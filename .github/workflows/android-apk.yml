@@ -35,34 +35,46 @@ jobs:
       - name: Generate native Android project
         run: npx expo prebuild --platform android --no-install
 
-      - name: Build release APK
+      # arm64-v8a alone covers every Android phone shipped since ~2017 and keeps
+      # the APK small enough to pass around; the universal one is the fallback
+      # for older 32-bit devices and x86 emulators.
+      - name: Build arm64-only release APK
         working-directory: android
-        run: ./gradlew assembleRelease --no-daemon
+        run: ./gradlew assembleRelease --no-daemon -PreactNativeArchitectures=arm64-v8a
 
-      - name: Stage APK
-        id: apk
+      - name: Stage arm64 APK
         run: |
           mkdir -p dist
           cp android/app/build/outputs/apk/release/app-release.apk \
-             "dist/compteur-${{ github.run_number }}.apk"
-          echo "path=dist/compteur-${{ github.run_number }}.apk" >> "$GITHUB_OUTPUT"
-          echo "tag=apk-build-${{ github.run_number }}" >> "$GITHUB_OUTPUT"
+             "dist/compteur-${{ github.run_number }}-arm64.apk"
 
-      - name: Upload APK as workflow artifact
+      - name: Build universal release APK
+        working-directory: android
+        run: ./gradlew assembleRelease --no-daemon
+
+      - name: Stage universal APK
+        id: apk
+        run: |
+          cp android/app/build/outputs/apk/release/app-release.apk \
+             "dist/compteur-${{ github.run_number }}-universal.apk"
+          echo "tag=apk-build-${{ github.run_number }}" >> "$GITHUB_OUTPUT"
+          ls -lh dist/
+
+      - name: Upload APKs as workflow artifact
         uses: actions/upload-artifact@v4
         with:
           name: compteur-apk
-          path: ${{ steps.apk.outputs.path }}
+          path: dist/*.apk
           if-no-files-found: error
 
-      - name: Publish APK as a release
+      - name: Publish APKs as a release
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
           gh release create "${{ steps.apk.outputs.tag }}" \
-            "${{ steps.apk.outputs.path }}" \
+            dist/*.apk \
             --title "Compteur APK (build ${{ github.run_number }})" \
-            --notes "Standalone Android APK built from \`${{ github.ref_name }}\` at \`${{ github.sha }}\`. Sideload it directly - no Google Play account needed." \
+            --notes "Standalone Android APKs built from \`${{ github.ref_name }}\` at \`${{ github.sha }}\`. Sideload directly - no Google Play account needed. Use the \`arm64\` build on any modern phone; the \`universal\` build also covers 32-bit ARM and x86 emulators." \
             --target "${{ github.sha }}" \
             --latest
           {
