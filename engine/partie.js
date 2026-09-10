@@ -1,7 +1,7 @@
 // Contrôleur de partie : la seule surface que l'interface appelle.
 // Toutes les fonctions prennent un état, en renvoient une copie modifiée.
 
-import { cloner, creerEtatInitial, santeMax, capacitePort, poidsPorte, statEffective, xpProchainNiveau } from './etat.js';
+import { cloner, creerEtatInitial, santeMax, capacitePort, poidsPorte, surcharge, statEffective, xpProchainNiveau } from './etat.js';
 import { avancerSegments, reposer, nomSegment } from './temps.js';
 import { appliquerEffets } from './effets.js';
 import {
@@ -60,6 +60,8 @@ export function voyager(etatSource, cibleId, catalogue) {
   let cout = liaison.segments;
   // Une jambe blessée coûte un segment de plus sur chaque trajet.
   if (etat.heros.etats.includes('blesse_jambe')) cout += 1;
+  // Porter au-delà de sa capacité ralentit la marche, en plus de fatiguer.
+  if (surcharge(etat, catalogue.objets) > 0) cout += 1;
 
   avancerSegments(etat, cout, catalogue.objets);
   verifierFin(etat);

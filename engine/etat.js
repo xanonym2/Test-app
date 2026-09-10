@@ -79,7 +79,8 @@ export function santeMax(etat) {
 }
 
 export function capacitePort(etat) {
-  return 10 + etat.heros.stats.vigueur * 3;
+  const base = 10 + etat.heros.stats.vigueur * 3;
+  return base + (etat.heros.competences.includes('dos_solide') ? 6 : 0);
 }
 
 export function poidsPorte(etat, catalogueObjets) {
@@ -108,6 +109,9 @@ export function statEffective(etat, stat) {
   if (stat === 'vigueur' && etats.includes('blesse_leger')) valeur -= 1;
   if (stat === 'adresse' && etats.includes('blesse_jambe')) valeur -= 2;
   if (stat === 'vigueur' && etats.includes('blesse_jambe')) valeur -= 1;
+  // Les compétences se lisent ici, jamais stockées dans les stats brutes.
+  if (stat === 'adresse' && etat.heros.competences.includes('main_sure')) valeur += 1;
+  if (stat === 'perception' && etat.heros.competences.includes('oeil_de_chasse')) valeur += 1;
   return Math.max(0, valeur);
 }
 

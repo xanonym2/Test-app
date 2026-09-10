@@ -20,6 +20,7 @@ export function avancerSegments(etat, n, catalogueObjets = {}) {
   const bilans = [];
   for (let i = 0; i < n; i += 1) {
     let fatigue = FATIGUE_PAR_SEGMENT;
+    if (etat.heros.competences.includes('souffle_long')) fatigue -= 2;
     // La nuit épuise davantage, et porter trop lourd aussi.
     if (etat.temps.segment === 6) fatigue += 4;
     const excedent = surcharge(etat, catalogueObjets);
