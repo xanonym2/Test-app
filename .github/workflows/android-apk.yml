@@ -3,7 +3,7 @@ name: Build Android APK
 on:
   push:
     branches:
-      - claude/expo-counter-apk-build-oiy5k7
+      - claude/mvp-android-apk-uzjrz9
   workflow_dispatch:
 
 permissions:
@@ -32,12 +32,16 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      # Valide les règles de contenu, puis simule 800 parties pour vérifier les
+      # invariants du moteur. Aucun texte narratif n'est affiché.
+      - name: Verify content and engine invariants
+        run: npm run verifier
+
       - name: Generate native Android project
         run: npx expo prebuild --platform android --no-install
 
-      # arm64-v8a alone covers every Android phone shipped since ~2017 and keeps
-      # the APK small enough to pass around; the universal one is the fallback
-      # for older 32-bit devices and x86 emulators.
+      # arm64-v8a couvre tous les téléphones sortis depuis ~2017 et garde l'APK
+      # léger ; l'APK universel est le repli pour les appareils 32 bits.
       - name: Build arm64-only release APK
         working-directory: android
         run: ./gradlew assembleRelease --no-daemon -PreactNativeArchitectures=arm64-v8a
@@ -46,7 +50,7 @@ jobs:
         run: |
           mkdir -p dist
           cp android/app/build/outputs/apk/release/app-release.apk \
-             "dist/compteur-${{ github.run_number }}-arm64.apk"
+             "dist/val-de-garde-${{ github.run_number }}-arm64.apk"
 
       - name: Build universal release APK
         working-directory: android
@@ -56,14 +60,14 @@ jobs:
         id: apk
         run: |
           cp android/app/build/outputs/apk/release/app-release.apk \
-             "dist/compteur-${{ github.run_number }}-universal.apk"
+             "dist/val-de-garde-${{ github.run_number }}-universal.apk"
           echo "tag=apk-build-${{ github.run_number }}" >> "$GITHUB_OUTPUT"
           ls -lh dist/
 
       - name: Upload APKs as workflow artifact
         uses: actions/upload-artifact@v4
         with:
-          name: compteur-apk
+          name: val-de-garde-apk
           path: dist/*.apk
           if-no-files-found: error
 
@@ -73,13 +77,13 @@ jobs:
         run: |
           gh release create "${{ steps.apk.outputs.tag }}" \
             dist/*.apk \
-            --title "Compteur APK (build ${{ github.run_number }})" \
-            --notes "Standalone Android APKs built from \`${{ github.ref_name }}\` at \`${{ github.sha }}\`. Sideload directly - no Google Play account needed. Use the \`arm64\` build on any modern phone; the \`universal\` build also covers 32-bit ARM and x86 emulators." \
+            --title "Val-de-Garde APK (build ${{ github.run_number }})" \
+            --notes "APK Android autonome, construit depuis \`${{ github.ref_name }}\` (\`${{ github.sha }}\`). Installation directe, sans compte Google Play. Utilise la version \`arm64\` sur un téléphone récent ; la version \`universal\` couvre aussi l'ARM 32 bits et les émulateurs x86." \
             --target "${{ github.sha }}" \
             --latest
           {
-            echo "### APK ready"
+            echo "### APK prêt"
             echo ""
             gh release view "${{ steps.apk.outputs.tag }}" \
-              --json assets --jq '.assets[] | "Direct download: \(.url)"'
+              --json assets --jq '.assets[] | "Téléchargement direct : \(.url)"'
           } >> "$GITHUB_STEP_SUMMARY"

@@ -1,44 +1,86 @@
-# Compteur — minimal Expo app
+# Val-de-Garde — MVP jouable
 
-One screen, one title, one button that increments a counter.
+Jeu narratif à storylets, jouable sur téléphone Android. Environ 30 minutes de
+jeu, une zone, une sortie. Ce n'est pas une démo commerciale : c'est un test de
+mécanique et de ressenti.
 
-- `App.js` — the whole app
-- `app.json` — Expo config (Android package `com.testapp.counter`)
-- `eas.json` — EAS Build profiles; `preview` produces a standalone `.apk`
+## Architecture
 
-## Run it in development
+Le moteur ne contient aucun texte narratif. Tout le contenu vit dans des
+fichiers de données séparés, ce qui permettra plus tard de rhabiller le jeu
+pour une autre plateforme sans y toucher.
+
+```
+/engine    état, conditions, effets, temps, inventaire, storylets, sauvegarde
+/content   zones, objets, modificateurs, créatures, PNJ, compétences, storylets
+/ui        thème, bandeau d'état, écrans scène / carte / personnage
+/scripts   validation du contenu et simulation de parties
+```
+
+| Fichier | Rôle |
+|---|---|
+| `engine/etat.js` | modèle d'état, valeurs dérivées, version de sauvegarde |
+| `engine/conditions.js` | évaluation des conditions (tableau d'atomes, `ou` / `non`) |
+| `engine/effets.js` | application des effets — seule voie de mutation depuis le contenu |
+| `engine/storylets.js` | sélection, machine à états locale, résolution des issues |
+| `engine/temps.js` | jour, segments 1-6, fatigue, faim, bilan de fin de journée |
+| `engine/inventaire.js` | usure par paliers, préfixes / suffixes, encombrement |
+| `engine/sauvegarde.js` | sauvegarde locale versionnée + migrations |
+| `engine/partie.js` | seule surface appelée par l'interface |
+
+### Trois règles tenues dès le premier jour
+
+1. **Identifiants stables** — zones, objets, PNJ et storylets ont un id technique
+   qui ne change jamais, indépendant du nom affiché.
+2. **Sauvegarde versionnée** — `version_sauvegarde` + table `MIGRATIONS` dans
+   `engine/sauvegarde.js`. Une sauvegarde sans chemin de migration est refusée
+   plutôt que chargée de travers.
+3. **Rien de calculable n'est stocké** — santé max, capacité de port, poids
+   porté et bonus sont recalculés à chaque lecture.
+
+## Vérifications
+
+```bash
+npm run verifier
+```
+
+Deux passes, sans jamais afficher le texte du jeu :
+
+- **validation du contenu** — références d'objets, de PNJ, de lieux et de
+  storylets existantes ; sortie disponible ; option d'observation là où il y a
+  du risque ; différés résolus sur un lieu ou un événement, jamais sur un délai.
+- **simulation** — 800 parties complètes. Le mode aléatoire contrôle les
+  invariants du moteur (3 à 5 options par tour, une sortie toujours offerte,
+  aucun tour sans effet) ; le mode raisonnable donne les repères d'équilibrage.
+
+## Développement
 
 ```bash
 npm install
 npx expo start
 ```
 
-## Build a standalone APK
+## APK Android
 
-Two independent paths produce the same thing: an APK you sideload directly,
-with no Google Play developer account.
+### 1. GitHub Actions (aucun compte Expo nécessaire)
 
-### 1. GitHub Actions (no Expo account needed)
+`.github/workflows/android-apk.yml` se déclenche à chaque push sur la branche de
+travail, et se lance à la main depuis l'onglet Actions. Il valide le contenu,
+prébuild le projet natif, lance `./gradlew assembleRelease`, puis publie l'APK :
 
-`.github/workflows/android-apk.yml` runs on every push to the feature branch,
-and can be started manually from the Actions tab. It prebuilds the native
-project and runs `./gradlew assembleRelease`, then publishes the APK twice:
+- comme artefact de workflow (`val-de-garde-apk`)
+- comme *release* GitHub (`apk-build-<numéro>`), pour un lien direct
 
-- as a workflow artifact (`compteur-apk`)
-- as a GitHub release asset (`apk-build-<run number>`) for a direct link
+La release est signée avec la clé de debug du template — c'est ce qui rend l'APK
+installable immédiatement. Avant toute distribution réelle, générer sa propre
+clé : la clé de debug est publique et identique pour tout le monde.
 
-The release build is signed with the template's debug keystore, which is what
-makes the APK installable straight away. Before shipping to real users,
-generate your own keystore and wire it into `android/app/build.gradle` — the
-debug key is public and identical for every developer, so it is fine for
-testing and not for distribution.
-
-### 2. EAS Build (needs a free Expo account)
+### 2. EAS Build (compte Expo gratuit)
 
 ```bash
 npx eas-cli login
 npx eas-cli build --platform android --profile preview
 ```
 
-EAS returns a download link when the build finishes. The `preview` profile is
-already set to `buildType: "apk"` with internal distribution.
+Le profil `preview` est déjà réglé sur `buildType: "apk"` en distribution
+interne.
