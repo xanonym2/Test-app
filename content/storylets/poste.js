@@ -246,6 +246,14 @@ Son souffle sent le cuir mouillé.`,
           si: [{ local: 'sante_ennemi', max: 5 }, { local: 'fini', valeur: false }],
           ajout: `Il tient son bras gauche contre lui. Il ne l’a pas fait exprès.`,
         },
+        {
+          // Dernière variante : elle l'emporte sur les précédentes une fois
+          // le combat terminé, sinon la scène rejouerait son texte d'entrée.
+          si: [{ local: 'fini', valeur: true }],
+          remplace: `Le vent est revenu. Tu l’entends de nouveau, ce qui veut dire que tu avais cessé de l’entendre.
+
+Devant le mur nord, le corps, le cuir bouilli, la hache courte tombée à plat. Les genêts ne bougent pas.`,
+        },
       ],
     },
     regles_locales: [
@@ -255,7 +263,7 @@ Son souffle sent le cuir mouillé.`,
         si: [{ local: 'sante_ennemi', max: 0 }, { local: 'nombre', valeur: 'deux' }, { local: 'second_engage', valeur: false }],
         alors: [
           { local: 'second_engage', '=': true },
-          { local: 'sante_ennemi', '=': 12 },
+          { local: 'sante_ennemi', '=': 10 },
           { local: 'distance', '=': 'contact' },
           { local: 'su', '=': true },
           {
@@ -496,7 +504,7 @@ Il avance, et pour avancer il faut bien qu’il ouvre quelque chose. Tu prends c
 
 Il te le rend sur l’avant-bras que tu as levé trop tard.`,
             effets: [
-              { local: 'sante_ennemi', '=': { increment: -4 } },
+              { local: 'sante_ennemi', '=': { increment: -5 } },
               { local: 'distance', '=': 'contact' },
               { local: 'tours', '=': { increment: 1 } },
               { sante_heros: -3 },

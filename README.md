@@ -44,7 +44,7 @@ pour une autre plateforme sans y toucher.
 npm run verifier
 ```
 
-Deux passes, sans jamais afficher le texte du jeu :
+Quatre passes, sans jamais afficher le texte du jeu :
 
 - **validation du contenu** — références d'objets, de PNJ, de lieux et de
   storylets existantes ; sortie disponible ; option d'observation là où il y a
@@ -52,6 +52,12 @@ Deux passes, sans jamais afficher le texte du jeu :
 - **simulation** — 800 parties complètes. Le mode aléatoire contrôle les
   invariants du moteur (3 à 5 options par tour, une sortie toujours offerte,
   aucun tour sans effet) ; le mode raisonnable donne les repères d'équilibrage.
+- **combat narratif** — exploration exhaustive de toutes les suites de choix
+  jusqu'à six tours, sur plusieurs graines : la scène se referme toujours et
+  aucun état local n'y devient absurde.
+- **sauvegarde** — écriture, relecture au bit près, reprise sur la même scène
+  au même tour, refus d'une sauvegarde plus récente que le moteur, et chaîne de
+  migration exercée dans les deux cas (présente et absente).
 
 ## Développement
 
