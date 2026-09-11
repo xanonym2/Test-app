@@ -3,12 +3,21 @@ import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import Bandeau from './components/Bandeau';
 import { C, ESP, T } from './theme';
 import { optionsVisibles } from '../engine/moteur';
+import { defObjet } from '../engine/derive';
 
+// Le libellé ne dit jamais ce qu'on va obtenir, mais le coût concret reste
+// affiché : le joueur sait toujours ce qu'il dépense.
 function coutLisible(cout) {
   const morceaux = [];
   if (cout.segments) morceaux.push(cout.segments === 1 ? 'un moment' : `${cout.segments} moments`);
-  if (cout.objet) morceaux.push(cout.quantite > 1 ? `${cout.quantite} ${cout.objet}` : cout.objet);
-  if (cout.fatigue > 6) morceaux.push('effort');
+  if (cout.objet) {
+    const n = cout.quantite ?? 1;
+    const nom = defObjet(cout.objet).nom;
+    morceaux.push(n > 1 ? `${n} ${nom}s` : `1 ${nom}`);
+  }
+  if (cout.fatigue >= 10) morceaux.push('gros effort');
+  else if (cout.fatigue > 5) morceaux.push('effort');
+  if (cout.fatigue < 0) morceaux.push('du repos');
   return morceaux.join(' · ');
 }
 
