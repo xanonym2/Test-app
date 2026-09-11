@@ -1,14 +1,14 @@
-import { etatInitial, migrer, VERSION_SAUVEGARDE } from './engine/state';
+import { etatInitial, migrer, VERSION_SAUVEGARDE } from '../engine/state';
 import {
   choisirOption, choisirStorylet, entrerStorylet, enregistrerZones,
   optionsVisibles, reprendreLieu, resteAFaire, voyager,
-} from './engine/moteur';
-import { STORYLETS, DEPART } from './content/storylets';
-import { ZONES } from './content/zones';
-import { CARNET } from './content/carnet';
-import { OBJETS } from './content/objets';
-import { poidsPorte, capacitePort, santeMax, defObjet } from './engine/derive';
-import { appliquerEffets } from './engine/effets';
+} from '../engine/moteur';
+import { STORYLETS, DEPART } from '../content/storylets';
+import { ZONES } from '../content/zones';
+import { CARNET } from '../content/carnet';
+import { OBJETS } from '../content/objets';
+import { poidsPorte, capacitePort, santeMax, defObjet } from '../engine/derive';
+import { appliquerEffets } from '../engine/effets';
 
 enregistrerZones(ZONES);
 

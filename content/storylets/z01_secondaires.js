@@ -55,6 +55,71 @@ export const SECONDAIRES = {
           ajout:
             'Vous repensez à l’outre, et vous n’arrivez pas à décider si c’était intelligent. Vous décidez que ce n’était pas la question.',
         },
+        {
+          si: [{ flag: 'outre_vide_devant_renn' }],
+          ajout:
+            'Le bras tendu, avec une outre vide au bout. C’est cette image-là qui revient, pas le reste, et elle revient à chaque fois qu’on ferme les yeux.',
+        },
+        {
+          si: [{ flag: 'eclaireur_abattu' }],
+          ajout:
+            'Vous avez tué un homme aujourd’hui. Vous attendez que ça vous fasse quelque chose de précis, et ça ne vient pas : il y a seulement une fatigue de plus, mêlée aux autres, qu’on ne peut pas distinguer.',
+        },
+        {
+          si: [{ flag: 'suivi_eclaireur' }],
+          ajout:
+            'Il vous a regardé remonter le ruisseau. Il n’a pas couru, il a regardé où vous alliez. Vous vous relevez deux fois dans la nuit pour écouter le bas de la pente.',
+        },
+        {
+          si: [{ flag: 'coupe_contournee' }],
+          ajout:
+            'Vous avez reculé onze pas devant un homme seul et vous avez perdu une heure à contourner. Vous referiez pareil. Ça ne vous empêche pas d’y revenir.',
+        },
+        {
+          si: [{ flag: 'morsures' }],
+          ajout:
+            'Les morsures de l’avant-bras chauffent. C’est normal le premier soir. C’est le troisième qui compte.',
+        },
+        {
+          si: [{ flag: 'source_cedee' }],
+          ajout:
+            'Vous avez cédé la source à cinq chiens. Une source qu’on a connue en juillet, à six ou sept, quand l’eau était trop froide pour qu’on y reste.',
+        },
+        {
+          si: [{ flag: 'veillee' }],
+          ajout:
+            'Deux temps courts, un long, un silence. Vous vous surprenez à compter votre propre respiration sur ce rythme-là, et vous en changez exprès.',
+        },
+        {
+          si: [{ flag: 'piste_mathieu' }],
+          ajout:
+            'Il a ouvert la porte en grand et il est resté sur le seuil avec le maillet. Vous connaissez ce geste : c’est celui d’un homme qui n’a jamais eu à décider de rien de tel et qui décide vite.',
+        },
+        {
+          si: [{ flag: 'nom_vairon' }],
+          ajout:
+            'Vairon. Avec deux traits sous le nom. Vous tournez ce nom dans la bouche sans rien en tirer, et il revient quand même.',
+        },
+        {
+          si: [{ flag: 'objet_de_corne' }],
+          ajout:
+            'La plaque de corne est dans votre poche. Un quadrillage, deux encoches sur le bord long. Vous la sortez, vous la posez à plat sur le genou, vous la retournez. Ce n’est toujours pas une arme.',
+        },
+        {
+          si: [{ flag: 'matin_ordinaire' }],
+          ajout:
+            'Le muret chaud, le fil de la faux sur la pierre, quelqu’un qui rit dans le pré sans qu’on sache pourquoi. Ça date de ce matin. Ça ne devrait pas être possible que ça date de ce matin.',
+        },
+        {
+          si: [{ flag: 'lecon_portage' }],
+          ajout:
+            'Vous refaites le tri avant de dormir, deux tas, comme à la tour. Le deuxième tas est plus gros que ce que vous vouliez admettre.',
+        },
+        {
+          si: [{ flag: 'a_partage_camp' }],
+          ajout:
+            'Quarante et une parts. Elle a compté quarante et une parts sans lever les yeux, et elle en a laissé une sur la pierre au cas où vous reviendriez.',
+        },
       ],
     },
     options: [

@@ -43,6 +43,26 @@ const VARIANTES_COMMUNES = [
     ajout:
       'Il fait nuit. Vous avancez à l’oreille et au souvenir, une main tendue à hauteur de visage pour les branches.',
   },
+  {
+    si: [{ surcharge: true }],
+    ajout:
+      'Les sangles travaillent à chaque pas et vous changez d’épaule tous les cent mètres. Vous regardez vos pieds au lieu de regarder devant.',
+  },
+  {
+    si: [{ flag: 'derobe_ruisseau' }],
+    ajout:
+      'Vous avez encore les jambes froides jusqu’aux genoux. Le cuir des chaussures ne sèche pas en marchant, il sèche en craquant, plus tard, et plus dur.',
+  },
+  {
+    si: [{ flag: 'nuit_au_poste' }],
+    ajout:
+      'Vous marchez mieux que les jours précédents. Une nuit entière sous un demi-toit, et le corps s’en souvient pendant des heures.',
+  },
+  {
+    si: [{ flag: 'renn_abandonne' }, { non: { flag: 'renn_mort' } }],
+    ajout:
+      'Le bras droit qui bouge lentement, à intervalles réguliers. Ça revient dans les montées, quand la tête n’a rien d’autre à faire.',
+  },
 ];
 
 export const VOYAGES = {
@@ -195,6 +215,41 @@ export const SORTIE = {
           si: [{ flag: 'indice_ouest' }, { flag: 'indice_rien_pris' }, { flag: 'indice_garnison' }],
           ajout:
             'Trois choses tournent dans votre tête depuis hier et refusent de se mettre en ligne. Ils sont venus beaucoup trop loin à l’ouest. Ils n’ont rien pris. Et quarante hommes sont partis vers l’est six jours avant, sur un ordre signé de deux traits.',
+        },
+        {
+          si: [{ flag: 'renn_mort' }],
+          ajout:
+            'Une chaussure dans un trou, au milieu d’un layon droit. Vous emportez ça aussi, et ça ne pèse rien du tout, ce qui est le problème.',
+        },
+        {
+          si: [{ flag: 'abeline_enterre' }],
+          ajout:
+            'Vous avez rangé la bêche exactement là où elle était. Vous ne savez pas pourquoi c’est ce détail-là qui vous revient ici, au replat, devant trois jours de route.',
+        },
+        {
+          si: [{ flag: 'ferme_laissee' }],
+          ajout:
+            'Il y a une bêche contre un mur de fournil, à deux heures d’ici, et un homme sur le sol d’une cuisine. Vous aviez raison : il y avait plus urgent. Vous emportez la cour avec vous quand même.',
+        },
+        {
+          si: [{ flag: 'corde_refaite' }],
+          ajout:
+            'L’arc est bon. Corde neuve, torons réguliers, départ sec. C’est peu de chose et c’est la seule chose sur laquelle vous puissiez compter à cette heure-ci.',
+        },
+        {
+          si: [{ flag: 'corde_fatiguee' }, { non: { flag: 'corde_refaite' } }],
+          ajout:
+            'La corde peluche toujours à une paume de l’encoche haute. Vous vous étiez dit : ce soir. Il y a eu des soirs depuis.',
+        },
+        {
+          si: [{ flag: 'souffle' }],
+          ajout:
+            'Les pieds dans le sable froid, la tête renversée, une poule d’eau qui revient et ne s’en va pas. Vous vous accrochez à ce quart d’heure-là comme à une preuve.',
+        },
+        {
+          si: [{ flag: 'chevres_liberees' }],
+          ajout:
+            'Quelque part derrière vous, six chèvres descendent un talus en mangeant tout ce qu’elles trouvent. C’est complètement dérisoire. Vous y repensez et ça tient chaud.',
         },
       ],
     },
