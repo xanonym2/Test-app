@@ -146,6 +146,12 @@ export function voyager(E, pointId) {
 
 // Rejoue une scène au point courant (après une sortie de storylet).
 export function rafraichirScene(E) {
+  // Arriver ici pour la première fois compte comme une visite, même quand on
+  // n'y est pas venu par la carte (fuite, déclenchement, ouverture).
+  if ((E.geo.points_visites[E.geo.position] ?? 0) === 0) {
+    E.geo.points_visites[E.geo.position] = 1;
+    E.stats_partie.points_visites += 1;
+  }
   const s = choisirStorylet(E, E.geo.position);
   if (s) ouvrirStorylet(E, s.id);
   else E.systeme.storylet_courant = null;

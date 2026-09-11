@@ -89,12 +89,15 @@ export function FournisseurJeu({ children }) {
     }
 
     if (r.sortie) {
+      const quitte = scene.storylet?.id ?? null;
       const suivant = rafraichirScene(etat);
-      if (suivant) {
+      // On n'enchaîne que sur une scène réellement nouvelle : sinon on rend
+      // la main au joueur plutôt que de le renvoyer dans la même scène.
+      if (suivant && suivant !== quitte) {
         const sc = scenePour(etat);
         pousser(etat, { fil: [{ k: 'i', t: r.texte }, ...sc.fil], options: sc.options, storylet: sc.storylet });
       } else {
-        setEcran('carte');
+        etat.systeme.storylet_courant = null;
         pousser(etat, { fil: [{ k: 'i', t: r.texte }], options: [], storylet: null });
       }
       return;

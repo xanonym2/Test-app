@@ -3,7 +3,7 @@
 export const storylets = {
   "ST-P04-01": {
     id: "ST-P04-01",
-    titre_travail: "Layon — la coulee",
+    titre_travail: "Layon — la coulée",
     lieu: { type: "point_interet", cible: "P04" },
     conditions: { requis: [], interdit: [] },
     unique: true,
@@ -13,14 +13,14 @@ export const storylets = {
     etat_local_initial: { lu: false, bu: false },
     texte: {
       arrivee:
-        "Le layon monte droit, puis la pente a lache. La terre est partie sur vingt pas, jusqu'au lit du ruisseau ; en bas, il est a sec, plein de pierres claires. Le devers est de l'argile dure comme une tuile, et rien n'y tient. Un hetre mort est tombe en travers ; le vent remonte le layon et le fait bouger par rafales.",
+        "Le layon monte droit, puis la pente a lâché. La terre est partie sur vingt pas, jusqu'au lit du ruisseau ; en bas, il est à sec, plein de pierres claires. Le dévers est de l'argile dure comme une tuile, et rien n'y tient. Un hêtre mort est tombé en travers ; le vent remonte le layon et le fait bouger par rafales.",
       base:
-        "La coulee n'a pas bouge. Argile dure, le hetre mort en travers, le vent qui remonte par rafales. En bas, les pierres claires du ruisseau a sec.",
+        "La coulée n'a pas bougé. Argile dure, le hêtre mort en travers, le vent qui remonte par rafales. En bas, les pierres claires du ruisseau à sec.",
       variantes: [
         {
           si: [["meteo", "pluie"]],
           ajout:
-            "La pluie a mouille l'argile. Cette terre-la ne boit pas : elle garde l'eau en surface et devient du savon.",
+            "La pluie a mouillé l'argile. Cette terre-là ne boit pas : elle garde l'eau en surface et devient du savon.",
         },
         {
           si: [["etat", "assoiffe"]],
@@ -30,7 +30,7 @@ export const storylets = {
         {
           si: [["local", "lu"]],
           ajout:
-            "Sous la souche arrachee, l'eau d'avant a creuse un boyau. Etroit. Il ressort plus haut, derriere la coulee.",
+            "Sous la souche arrachée, l'eau d'avant a creusé un boyau. Étroit. Il ressort plus haut, derrière la coulée.",
         },
       ],
     },
@@ -46,14 +46,14 @@ export const storylets = {
             si: [],
             reussite: true,
             texte:
-              "Les rafales viennent par trois, puis le vent retombe le temps de dix pas. Le hetre est sec, sans champignon en console : ce bois-la porte encore. Sous la souche arrachee, un boyau etroit traverse la coulee par-dessous.",
+              "Les rafales viennent par trois, puis le vent retombe le temps de dix pas. Le hêtre est sec, sans champignon en console : ce bois-là porte encore. Sous la souche arrachée, un boyau étroit traverse la coulée par-dessous.",
             effets: [{ local: "lu", "=": true }, { xp: 5 }],
           },
         ],
       },
       {
         id: "B",
-        libelle: "Boire une gorgee avant de s'engager",
+        libelle: "Boire une gorgée avant de s'engager",
         cout: { objet: { "OBJ-05": 1 } },
         apparait_si: [["etat", "assoiffe"], ["!local", "bu"]],
         requiert: [["objet", "OBJ-05"]],
@@ -61,7 +61,7 @@ export const storylets = {
           {
             si: [],
             texte:
-              "L'eau est tiede et a le gout de l'outre. La gorge se desserre, les doigts se rouvrent. En bas, les pierres du ruisseau sont blanches de soleil : il n'y a rien a reprendre ici.",
+              "L'eau est tiède et a le goût de l'outre. La gorge se desserre, les doigts se rouvrent. En bas, les pierres du ruisseau sont blanches de soleil : il n'y a rien à reprendre ici.",
             effets: [
               { retire_etat: "assoiffe" },
               { fatigue: -8 },
@@ -72,7 +72,7 @@ export const storylets = {
       },
       {
         id: "C",
-        libelle: "Traverser le devers en biais, a plat sur l'argile",
+        libelle: "Traverser le dévers en biais, à plat sur l'argile",
         cout: { segments: 1 },
         modif_proba: [
           { si: [["stat>=", "adresse", 4]], valeur: 15 },
@@ -91,7 +91,7 @@ export const storylets = {
             si: [],
             sortie: true,
             texte:
-              "Le pied cherche, trouve un durillon de racine, puis un autre. L'argile tient la ou elle est grise. De l'autre cote, les jambes tremblent un peu et mettent un moment a s'arreter.",
+              "Le pied cherche, trouve un durillon de racine, puis un autre. L'argile tient là où elle est grise. De l'autre côté, les jambes tremblent un peu et mettent un moment à s'arrêter.",
             effets: [
               { flag: "f_layon_reussi" },
               { fatigue: 6 },
@@ -104,7 +104,7 @@ export const storylets = {
             si: [],
             sortie: true,
             texte:
-              "Le talon part. La main attrape le hetre mort au passage et le corps suit. Le carquois se vide a moitie dans la pente ; les fleches rebondissent jusqu'aux pierres claires, en bas.",
+              "Le talon part. La main attrape le hêtre mort au passage et le corps suit. Le carquois se vide à moitié dans la pente ; les flèches rebondissent jusqu'aux pierres claires, en bas.",
             effets: [
               { objet: "OBJ-02", quantite: -3 },
               { sante_heros: -4 },
@@ -118,7 +118,7 @@ export const storylets = {
             si: [],
             sortie: true,
             texte:
-              "L'argile part d'un bloc, en plaque. La descente est courte et seche. Le genou tape une pierre claire en bas, et la jambe ne veut plus porter du meme cote.",
+              "L'argile part d'un bloc, en plaque. La descente est courte et sèche. Le genou tape une pierre claire en bas, et la jambe ne veut plus porter du même côté.",
             effets: [
               { etat: "blesse_jambe" },
               { sante_heros: -12 },
@@ -132,7 +132,7 @@ export const storylets = {
       },
       {
         id: "D",
-        libelle: "Passer sur le hetre mort, entre deux rafales",
+        libelle: "Passer sur le hêtre mort, entre deux rafales",
         cout: { segments: 1 },
         modif_proba: [
           { si: [["local", "lu"]], valeur: 20 },
@@ -149,7 +149,7 @@ export const storylets = {
             si: [],
             sortie: true,
             texte:
-              "Le bois crisse sans plier. Trois pas, la rafale arrive dans le dos, on ne bouge plus, puis trois pas encore. Le tronc rend l'autre berge a hauteur d'homme.",
+              "Le bois crisse sans plier. Trois pas, la rafale arrive dans le dos, on ne bouge plus, puis trois pas encore. Le tronc rend l'autre berge à hauteur d'homme.",
             effets: [
               { flag: "f_layon_reussi" },
               { fatigue: 5 },
@@ -162,7 +162,7 @@ export const storylets = {
             si: [],
             sortie: true,
             texte:
-              "Au milieu, une branche morte cede sous le pied. La poitrine tombe sur le tronc et coupe le souffle. L'arc cogne le bois, deux fois, avant que la main le rattrape.",
+              "Au milieu, une branche morte cède sous le pied. La poitrine tombe sur le tronc et coupe le souffle. L'arc cogne le bois, deux fois, avant que la main le rattrape.",
             effets: [
               { sante_heros: -6 },
               { usure: "arme_equipee", valeur: -10 },
@@ -198,7 +198,7 @@ export const storylets = {
           {
             si: [["surcharge"]],
             texte:
-              "Le sac accroche des l'entree. Il faut le pousser devant, ramper derriere, le reprendre a chaque coude. On ressort plus haut, plein de terre, les bras morts.",
+              "Le sac accroche dès l'entrée. Il faut le pousser devant, ramper derrière, le reprendre à chaque coude. On ressort plus haut, plein de terre, les bras morts.",
             effets: [
               { fatigue: 22 },
               { usure: "arme_equipee", valeur: -5 },
@@ -209,7 +209,7 @@ export const storylets = {
           {
             si: [],
             texte:
-              "Le boyau est froid et sent la racine coupee. A plat ventre sur toute la longueur, coudes et genoux. Il ressort derriere la coulee, la ou le layon redevient un layon.",
+              "Le boyau est froid et sent la racine coupée. À plat ventre sur toute la longueur, coudes et genoux. Il ressort derrière la coulée, là où le layon redevient un layon.",
             effets: [
               { fatigue: 15 },
               { flag: "f_layon_evite" },
@@ -227,7 +227,7 @@ export const storylets = {
           {
             si: [],
             texte:
-              "Le detour repasse par le fond du vallon, sur les pierres claires, puis remonte de l'autre cote. Deux fois plus long. La pente ouverte reste derriere, intacte.",
+              "Le détour repasse par le fond du vallon, sur les pierres claires, puis remonte de l'autre côté. Deux fois plus long. La pente ouverte reste derrière, intacte.",
             effets: [
               { flag: "f_layon_evite" },
               { fatigue: 10 },
@@ -241,7 +241,7 @@ export const storylets = {
 
   "ST-P04-02": {
     id: "ST-P04-02",
-    titre_travail: "Layon — apres la coulee",
+    titre_travail: "Layon — après la coulée",
     lieu: { type: "point_interet", cible: "P04" },
     conditions: {
       requis: [
@@ -261,19 +261,19 @@ export const storylets = {
     etat_local_initial: { vu_jambe: false },
     texte: {
       arrivee:
-        "Passe la coulee, le layon redevient plat. Dans la poussiere, des pieds nus et un baton traine : un groupe est monte vers le nord, il y a moins d'un jour. Ils marchaient serre et lentement, et ils se sont arretes souvent. Une outre crevee a ete jetee au bord, encore humide a l'interieur.",
+        "Passé la coulée, le layon redevient plat. Dans la poussière, des pieds nus et un bâton traîné : un groupe est monté vers le nord, il y a moins d'un jour. Ils marchaient serré et lentement, et ils se sont arrêtés souvent. Une outre crevée a été jetée au bord, encore humide à l'intérieur.",
       base:
-        "Le layon est plat, ici. Les pieds nus vont toujours vers le nord. L'outre crevee seche au bord du passage.",
+        "Le layon est plat, ici. Les pieds nus vont toujours vers le nord. L'outre crevée sèche au bord du passage.",
       variantes: [
         {
           si: [["etat", "blesse_jambe"]],
           ajout:
-            "La jambe chauffe. Elle porte, mais elle ne portera pas jusqu'au soir de cette facon.",
+            "La jambe chauffe. Elle porte, mais elle ne portera pas jusqu'au soir de cette façon.",
         },
         {
           si: [["compagnons>=", 1]],
           ajout:
-            "L'autre attend deux pas en arriere, sans rien dire, et regarde la pente qu'on vient de quitter.",
+            "L'autre attend deux pas en arrière, sans rien dire, et regarde la pente qu'on vient de quitter.",
         },
       ],
     },
@@ -288,14 +288,14 @@ export const storylets = {
           {
             si: [],
             texte:
-              "Le genou est ouvert sur le cote, propre, et gonfle deja. Rien n'est casse : le pied tourne encore dans les deux sens. Mais la peau est sale et la terre d'argile est entree dedans.",
+              "Le genou est ouvert sur le côté, propre, et gonfle déjà. Rien n'est cassé : le pied tourne encore dans les deux sens. Mais la peau est sale et l'argile est entrée dedans.",
             effets: [{ local: "vu_jambe", "=": true }, { xp: 5 }],
           },
         ],
       },
       {
         id: "B",
-        libelle: "Laver la plaie, serrer, refaire le lacage",
+        libelle: "Laver la plaie, serrer, refaire le laçage",
         cout: { segments: 1, objet: { "OBJ-12": 1 } },
         apparait_si: [["etat", "blesse_jambe"]],
         requiert: [["objet", "OBJ-12"]],
@@ -303,7 +303,7 @@ export const storylets = {
           {
             si: [],
             texte:
-              "La terre sort mal et ca prend du temps. Une fois la botte relacee par-dessus, serree haut, le genou reste raide mais il tient. C'est ce qui restait pour ce genre de chose.",
+              "La terre sort mal et ça prend du temps. Une fois la botte relacée par-dessus, serrée haut, le genou reste raide mais il tient. C'était ce qui restait pour ce genre de chose.",
             effets: [
               { retire_etat: "blesse_jambe" },
               { sante_heros: 10 },
@@ -323,25 +323,25 @@ export const storylets = {
           {
             si: [["compagnon", "PNJ-01"]],
             texte:
-              "Il ecoute jusqu'au bout sans couper. Puis il montre le hetre mort : lui serait passe par la, et tant pis pour le bruit. Il le dit sans reproche, comme on donne un outil.",
+              "Il écoute jusqu'au bout sans couper. Puis il montre le hêtre mort : lui serait passé par là, et tant pis pour le bruit. Il le dit sans reproche, comme on tend un outil.",
             effets: [{ confiance: { pnj: "PNJ-01", valeur: 1 } }, { xp: 10 }],
           },
           {
             si: [["compagnon", "PNJ-02"]],
             texte:
-              "Elle ecoute, puis explique comment on sonde une argile pareille : une perche, plantee trois fois, et on regarde jusqu'ou elle entre. Elle ne dit pas qu'on aurait du le savoir.",
+              "Elle écoute, puis explique comment on sonde une argile pareille : une perche, plantée trois fois, et on regarde jusqu'où elle entre. Elle ne dit pas qu'on aurait dû le savoir.",
             effets: [{ confiance: { pnj: "PNJ-02", valeur: 1 } }, { xp: 10 }],
           },
           {
             si: [["compagnon", "PNJ-04"]],
             texte:
-              "L'aveu passe mal, puis il passe. On repart avec un accord sans mot : celui qui voit le premier parle le premier, meme pour dire qu'il n'est pas sur.",
+              "L'aveu passe mal, puis il passe. On repart avec un accord sans mot : celui qui voit le premier parle le premier, même pour dire qu'il n'est pas sûr.",
             effets: [{ confiance: { pnj: "PNJ-04", valeur: 1 } }, { xp: 10 }],
           },
           {
             si: [],
             texte:
-              "L'autre ecoute et ne repond pas tout de suite. Puis la main se tend vers le sac : on porte a deux pour la montee suivante.",
+              "L'autre écoute et ne répond pas tout de suite. Puis la main se tend vers le sac : on portera à deux pour la montée suivante.",
             effets: [{ xp: 10 }],
           },
         ],
@@ -355,7 +355,7 @@ export const storylets = {
           {
             si: [],
             texte:
-              "Le dos contre la souche, la jambe tendue devant. Les fourmis montent et redescendent le long du bois mort. Quand on se releve, le corps a repris de quoi marcher encore un peu.",
+              "Le dos contre la souche, la jambe tendue devant. Les fourmis montent et redescendent le long du bois mort, toujours par le même côté. En se relevant, le corps a repris de quoi marcher encore un peu.",
             effets: [{ fatigue: -20 }, { sante_heros: 3 }, { xp: 10 }],
           },
         ],
@@ -369,7 +369,7 @@ export const storylets = {
           {
             si: [["etat", "blesse_jambe"]],
             texte:
-              "Les cent premiers pas vont. Apres, chaque appui se paye et la jambe se met a chercher ses propres chemins. Elle demandera son du plus tard, et elle le prendra.",
+              "Les cent premiers pas vont. Après, chaque appui se paye et la jambe se met à chercher ses propres chemins. Elle demandera son dû plus tard, et elle le prendra.",
             effets: [
               { differe: { evenement: "ST-EVT-01", resolution: "jambe", dans_jours: 1 } },
               { fatigue: 12 },
@@ -381,7 +381,7 @@ export const storylets = {
           {
             si: [],
             texte:
-              "La trace se lit facilement : ils n'ont rien fait pour l'effacer. Elle monte vers le nord, franche, et elle ne s'arrete pas avant le pli ou la fumee tient.",
+              "La trace se lit sans effort : ils n'ont rien fait pour l'effacer. Elle monte vers le nord, franche, et elle ne s'arrête pas avant le pli où la fumée tient.",
             effets: [{ fatigue: 6 }, { xp: 15 }],
           },
         ],
@@ -391,7 +391,7 @@ export const storylets = {
 };
 
 export const journal = {
-  layon_passe: "Il a franchi la coulee du layon par ses propres moyens.",
-  layon_chute: "L'argile du layon a lache sous lui ; il est tombe jusqu'aux pierres du ruisseau.",
+  layon_passe: "Il a franchi la coulée du layon par ses propres moyens.",
+  layon_chute: "L'argile du layon a lâché sous lui ; il est tombé jusqu'aux pierres du ruisseau.",
   layon_force: "Il est reparti sur une jambe qui ne portait plus, sans attendre.",
 };
