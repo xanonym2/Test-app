@@ -258,7 +258,7 @@ export const storylets = {
     priorite: 7,
     poids: 10,
     duree_segments: 1,
-    etat_local_initial: { vu_jambe: false },
+    etat_local_initial: { vu_jambe: false, trace_lue: false },
     texte: {
       arrivee:
         "Passé la coulée, le layon redevient plat. Dans la poussière, des pieds nus et un bâton traîné : un groupe est monté vers le nord, il y a moins d'un jour. Ils marchaient serré et lentement, et ils se sont arrêtés souvent. Une outre crevée a été jetée au bord, encore humide à l'intérieur.",
@@ -343,6 +343,27 @@ export const storylets = {
             texte:
               "L'autre écoute et ne répond pas tout de suite. Puis la main se tend vers le sac : on portera à deux pour la montée suivante.",
             effets: [{ xp: 10 }],
+          },
+        ],
+      },
+      {
+        id: "F",
+        libelle: "Remonter la trace sur cent pas et revenir",
+        cout: { segments: 1 },
+        apparait_si: [["!etat", "blesse_jambe"]],
+        observation: true,
+        issues: [
+          {
+            si: [["local", "trace_lue"]],
+            texte:
+              "La trace n'a rien appris de plus. Elle monte, elle s'arrête, elle repart. Les empreintes du dessus sont encore nettes : ils n'ont pas pressé le pas.",
+            effets: [{ fatigue: 5 }],
+          },
+          {
+            si: [],
+            texte:
+              "Ils s'arrêtent tous les cinquante pas. La couture de l'outre a lâché à l'épaule, et la lanière a été coupée court : on l'a prise pour attacher quelque chose, ou quelqu'un. Ils portent un blessé et ils vont lentement. Une demi-journée devant, pas plus.",
+            effets: [{ local: "trace_lue", "=": true }, { xp: 10 }],
           },
         ],
       },

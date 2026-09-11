@@ -6,6 +6,8 @@ import { operateursConnus } from '../engine/conditions.js';
 import { nouvellePartie, voyager, rafraichirScene, pointsAccessibles, partieTerminee } from '../engine/game.js';
 import { composerTexte, optionsVisibles, resoudreOption, ouvrirStorylet } from '../engine/storylets.js';
 import { bilan } from '../engine/badges.js';
+import { appliquerEffets } from '../engine/effects.js';
+import { retirerObjet } from '../engine/items.js';
 
 const OPS = new Set([...operateursConnus, 'ou', 'non']);
 const EFFETS = new Set([
@@ -129,7 +131,9 @@ function verifier() {
 
     const opts = s.options ?? [];
     if (!opts.length) note(1, id, 'sans_option', '');
-    if (opts.length > 6) note(0, id, 'trop_options', String(opts.length));
+    // Le plafond de 3 à 5 options porte sur les options VISIBLES à un tour
+    // donné, pas sur le total déclaré : un storylet à états en porte plus.
+    if (opts.length > 9) note(0, id, 'trop_options', String(opts.length));
     let aSortie = false;
     let modifieEtat = false;
     for (const o of opts) {
@@ -190,19 +194,55 @@ function verifier() {
 }
 
 // ---------------------------------------------------------------- parties auto
+// Un joueur raisonnable mange quand il a faim et se soigne quand il saigne :
+// c'est ce que permet l'écran d'inventaire, donc le robot le fait aussi.
+function entretien(E) {
+  const conso = (base) => {
+    const it = E.inventaire.find((i) => i.base === base);
+    if (!it) return false;
+    const b = db.objets[base];
+    if (!b?.effets_consommation) return false;
+    appliquerEffets(E, b.effets_consommation);
+    retirerObjet(E, base, 1);
+    return true;
+  };
+  if (E.heros.faim >= 60) {
+    for (const id of Object.keys(db.objets)) {
+      const b = db.objets[id];
+      if (b.categorie !== 'consommable') continue;
+      if ((b.effets_consommation ?? []).some((e) => (e.faim ?? 0) < 0) && conso(id)) break;
+    }
+  }
+  if (E.heros.sante <= 12) {
+    for (const id of Object.keys(db.objets)) {
+      const b = db.objets[id];
+      if (b.categorie !== 'consommable') continue;
+      if ((b.effets_consommation ?? []).some((e) => (e.sante_heros ?? 0) > 0) && conso(id)) break;
+    }
+  }
+}
+
 function partieAuto(seed, maxActions = 400) {
   let E;
   try { E = nouvellePartie({ seed }); } catch (e) { return { erreur: 'creation:' + e.message }; }
   let actions = 0;
+  let bloque = 0;
   const vus = new Set();
   try {
     while (!partieTerminee(E) && actions < maxActions) {
       actions += 1;
+      entretien(E);
       const s = db.storylets[E.systeme.storylet_courant];
       if (!s) {
         const acc = pointsAccessibles(E).filter((p) => !p.bloque);
-        if (!acc.length) { rafraichirScene(E); if (!E.systeme.storylet_courant) break; continue; }
-        voyager(E, acc[actions % acc.length].id);
+        if (!acc.length) {
+          rafraichirScene(E);
+          if (!E.systeme.storylet_courant) { bloque += 1; if (bloque > 3) break; }
+          continue;
+        }
+        const neufs = acc.filter((p) => !p.visite);
+        const cible = (neufs.length ? neufs : acc)[actions % (neufs.length || acc.length)];
+        voyager(E, cible.id);
         continue;
       }
       vus.add(s.id);
@@ -210,16 +250,22 @@ function partieAuto(seed, maxActions = 400) {
       E.systeme.premiere_vue = false;
       const opts = optionsVisibles(E, s).filter((o) => !o.indisponible);
       if (!opts.length) { rafraichirScene(E); continue; }
-      const o = opts[(actions * 7 + seed) % opts.length];
+      const obs = opts.filter((x) => x.observation);
+      const o = (E.geo.points_decouverts.length < 4 && obs.length)
+        ? obs[0]
+        : opts[(actions * 7 + seed) % opts.length];
       const r = resoudreOption(E, o.id);
       if (!r) { rafraichirScene(E); continue; }
       if (r.declenchements.length) { ouvrirStorylet(E, r.declenchements[0]); continue; }
       if (r.sortie) {
+        const quitte = s.id;
         const suivant = rafraichirScene(E);
-        if (!suivant) {
+        if (!suivant || suivant === quitte) {
+          E.systeme.storylet_courant = null;
           const acc = pointsAccessibles(E).filter((p) => !p.bloque);
-          if (acc.length) voyager(E, acc[actions % acc.length].id);
-          else break;
+          if (!acc.length) continue;
+          const neufs = acc.filter((p) => !p.visite);
+          voyager(E, (neufs.length ? neufs : acc)[actions % (neufs.length || acc.length)].id);
         }
       }
     }
@@ -230,6 +276,7 @@ function partieAuto(seed, maxActions = 400) {
   try { b = bilan(E); } catch (e) { return { erreur: 'bilan:' + e.message }; }
   return {
     actions, jours: E.temps.jour, niveau: E.heros.niveau, fin: E.fin?.id ?? null,
+    points: E.stats_partie.points_visites,
     vus: vus.size, badges: b.badges.filter((x) => x.obtenu).length,
     savoir: E.recit.connaissance_sortilege, xp: E.heros.xp,
     compagnons: E.compagnons.length,
@@ -263,8 +310,8 @@ const grouper = (l) => {
   for (const p of l) (m[p.type] ??= []).push(p.id + (p.detail ? ' [' + p.detail + ']' : ''));
   return m;
 };
-for (const [t, l] of Object.entries(grouper(graves))) console.log('  ! ' + t + ' (' + l.length + ') : ' + l.slice(0, 12).join(', '));
-for (const [t, l] of Object.entries(grouper(legers))) console.log('  ~ ' + t + ' (' + l.length + ') : ' + l.slice(0, 12).join(', '));
+for (const [t, l] of Object.entries(grouper(graves))) console.log('  ! ' + t + ' (' + l.length + ') : ' + l.join(', '));
+for (const [t, l] of Object.entries(grouper(legers))) console.log('  ~ ' + t + ' (' + l.length + ') : ' + l.join(', '));
 
 console.log('\n=== PARTIES AUTOMATIQUES ===');
 let ko = 0;
@@ -279,7 +326,7 @@ if (res.length) {
   console.log('  parties OK   :', res.length, '/ 30   (crashs :', ko + ')');
   console.log('  actions moy  :', moy('actions'), '| jours moy :', moy('jours'));
   console.log('  niveau moy   :', moy('niveau'), '| xp moy :', moy('xp'));
-  console.log('  scènes vues  :', moy('vus'), '/', ids.length);
+  console.log('  scènes vues  :', moy('vus'), '/', ids.length, '| points visités :', moy('points'), '/ 6');
   console.log('  savoir moy   :', moy('savoir'), '| badges moy :', moy('badges'));
   console.log('  compagnons   :', moy('compagnons'));
   const fins = {};

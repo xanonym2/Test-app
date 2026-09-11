@@ -40,7 +40,7 @@ export const PALIERS_USURE = [
 export const NIVEAU_MAX = 8;
 
 // XP cumulée requise pour atteindre le niveau N (index = niveau - 1).
-export const SEUILS_XP = [0, 50, 120, 220, 350, 520, 730, 980];
+export const SEUILS_XP = [0, 40, 95, 170, 265, 385, 530, 700];
 
 // Niveaux auxquels une compétence est proposée (1 tous les 2 niveaux).
 export const NIVEAUX_COMPETENCE = [2, 4, 6, 8];
@@ -48,11 +48,11 @@ export const NIVEAUX_COMPETENCE = [2, 4, 6, 8];
 export const SEGMENTS_PAR_JOUR = 6;
 
 // Coût de base d'un segment écoulé.
-export const COUT_SEGMENT = { fatigue: 7, faim: 6 };
+export const COUT_SEGMENT = { fatigue: 6, faim: 5 };
 
 // Segments de nuit : plus coûteux en fatigue.
 export const SEGMENTS_NUIT = [5, 6];
-export const MALUS_NUIT_FATIGUE = 5;
+export const MALUS_NUIT_FATIGUE = 4;
 
 // Seuils de bascule d'état automatique.
 export const SEUILS = {
