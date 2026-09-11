@@ -3,11 +3,11 @@ import React, { createContext, useContext, useState, useCallback, useRef } from 
 import { getDb } from '../engine/db.js';
 import { nouvellePartie, voyager, rafraichirScene, forcerStorylet, partieTerminee } from '../engine/game.js';
 import { composerTexte, optionsVisibles, resoudreOption } from '../engine/storylets.js';
+import { texteVoyage } from '../engine/voyage.js';
 import { ouvrirStorylet } from '../engine/storylets.js';
 import { depenserPointStat, apprendreCompetence, xpCompagnons } from '../engine/progression.js';
 import { sauvegarder, charger, effacer } from '../engine/save.js';
-import { santeMax } from '../engine/derive.js';
-import { creerObjet, ajouterObjet, retirerObjet } from '../engine/items.js';
+import { retirerObjet } from '../engine/items.js';
 import { appliquerEffets } from '../engine/effects.js';
 
 const Ctx = createContext(null);
@@ -72,7 +72,8 @@ export function FournisseurJeu({ children }) {
     setSelection(null);
     if (!r) return;
 
-    xpCompagnons(etat, 8);
+    const xpGagnee = (r.traces ?? []).filter((t) => t.cle === 'xp').reduce((a, t) => a + t.valeur, 0);
+    if (xpGagnee) xpCompagnons(etat, xpGagnee);
 
     if (etat.fin || partieTerminee(etat)) {
       setEcran('bilan');
@@ -112,12 +113,16 @@ export function FournisseurJeu({ children }) {
 
   const allerA = useCallback((pointId) => {
     const etat = ref.current;
+    const transition = texteVoyage(etat, pointId);
     const r = voyager(etat, pointId);
     if (!r.ok) { setMessage('bloque'); return; }
     const sc = etat.systeme.storylet_courant ? scenePour(etat) : { fil: [], options: [], storylet: null };
     setSelection(null);
     setEcran('scene');
-    pousser(etat, sc);
+    pousser(etat, {
+      ...sc,
+      fil: transition ? [{ k: 'v', t: transition }, ...sc.fil] : sc.fil,
+    });
   }, [pousser]);
 
   const relancerScene = useCallback(() => {

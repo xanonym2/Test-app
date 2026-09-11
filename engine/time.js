@@ -2,6 +2,7 @@
 import { SEGMENTS_PAR_JOUR, COUT_SEGMENT, SEGMENTS_NUIT, MALUS_NUIT_FATIGUE, SEUILS } from './schema.js';
 import { choixPondere } from './rng.js';
 import { getDb } from './db.js';
+import { perimer } from './items.js';
 
 export function tableMeteo(E) {
   const db = getDb();
@@ -41,6 +42,8 @@ export function avancerSegments(E, n) {
       E.temps.jour += 1;
       E.stats_partie.jours = E.temps.jour;
       E.temps.meteo = tirerMeteo(E);
+      const gates = perimer(E);
+      if (gates.length) evenements.push({ type: 'gate', objets: gates });
       evenements.push({ type: 'jour', jour: E.temps.jour });
       evenements.push(...appliquerPression(E));
     }
@@ -55,8 +58,13 @@ export function appliquerPression(E) {
   const db = getDb();
   const out = [];
   const paliers = db.pression ?? [];
+  // Certains mutateurs avancent la pression : le monde se dégrade plus vite.
+  let decalage = 0;
+  for (const mid of E.partie.mutateurs) {
+    decalage += db.mutateurs[mid]?.pression_decalage_jours ?? 0;
+  }
   for (const p of paliers) {
-    if (E.temps.jour >= p.jour && !E.recit.flags[p.flag]) {
+    if (E.temps.jour >= p.jour - decalage && !E.recit.flags[p.flag]) {
       E.recit.flags[p.flag] = true;
       if (p.bloque) for (const id of p.bloque) E.geo.lieux_bloques[id] = { jusqu_au: 9999 };
       if (p.storylet) out.push({ type: 'declenche', storylet: p.storylet });

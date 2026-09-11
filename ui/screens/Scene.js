@@ -4,7 +4,7 @@ import { useRef, useEffect } from 'react';
 import { View, Text, Pressable, ScrollView } from 'react-native';
 import { T, ESP, TYPO } from '../theme.js';
 import { Bouton, Vide } from '../components/Base.js';
-import { coutTexte } from '../format.js';
+import { coutTexte, nomBase } from '../format.js';
 import { useJeu } from '../jeu.js';
 
 function Option({ o, choisi, onPress }) {
@@ -32,8 +32,10 @@ function Option({ o, choisi, onPress }) {
         <View style={{ flex: 1 }}>
           <Text style={TYPO.libelle}>{o.libelle}</Text>
           {cout ? <Text style={[TYPO.minuscule, { marginTop: 5, color: T.accentDoux }]}>{cout}</Text> : null}
-          {o.indisponible && o.raison_indisponible ? (
-            <Text style={[TYPO.minuscule, { marginTop: 4, color: T.texteFaible }]}>{o.raison_indisponible}</Text>
+          {o.indisponible ? (
+            <Text style={[TYPO.minuscule, { marginTop: 4, color: T.texteFaible }]}>
+              {o.manque ? 'Il manque : ' + nomBase(o.manque) : 'Hors de portée pour l’instant'}
+            </Text>
           ) : null}
         </View>
       </View>
@@ -77,7 +79,9 @@ export function EcranScene() {
       >
         {scene.fil.map((b, i) => (
           <View key={i} style={{ marginBottom: ESP.lg }}>
-            {b.k === 'i' ? (
+            {b.k === 'v' ? (
+              <Text style={[TYPO.narration, { color: T.texteFaible, fontStyle: 'italic', fontSize: 15 }]}>{b.t}</Text>
+            ) : b.k === 'i' ? (
               <View style={{ borderLeftWidth: 2, borderLeftColor: T.bordFort, paddingLeft: ESP.md }}>
                 <Text style={[TYPO.narration, { color: T.texteDoux }]}>{b.t}</Text>
               </View>

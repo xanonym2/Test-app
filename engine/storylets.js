@@ -86,10 +86,17 @@ export function optionsVisibles(E, s) {
   return (s.options ?? [])
     .filter((o) => !(o.epuisable && E.systeme.options_epuisees.includes(o.id)))
     .filter((o) => evaluerConditions(E, o.apparait_si, L, ctx))
-    .map((o) => ({
-      ...o,
-      indisponible: o.requiert && !evaluerConditions(E, o.requiert, L, ctx),
-    }));
+    .map((o) => {
+      let indisponible = !!(o.requiert && !evaluerConditions(E, o.requiert, L, ctx));
+      let manque = null;
+      for (const [id, q] of Object.entries(o.cout?.objet ?? {})) {
+        const possede = E.inventaire
+          .filter((i) => i.base === id)
+          .reduce((s2, i) => s2 + (i.quantite ?? 1), 0);
+        if (possede < q) { indisponible = true; manque = id; }
+      }
+      return { ...o, indisponible, manque };
+    });
 }
 
 function bonusProbabilite(E, o) {

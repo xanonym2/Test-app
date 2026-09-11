@@ -18,6 +18,7 @@ export function creerObjet(E, baseId, opts = {}) {
   return {
     uid: nouvelUid(E),
     base: baseId,
+    jour_gain: E.temps?.jour ?? 1,
     categorie: base.categorie,
     famille: base.famille ?? null,
     prefixe: opts.prefixe ?? null,
@@ -123,6 +124,19 @@ export function compter(E, baseId) {
   return E.inventaire
     .filter((i) => i.base === baseId)
     .reduce((s, i) => s + (i.quantite ?? 1), 0);
+}
+
+// Les denrées se gâtent. Appelé au changement de jour.
+export function perimer(E) {
+  const db = getDb();
+  const perdus = [];
+  E.inventaire = E.inventaire.filter((i) => {
+    const d = db.objets[i.base]?.perissable;
+    if (!d) return true;
+    if (E.temps.jour - (i.jour_gain ?? E.temps.jour) > d) { perdus.push(i.base); return false; }
+    return true;
+  });
+  return perdus;
 }
 
 export function etatObjet(item) {
