@@ -1,19 +1,20 @@
 {
   "expo": {
-    "name": "Compteur",
-    "slug": "counter",
+    "name": "Val-de-Garde",
+    "slug": "val-de-garde",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
-    "userInterfaceStyle": "light",
+    "userInterfaceStyle": "dark",
+    "backgroundColor": "#141311",
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.testapp.counter"
+      "bundleIdentifier": "com.testapp.valdegarde"
     },
     "android": {
-      "package": "com.testapp.counter",
+      "package": "com.testapp.valdegarde",
       "adaptiveIcon": {
-        "backgroundColor": "#E6F4FE",
+        "backgroundColor": "#141311",
         "foregroundImage": "./assets/android-icon-foreground.png",
         "backgroundImage": "./assets/android-icon-background.png",
         "monochromeImage": "./assets/android-icon-monochrome.png"
