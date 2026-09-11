@@ -44,6 +44,15 @@ export const storylets = {
             effets: [{ fatigue: 5 }],
           },
           {
+            si: [["competence", "C09"]],
+            texte:
+              "Trois fumées, pas une. Elles ne suivent pas la route mais les fermes, l'une après l'autre, vers le nord. La plus proche ne fume presque plus : elle a brûlé la première. Ce qui les a faites est monté la vallée, il n'est pas descendu.",
+            effets: [
+              { journal: "evt_fumee", majeure: true },
+              { xp: 20 },
+            ],
+          },
+          {
             si: [],
             texte:
               "Trois fumées, pas une. Elles ne sont pas alignées sur la route mais sur les fermes, l'une après l'autre, vers le nord. La plus proche ne fume presque plus.",
