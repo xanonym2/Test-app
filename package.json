@@ -1,8 +1,9 @@
 {
-  "name": "counter",
+  "name": "val-de-garde",
   "version": "1.0.0",
   "main": "index.js",
   "dependencies": {
+    "@react-native-async-storage/async-storage": "^3.1.1",
     "expo": "~57.0.20",
     "expo-status-bar": "~57.0.1",
     "react": "19.2.3",
@@ -12,7 +13,11 @@
     "start": "expo start",
     "android": "expo start --android",
     "ios": "expo start --ios",
-    "web": "expo start --web"
+    "web": "expo start --web",
+    "valider": "esbuild tools/valider.js --bundle --platform=node --outfile=node_modules/.cache/valider.cjs --log-level=warning && node node_modules/.cache/valider.cjs"
   },
-  "private": true
+  "private": true,
+  "devDependencies": {
+    "esbuild": "^0.24.0"
+  }
 }

@@ -1,44 +1,80 @@
-# Compteur — minimal Expo app
+# Val-de-Garde — MVP jouable
 
-One screen, one title, one button that increments a counter.
+Jeu narratif à storylets, en français, jouable sur téléphone Android.
+Environ 30 à 40 minutes de jeu pour la zone 1.
 
-- `App.js` — the whole app
-- `app.json` — Expo config (Android package `com.testapp.counter`)
-- `eas.json` — EAS Build profiles; `preview` produces a standalone `.apk`
+## Organisation
 
-## Run it in development
+Le moteur et le contenu sont strictement séparés. **Le moteur ne contient pas
+une ligne de texte narratif.**
+
+```
+/engine     état, conditions, effets, temps, résolution des storylets, sauvegarde
+/content    storylets, objets, créatures, PNJ, zones, carnet, écran d'ouverture
+/ui         écrans et composants
+/tools      validateur de contenu (ne fait pas partie de l'application)
+```
+
+### Moteur (`/engine`)
+
+| Fichier | Rôle |
+|---|---|
+| `state.js` | modèle d'état, version de sauvegarde, migrations |
+| `conditions.js` | évaluation du DSL de conditions (`{ flag: … }`, `{ stat: …, ">=": 3 }`, `non`, `ou`, `et`) |
+| `effets.js` | application des effets d'une issue |
+| `derive.js` | tout ce qui se calcule et ne se stocke jamais (santé max, portage, paliers d'usure) |
+| `temps.js` | six segments par jour, météo, coût du temps sur le corps |
+| `moteur.js` | sélection des storylets, machine à états locale, voyage, différés |
+| `sauvegarde.js` | persistance locale versionnée |
+
+### Contenu (`/content`)
+
+25 storylets, 92 options, 130 issues, 101 variantes de texte conditionnelles.
+Le format complet d'un storylet est décrit dans les fichiers de
+`content/storylets/` ; chacun expose `texte.arrivee` (première visite),
+`texte.base` (visites suivantes) et des `variantes` conditionnées par l'état,
+la météo, le moment de la journée ou le registre physique du héros.
+
+## Lancer en développement
 
 ```bash
 npm install
 npx expo start
 ```
 
-## Build a standalone APK
+## Valider le contenu
 
-Two independent paths produce the same thing: an APK you sideload directly,
-with no Google Play developer account.
+Vérifie la cohérence des identifiants, la présence d'une sortie dans chaque
+scène, les références croisées (objets, entrées de carnet, storylets
+déclenchés), puis simule 120 parties pour mesurer l'accessibilité et
+l'équilibrage.
 
-### 1. GitHub Actions (no Expo account needed)
+```bash
+npm run valider
+```
 
-`.github/workflows/android-apk.yml` runs on every push to the feature branch,
-and can be started manually from the Actions tab. It prebuilds the native
-project and runs `./gradlew assembleRelease`, then publishes the APK twice:
+## Produire un APK
 
-- as a workflow artifact (`compteur-apk`)
-- as a GitHub release asset (`apk-build-<run number>`) for a direct link
+Deux chemins indépendants donnent le même résultat : un APK qu'on installe
+directement, sans compte Google Play.
 
-The release build is signed with the template's debug keystore, which is what
-makes the APK installable straight away. Before shipping to real users,
-generate your own keystore and wire it into `android/app/build.gradle` — the
-debug key is public and identical for every developer, so it is fine for
-testing and not for distribution.
+### 1. GitHub Actions (aucun compte Expo nécessaire)
 
-### 2. EAS Build (needs a free Expo account)
+`.github/workflows/android-apk.yml` se déclenche à chaque poussée sur la
+branche de travail, et peut être lancé à la main depuis l'onglet Actions. Il
+publie l'APK deux fois :
+
+- comme artefact de workflow (`val-de-garde-apk`)
+- comme asset de release (`apk-build-<numéro>`), pour un lien direct
+
+La build de release est signée avec le keystore de debug du gabarit, ce qui
+la rend installable immédiatement. Avant toute distribution réelle, générer
+un keystore propre : la clé de debug est publique et identique pour tout le
+monde.
+
+### 2. EAS Build (compte Expo gratuit)
 
 ```bash
 npx eas-cli login
 npx eas-cli build --platform android --profile preview
 ```
-
-EAS returns a download link when the build finishes. The `preview` profile is
-already set to `buildType: "apk"` with internal distribution.
