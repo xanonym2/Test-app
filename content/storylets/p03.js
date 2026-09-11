@@ -16,8 +16,9 @@ export const storylets = {
         "Le creux n'a pas changé. L'eau sort, tombe, repart sous les cailloux. La dalle est sèche.",
       variantes: [
         {
-          si: [["etat", "affame"]],
-          ajout: "Boire cale un moment. Pas longtemps.",
+          si: [["competence", "C01"]],
+          ajout:
+            "Les coulées descendent toutes au même point de la berge. Ça vient boire ici tous les soirs.",
         },
         {
           si: [["etat", "blesse_leger"]],
@@ -44,7 +45,6 @@ export const storylets = {
         sortie: false,
         issues: [
           {
-            probabilite: 100,
             reussite: true,
             si: [],
             texte:
@@ -103,7 +103,6 @@ export const storylets = {
         sortie: false,
         issues: [
           {
-            probabilite: 100,
             reussite: true,
             si: [],
             texte:
@@ -147,6 +146,54 @@ export const storylets = {
         ],
       },
       {
+        id: "F",
+        libelle: "Attendre à l'affût, à plat ventre sous les frênes",
+        cout: { segments: 2, objet: { "OBJ-02": 1 } },
+        apparait_si: [["competence", "C01"]],
+        requiert: [["equipe_famille", "arc"], ["objet", "OBJ-02"]],
+        epuisable: false,
+        observation: false,
+        deplacement: false,
+        sortie: false,
+        issues: [
+          {
+            reussite: true,
+            si: [],
+            texte:
+              "Je me couche en amont des coulées, sous le vent, et je ne bouge plus. Un chevreuil descend boire avant l'ombre. Un seul trait, de près. Il ne repart pas.",
+            effets: [
+              { objet: "OBJ-06", quantite: 1 },
+              { stat_partie: { compteur: "fleches_tirees", valeur: 1 } },
+              { fatigue: 6 },
+              { xp: 15 },
+            ],
+          },
+        ],
+      },
+      {
+        id: "G",
+        libelle: "Laver la plaie à l'eau froide et la resserrer",
+        cout: { segments: 1 },
+        apparait_si: [["competence", "C04"], ["etat", "blesse_leger"]],
+        epuisable: false,
+        observation: false,
+        deplacement: false,
+        sortie: false,
+        issues: [
+          {
+            reussite: true,
+            si: [],
+            texte:
+              "L'eau est assez froide pour endormir la peau. Je lave, je retire ce qui traîne dedans, je serre avec une lanière propre. Ça se rouvrira si je force. Pour aujourd'hui, ça tient.",
+            effets: [
+              { retire_etat: "blesse_leger" },
+              { sante_heros: 6 },
+              { xp: 10 },
+            ],
+          },
+        ],
+      },
+      {
         id: "E",
         libelle: "Remonter du creux et reprendre la route",
         cout: {},
@@ -156,7 +203,6 @@ export const storylets = {
         sortie: true,
         issues: [
           {
-            probabilite: 100,
             reussite: true,
             si: [],
             texte:
@@ -209,7 +255,6 @@ export const storylets = {
         sortie: false,
         issues: [
           {
-            probabilite: 100,
             reussite: true,
             si: [],
             texte:
@@ -236,7 +281,6 @@ export const storylets = {
         sortie: false,
         issues: [
           {
-            probabilite: 100,
             reussite: true,
             si: [],
             texte:
@@ -263,7 +307,6 @@ export const storylets = {
         sortie: false,
         issues: [
           {
-            probabilite: 100,
             reussite: true,
             si: [],
             texte:
@@ -285,7 +328,6 @@ export const storylets = {
         sortie: true,
         issues: [
           {
-            probabilite: 100,
             reussite: true,
             si: [],
             texte:

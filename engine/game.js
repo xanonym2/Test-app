@@ -49,6 +49,7 @@ export function etatVierge(seed) {
       tour: 1,
       options_epuisees: [],
       premiere_vue: true,
+      fil: [],
     },
     fin: null,
   };

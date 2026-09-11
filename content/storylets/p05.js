@@ -13,9 +13,9 @@ export const storylets = {
     etat_local_initial: { lu: false },
     texte: {
       arrivee:
-        "Le camp tient dans un pli, sous les aulnes. Sept feux, dont trois froids : ils sont partis de nuit, et personne ne fait cuire. Au bord de la piste, un homme fend du bois beaucoup trop vite pour ce qu'il y a à fendre. Plus loin, une femme lave des pieds dans une bassine et recoud ce qui peut l'être. Un chariot vide attend en travers, timon vers l'ouest.",
+        "Le camp tient dans un pli, sous les aulnes. Sept feux, dont trois froids : ils sont partis de nuit, et personne ne fait cuire. Au bord de la piste, un homme fend du bois beaucoup trop vite pour ce qu'il y a à fendre. Plus loin, une femme lave des pieds dans une bassine et recoud ce qui peut l'être. Une charrette vide attend en travers, timon vers l'ouest.",
       base:
-        "Le camp a encore perdu deux feux. L'homme fend toujours son bois. La femme n'a plus de linge propre pour les pieds. Le chariot n'a pas bougé, timon vers l'ouest.",
+        "Le camp a encore perdu deux feux. L'homme fend toujours son bois. La femme n'a plus de linge propre pour les pieds. La charrette n'a pas bougé, timon vers l'ouest.",
       variantes: [
         {
           si: [["meteo", "pluie"]],
@@ -52,6 +52,12 @@ export const storylets = {
         cout: { segments: 1 },
         issues: [
           {
+            si: [["competence", "C05"], ["confiance<=", "PNJ-01", 0]],
+            texte:
+              "Deux rondins, et c'est lui qui demande où l'on va. Il tenait une porte, quelque part au nord ; elle n'a pas tenu. Il écoute la réponse jusqu'au bout, puis il pose sa hache du bon côté du tas.",
+            effets: [{ confiance: { pnj: "PNJ-01", valeur: 2 } }, { xp: 10 }],
+          },
+          {
             si: [["confiance<=", "PNJ-01", 0]],
             texte:
               "Il laisse faire deux rondins avant de parler. Il tenait une porte, quelque part au nord ; elle n'a pas tenu longtemps. Depuis, il ne dort pas si quelqu'un ne regarde pas la piste.",
@@ -86,13 +92,13 @@ export const storylets = {
       },
       {
         id: "D",
-        libelle: "Aider le charretier à caler ses roues",
+        libelle: "Aider le colporteur à caler ses roues",
         cout: { segments: 1 },
         issues: [
           {
             si: [["confiance<=", "PNJ-03", 0]],
             texte:
-              "Le chariot est vide et il ne dira pas ce qu'il a déchargé. Il vient de l'est par la route basse, et il y repassera. Il vend ce qu'il entend, et il n'entend rien pour rien.",
+              "La charrette est vide et il ne dira pas ce qu'il a déchargé. Il vient de l'est par la route basse, et il y repassera. Il vend ce qu'il entend, et il n'entend rien pour rien.",
             effets: [{ confiance: { pnj: "PNJ-03", valeur: 1 } }, { xp: 5 }],
           },
           {
@@ -132,7 +138,7 @@ export const storylets = {
     priorite: 7,
     poids: 10,
     duree_segments: 1,
-    etat_local_initial: { pese: false },
+    etat_local_initial: { pese: false, dit: false },
     texte: {
       arrivee:
         "Les deux ont compris avant qu'on demande. L'homme a posé sa hache et s'est mis debout dans le passage : il ira devant, et il mangera ce qu'on mange. La femme a roulé son fil ; elle sait tenir une ligne de collets, et elle ne se battra pas au milieu d'un chemin. Le camp n'en laissera partir qu'un. Celui qui reste tient le reste.",
@@ -168,12 +174,44 @@ export const storylets = {
         ],
       },
       {
+        id: "M",
+        libelle: "Dire devant tout le monde où l'on va",
+        cout: { segments: 1 },
+        apparait_si: [["competence", "C05"]],
+        epuisable: true,
+        issues: [
+          {
+            si: [],
+            texte:
+              "On parle assez fort pour que le pli entende. Personne ne coupe. À la fin, l'homme a avancé d'un pas vers la piste et la femme a fermé son sac. Les deux attendent le nom qui sortira.",
+            effets: [
+              { local: "dit", "=": true },
+              { confiance: { pnj: "PNJ-01", valeur: 1 } },
+              { confiance: { pnj: "PNJ-02", valeur: 1 } },
+              { xp: 10 },
+            ],
+          },
+        ],
+      },
+      {
         id: "B",
         libelle: "Tendre l'avant-bras à l'homme et le laisser passer devant",
         cout: { segments: 1 },
         apparait_si: [["!flag", "f_recrue_prise"]],
         sortie: true,
         issues: [
+          {
+            si: [["competence", "C05"]],
+            texte:
+              "Il ne demande pas où l'on va : il l'a déjà entendu. Il prend l'avant-bras, ramasse sa hache et se met devant avant qu'on ait à le dire. Il ne regarde plus derrière lui une seule fois.",
+            effets: [
+              { compagnon: "PNJ-01" },
+              { flag: "f_recrue_prise" },
+              { confiance: { pnj: "PNJ-01", valeur: 2 } },
+              { journal: "recrue_devant", majeure: true },
+              { xp: 25 },
+            ],
+          },
           {
             si: [],
             texte:
@@ -195,6 +233,18 @@ export const storylets = {
         apparait_si: [["!flag", "f_recrue_prise"]],
         sortie: true,
         issues: [
+          {
+            si: [["competence", "C05"]],
+            texte:
+              "Elle ne discute pas le partage du sac : elle en reprend la moitié d'office. Elle dit ce qu'elle surveillera, les bas-côtés et le vent, et elle se met à trois pas en arrière sans qu'on le demande.",
+            effets: [
+              { compagnon: "PNJ-02" },
+              { flag: "f_recrue_prise" },
+              { confiance: { pnj: "PNJ-02", valeur: 2 } },
+              { journal: "recrue_arriere", majeure: true },
+              { xp: 25 },
+            ],
+          },
           {
             si: [],
             texte:
@@ -232,19 +282,19 @@ export const storylets = {
 
   "ST-P05-03": {
     id: "ST-P05-03",
-    titre_travail: "Camp — le charretier",
+    titre_travail: "Camp — le colporteur",
     lieu: { type: "point_interet", cible: "P05" },
     conditions: { requis: [["flag", "f_camp_atteint"]], interdit: [] },
     unique: true,
     priorite: 6,
     poids: 10,
     duree_segments: 1,
-    etat_local_initial: {},
+    etat_local_initial: { ecoute: false },
     texte: {
       arrivee:
-        "Le charretier a fini de caler ses roues. Il s'assoit sur le timon, dos à l'ouest, et regarde ce qu'on porte plutôt que le visage. Il a fait la route basse trois fois depuis le printemps, chargé à l'aller, vide au retour. Ce qu'il sait vaut mieux que ce qu'il transporte, et rien ne se donne.",
+        "Le colporteur a fini de caler ses roues. Il s'assoit sur le timon, dos à l'ouest, et regarde ce qu'on porte plutôt que le visage. Il a fait la route basse trois fois depuis le printemps, chargé à l'aller, vide au retour. Ce qu'il sait vaut mieux que ce qu'il transporte, et rien ne se donne.",
       base:
-        "Le charretier est toujours sur son timon. Il regarde ce qu'on porte, puis les mains, puis la piste.",
+        "Le colporteur est toujours sur son timon. Il regarde ce qu'on porte, puis les mains, puis la piste.",
       variantes: [
         {
           si: [["flag", "f_indice_3"]],
@@ -266,6 +316,12 @@ export const storylets = {
         epuisable: true,
         observation: true,
         issues: [
+          {
+            si: [["competence", "C02"]],
+            texte:
+              "On s'assoit dos à la charrette, dans son angle mort, et il parle comme si personne n'écoutait. Le gué du nord est tenu. La route basse ne l'est plus. Il compte repartir avant l'aube, et il cherche quelqu'un pour l'ouest.",
+            effets: [{ local: "ecoute", "=": true }, { xp: 15 }],
+          },
           {
             si: [],
             texte:
@@ -329,15 +385,43 @@ export const storylets = {
         ],
       },
       {
-        id: "D",
-        libelle: "Décharger et recharger son chariot jusqu'au soir",
-        cout: { segments: 2 },
+        id: "N",
+        libelle: "Le faire parler devant les autres hommes du camp",
+        cout: { segments: 1 },
+        apparait_si: [["competence", "C05"]],
         sortie: true,
         issues: [
           {
             si: [["!flag", "f_indice_3"]],
             texte:
-              "Le chariot n'est pas vide : il est plein de choses qui ne valent rien. À la dernière caisse, il parle. La garnison de la vallée est partie vers l'est deux jours avant l'attaque, colonne entière, sur un ordre signé d'un capitaine Vairon. Elle n'est pas revenue.",
+              "On pose la question devant trois hommes qui l'écoutent. Il ne peut plus dire qu'il ne sait rien. La garnison de la vallée est partie vers l'est deux jours avant l'attaque, colonne entière, sur un ordre signé d'un capitaine Vairon. Elle n'est pas revenue.",
+            effets: [
+              { connaissance_sortilege: "+1" },
+              { flag: "f_indice_3" },
+              { pnj_statut: { id: "PNJ-V1", valeur: "cite" } },
+              { journal: "charretier_garnison" },
+              { xp: 25 },
+            ],
+          },
+          {
+            si: [],
+            texte:
+              "Devant les autres, il lâche autre chose : le vieux poste au-dessus du layon n'a jamais été vidé. Le toit est tombé dedans, alors personne n'y monte, alors rien n'en est sorti.",
+            effets: [{ debloque_point: "P06" }, { xp: 15 }],
+          },
+        ],
+      },
+      {
+        id: "D",
+        libelle: "Décharger et recharger sa charrette jusqu'au soir",
+        cout: { segments: 2 },
+        apparait_si: [["!competence", "C05"]],
+        sortie: true,
+        issues: [
+          {
+            si: [["!flag", "f_indice_3"]],
+            texte:
+              "La charrette n'est pas vide : elle est pleine de choses qui ne valent rien. À la dernière caisse, il parle. La garnison de la vallée est partie vers l'est deux jours avant l'attaque, colonne entière, sur un ordre signé d'un capitaine Vairon. Elle n'est pas revenue.",
             effets: [
               { fatigue: 18 },
               { connaissance_sortilege: "+1" },
@@ -383,7 +467,7 @@ export const storylets = {
     etat_local_initial: { compte: false, fouille: 0, aide: false },
     texte: {
       arrivee:
-        "Il reste deux feux. Les bâches sont pliées, les piquets arrachés, et les trous sont encore là. Le chariot est parti dans la nuit : les ornières sont fraîches et vont vers l'ouest. Un chien est resté assis à l'endroit exact où était le chariot. Le passage est libre : plus personne ne se tient dedans.",
+        "Il reste deux feux. Les bâches sont pliées, les piquets arrachés, et les trous sont encore là. La charrette est partie dans la nuit : les ornières sont fraîches et vont vers l'ouest. Un chien est resté assis à l'endroit exact où elle était. Le passage est libre : plus personne ne se tient dedans.",
       base:
         "Il reste un feu. Les trous de piquets se remplissent. Le chien n'a pas bougé de sa place.",
       variantes: [
@@ -498,6 +582,6 @@ export const journal = {
   recrue_devant: "Un homme du camp a pris la tête de la marche, et la hache avec.",
   recrue_arriere: "Une femme du camp l'a suivi, trois pas en arrière, à regarder les bas-côtés.",
   camp_seul: "Il est ressorti du camp des fuyards comme il y était entré : seul.",
-  charretier_garnison: "Un charretier lui a vendu le départ de la garnison vers l'est, et le nom du capitaine Vairon.",
+  charretier_garnison: "Un colporteur lui a vendu le départ de la garnison vers l'est, et le nom du capitaine Vairon.",
   camp_defait: "Le camp des fuyards s'était défait avant qu'il reparte.",
 };

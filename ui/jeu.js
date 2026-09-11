@@ -32,6 +32,10 @@ export function FournisseurJeu({ children }) {
   ref.current = E;
 
   const pousser = useCallback((etat, sc) => {
+    // Le fil affiché fait partie de « revenir exactement au même point » :
+    // on le persiste plutôt que de le recomposer, car recomposer rejouerait
+    // les règles locales du storylet.
+    if (sc) etat.systeme.fil = sc.fil.slice(-40);
     setE({ ...etat });
     if (sc) setScene(sc);
     sauvegarder(etat);
@@ -48,7 +52,10 @@ export function FournisseurJeu({ children }) {
   const reprendre = useCallback(async () => {
     const etat = await charger();
     if (!etat) return false;
-    const sc = etat.fin ? { fil: [], options: [], storylet: null } : scenePour(etat);
+    const s = getDb().storylets[etat.systeme.storylet_courant];
+    const sc = etat.fin || !s
+      ? { fil: etat.systeme.fil ?? [], options: [], storylet: null }
+      : { fil: etat.systeme.fil ?? [], options: optionsVisibles(etat, s), storylet: s };
     setSelection(null);
     setEcran(etat.fin ? 'bilan' : 'scene');
     setE({ ...etat });

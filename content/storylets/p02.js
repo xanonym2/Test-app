@@ -57,7 +57,6 @@ export const storylets = {
         sortie: false,
         issues: [
           {
-            probabilite: 100,
             reussite: true,
             si: [],
             texte:
@@ -123,7 +122,6 @@ export const storylets = {
         sortie: false,
         issues: [
           {
-            probabilite: 100,
             reussite: true,
             si: [],
             texte:
@@ -146,7 +144,6 @@ export const storylets = {
         sortie: false,
         issues: [
           {
-            probabilite: 100,
             reussite: true,
             si: [],
             texte:
@@ -171,7 +168,6 @@ export const storylets = {
         sortie: true,
         issues: [
           {
-            probabilite: 100,
             reussite: true,
             si: [],
             texte:
@@ -226,7 +222,6 @@ export const storylets = {
         sortie: false,
         issues: [
           {
-            probabilite: 100,
             reussite: true,
             si: [],
             texte:
@@ -248,7 +243,6 @@ export const storylets = {
         sortie: false,
         issues: [
           {
-            probabilite: 100,
             reussite: true,
             si: [],
             texte:
@@ -306,7 +300,6 @@ export const storylets = {
         sortie: true,
         issues: [
           {
-            probabilite: 100,
             reussite: true,
             si: [],
             texte:
@@ -330,7 +323,7 @@ export const storylets = {
     etat_local_initial: { alerte: 0, lu: false },
     texte: {
       arrivee:
-        "Le vent tourne : odeur de fauve, forte, fraîche. Ça vient du pré, derrière la haie, et ça ne cherche pas à se taire. L'échelle du grenier tient encore. La barrière du fond est basse, mais il y a les ronces derrière.",
+        "Le vent tourne : odeur de fauve, forte, fraîche. Ça vient du pré, derrière la haie, et ça ne cherche pas à se taire. La grange a une fente à hauteur d'œil et l'échelle du grenier tient encore. La barrière du fond est basse, mais il y a les ronces derrière.",
       base:
         "Ça revient. Même odeur, même heure. L'échelle du grenier n'a pas bougé.",
       variantes: [
@@ -345,8 +338,9 @@ export const storylets = {
             "L'échelle me paraît haute, et les ronces derrière la barrière, plus épaisses.",
         },
         {
-          si: [["fatigue>=", 70]],
-          ajout: "Je n'ai plus de jambes pour courir. Il faudra choisir vite.",
+          si: [["competence", "C01"]],
+          ajout:
+            "De la fente à l'angle de la haie, il y a juste la bonne distance. Elle repassera de profil.",
         },
       ],
     },
@@ -360,9 +354,10 @@ export const storylets = {
         observation: true,
         deplacement: false,
         sortie: false,
+        modif_proba: [{ si: [["competence", "C06"]], valeur: 20 }],
         issues: [
           {
-            probabilite: 100,
+            probabilite: 65,
             reussite: true,
             si: [],
             texte:
@@ -371,6 +366,17 @@ export const storylets = {
               { local: "lu", "=": true },
               { local: "alerte", "+=": 1 },
               { xp: 10 },
+            ],
+          },
+          {
+            probabilite: 35,
+            si: [],
+            texte:
+              "Elle passe derrière le tas de fumier au mauvais moment. Je ne prends qu'un dos et une allure. Quand je me redresse, elle a changé d'angle et je ne sais plus de quel côté elle tourne.",
+            effets: [
+              { local: "alerte", "+=": 1 },
+              { fatigue: 4 },
+              { xp: 5 },
             ],
           },
         ],
@@ -385,7 +391,6 @@ export const storylets = {
         sortie: false,
         issues: [
           {
-            probabilite: 100,
             reussite: true,
             si: [],
             texte:
@@ -404,7 +409,6 @@ export const storylets = {
         sortie: false,
         issues: [
           {
-            probabilite: 100,
             reussite: true,
             si: [],
             texte:
@@ -428,7 +432,6 @@ export const storylets = {
         sortie: false,
         issues: [
           {
-            probabilite: 100,
             reussite: true,
             si: [],
             texte:
@@ -437,6 +440,45 @@ export const storylets = {
               { stat_partie: { compteur: "combats_evites", valeur: 1 } },
               { journal: "ferme_bete_evitee" },
               { xp: 15 },
+            ],
+          },
+        ],
+      },
+      {
+        id: "F",
+        libelle: "Tirer par la fente avant qu'elle passe la haie",
+        cout: { segments: 1, objet: { "OBJ-02": 1 } },
+        apparait_si: [["competence", "C01"]],
+        requiert: [["equipe_famille", "arc"], ["objet", "OBJ-02"]],
+        epuisable: false,
+        observation: false,
+        deplacement: false,
+        sortie: false,
+        modif_proba: [{ si: [["local", "lu"]], valeur: 15 }],
+        issues: [
+          {
+            probabilite: 70,
+            reussite: true,
+            si: [],
+            texte:
+              "Elle s'arrête à l'angle de la haie, de profil, le temps qu'il faut. La flèche entre derrière l'épaule. Elle fait trois pas et se couche dans l'herbe. Je ne sors pas tout de suite.",
+            effets: [
+              { objet: "OBJ-06", quantite: 1 },
+              { stat_partie: { compteur: "betes_vaincues", valeur: 1 } },
+              { stat_partie: { compteur: "combats_gagnes", valeur: 1 } },
+              { stat_partie: { compteur: "fleches_tirees", valeur: 1 } },
+              { xp: 25 },
+            ],
+          },
+          {
+            probabilite: 30,
+            si: [],
+            texte:
+              "Le trait part trop tôt et prend le gras de l'épaule. Le bois casse contre la haie. Elle se retourne vers la grange et elle vient droit sur la porte.",
+            effets: [
+              { stat_partie: { compteur: "fleches_tirees", valeur: 1 } },
+              { declenche: "ST-CBT-01" },
+              { xp: 5 },
             ],
           },
         ],
@@ -451,9 +493,20 @@ export const storylets = {
         sortie: true,
         issues: [
           {
-            probabilite: 100,
+            si: [["competence", "C04"]],
             reussite: true,
+            texte:
+              "Je passe dans les ronces sans ralentir. De l'autre côté je m'assois, je tire les épines une par une et je serre ce qui saigne avec une lanière. Ça prend le reste du jour. Après, ça tient.",
+            effets: [
+              { sante_heros: -2 },
+              { segments: 1 },
+              { stat_partie: { compteur: "combats_evites", valeur: 1 } },
+              { xp: 15 },
+            ],
+          },
+          {
             si: [],
+            reussite: true,
             texte:
               "Je passe la barrière sans bruit. Les ronces sont plus hautes qu'elles n'en avaient l'air : elles prennent les bras, le dos, la nuque. Je sors de là griffé jusqu'au sang, mais je sors.",
             effets: [

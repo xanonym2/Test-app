@@ -3,7 +3,7 @@
 export const storylets = {
   "ST-P06-01": {
     id: "ST-P06-01",
-    titre_travail: "Poste — le ratelier sous la poutre",
+    titre_travail: "Poste — le râtelier sous la poutre",
     lieu: { type: "point_interet", cible: "P06" },
     conditions: { requis: [], interdit: [] },
     unique: true,
@@ -13,19 +13,24 @@ export const storylets = {
     etat_local_initial: { pris: 0, lu: 0 },
     texte: {
       arrivee:
-        "Le vieux poste tient encore debout d'un côté. La porte a sauté il y a longtemps, les gonds sont mangés. Dans la salle basse, une poutre du toit est tombée en travers du râtelier d'armes : on voit les manches dessous. Une cotte de mailles pend à son crochet, noire mais entière. Une pique est restée contre le montant de la porte, posée là un jour par quelqu'un qui n'est pas revenu la prendre. La poussière du sol n'a pas été remuée depuis des semaines.",
+        "Le vieux poste tient encore debout d'un côté. La porte a sauté il y a longtemps, les gonds sont mangés. Dans la salle basse, une poutre du toit est tombée en travers du râtelier d'armes. Dessous, deux manches dépassent : un court et épais, un long et droit. Il n'y a de place que pour en sortir un avant que la poutre redescende. Une cotte de mailles pend à son crochet, noire mais entière. La poussière du sol n'a pas été remuée depuis des semaines.",
       base:
-        "La poutre pèse toujours sur le râtelier. La cotte au crochet, la pique contre la porte. La poussière garde les traces qu'il vient d'y faire.",
+        "La poutre pèse toujours sur le râtelier, deux manches dessous. La cotte à son crochet. La poussière garde les traces qu'il vient d'y faire.",
       variantes: [
         {
-          si: [["surcharge"]],
+          si: [["surcharge"], ["!competence", "C08"]],
           ajout:
-            "Les sangles mordent déjà. Il marche à petits pas dans la salle et il pose le pied bien à plat pour ne pas partir en avant.",
+            "Les sangles mordent déjà et il pose le pied bien à plat pour ne pas partir en avant.",
+        },
+        {
+          si: [["surcharge"], ["competence", "C08"]],
+          ajout:
+            "Le chargement est haut mais il tombe droit sur les hanches, là où le poids doit porter.",
         },
         {
           si: [["usure<=", "OBJ-01", 40]],
           ajout:
-            "La corde de l'arc a bu l'humidité. Elle siffle mal depuis deux jours et elle rend moins que ce qu'il lui donne.",
+            "La corde de l'arc a bu l'humidité, elle siffle mal depuis deux jours et rend moins que ce qu'il lui donne.",
         },
       ],
     },
@@ -39,7 +44,7 @@ export const storylets = {
           {
             si: [["!local", "lu"]],
             texte:
-              "La poussière dit tout. Personne n'est monté ici depuis des semaines. La poutre porte sur le montant de droite : en poussant de là, elle bascule au lieu de tomber. Les lanières de la cotte ont tenu, le cuir est resté gras. La pique est trop longue pour les sentes, elle prendra dans les branches.",
+              "La poussière dit tout. Personne n'est monté ici depuis des semaines. La poutre porte sur le montant de droite : en poussant de là, elle bascule au lieu de tomber. Sous le râtelier, le manche court tient une lame large, le manche long une lame droite. Les lanières de la cotte ont tenu, le cuir est resté gras.",
             effets: [
               { local: "lu", "=": true },
               { xp: 10 },
@@ -54,17 +59,17 @@ export const storylets = {
       },
       {
         id: "LOURDE",
-        libelle: "Forcer la poutre pour dégager le râtelier",
-        apparait_si: [["!local", "pris_lourde"]],
+        libelle: "Forcer la poutre et tirer le manche court",
+        apparait_si: [["!local", "ratelier"]],
         cout: { segments: 1, fatigue: 10 },
         issues: [
           {
             si: [["local", "lu"]],
             texte:
-              "Il pousse au montant de droite. La poutre bascule et racle le mur. Sous le râtelier, une arme lourde, le manche encore bon. Il la sort par la garde et la soupèse. Ça se sent tout de suite dans les épaules.",
+              "Il pousse au montant de droite. La poutre bascule et racle le mur. Il sort la lame large par la garde et la soupèse. Ça se sent tout de suite dans les épaules. La poutre redescend derrière, sur le reste.",
             effets: [
               { objet: "OBJ-08", tire: true },
-              { local: "pris_lourde", "=": true },
+              { local: "ratelier", "=": true },
               { local: "pris", "+=": 1 },
               { xp: 10 },
             ],
@@ -72,11 +77,42 @@ export const storylets = {
           {
             si: [],
             texte:
-              "Il force au mauvais endroit. La poutre part d'un coup et lui prend la main contre le bois. Il dégage quand même l'arme lourde du râtelier. Le manche est bon. Le poignet chauffe.",
+              "Il force au mauvais endroit. La poutre part d'un coup et lui prend la main contre le bois. Il sort quand même la lame large. Le manche est bon, le poignet chauffe. Le reste est dessous pour de bon.",
             effets: [
               { objet: "OBJ-08", tire: true },
               { sante_heros: -4 },
-              { local: "pris_lourde", "=": true },
+              { local: "ratelier", "=": true },
+              { local: "pris", "+=": 1 },
+              { xp: 5 },
+            ],
+          },
+        ],
+      },
+      {
+        id: "LONGUE",
+        libelle: "Forcer la poutre et tirer le manche long",
+        apparait_si: [["!local", "ratelier"]],
+        cout: { segments: 1, fatigue: 10 },
+        issues: [
+          {
+            si: [["local", "lu"]],
+            texte:
+              "Il pousse au montant de droite et la poutre bascule. Il sort la lame droite, longue comme le bras, et la fait tourner une fois. Elle ne pèse rien à côté de l'autre. La poutre redescend sur ce qui reste.",
+            effets: [
+              { objet: "OBJ-07", tire: true },
+              { local: "ratelier", "=": true },
+              { local: "pris", "+=": 1 },
+              { xp: 10 },
+            ],
+          },
+          {
+            si: [],
+            texte:
+              "Il force du mauvais côté. La poutre lui écrase les doigts avant qu'il dégage la lame droite. Elle est longue, bien montée, et elle se porte sans y penser. Le reste est bloqué dessous.",
+            effets: [
+              { objet: "OBJ-07", tire: true },
+              { sante_heros: -4 },
+              { local: "ratelier", "=": true },
               { local: "pris", "+=": 1 },
               { xp: 5 },
             ],
@@ -86,7 +122,7 @@ export const storylets = {
       {
         id: "COTTE",
         libelle: "Décrocher la cotte de mailles du mur",
-        apparait_si: [["!local", "pris_cotte"]],
+        apparait_si: [["!local", "cotte"]],
         cout: { segments: 1 },
         issues: [
           {
@@ -95,25 +131,7 @@ export const storylets = {
               "Le crochet cède sans bruit. La cotte tombe sur son bras d'un seul bloc, plus lourde que tout ce qu'il a porté cette semaine. Les lanières tiennent encore. Il la roule et la sangle sur le sac.",
             effets: [
               { objet: "OBJ-11", tire: true },
-              { local: "pris_cotte", "=": true },
-              { local: "pris", "+=": 1 },
-              { xp: 5 },
-            ],
-          },
-        ],
-      },
-      {
-        id: "PIQUE",
-        libelle: "Prendre la pique restée contre la porte",
-        apparait_si: [["!local", "pris_pique"]],
-        issues: [
-          {
-            si: [],
-            texte:
-              "Il prend la pique. Le fer est piqué mais droit, le bois n'a pas joué. Elle dépasse d'une tête au-dessus de lui.",
-            effets: [
-              { objet: "OBJ-09", tire: true },
-              { local: "pris_pique", "=": true },
+              { local: "cotte", "=": true },
               { local: "pris", "+=": 1 },
               { xp: 5 },
             ],
@@ -127,6 +145,12 @@ export const storylets = {
         cout: { segments: 1 },
         issues: [
           {
+            si: [["competence", "C08"]],
+            texte:
+              "Il défait tout, remonte les sangles d'un cran et remet la charge haut sur les épaules. Rien à laisser derrière. C'est la même masse et ce n'est déjà plus le même poids.",
+            effets: [{ fatigue: -12 }],
+          },
+          {
             si: [["objet", "OBJ-11"]],
             texte:
               "Il défait les sangles et pose la cotte contre le mur, là où elle a passé toutes ces années. On marche mieux sans. C'est tout ce qu'on peut en dire.",
@@ -135,14 +159,8 @@ export const storylets = {
           {
             si: [["objet", "OBJ-08"]],
             texte:
-              "Il laisse l'arme lourde sur les dalles, la lame contre la pierre. Le sac remonte de deux doigts sur les épaules.",
+              "Il laisse la lame large sur les dalles, le tranchant contre la pierre. Le sac remonte de deux doigts sur les épaules.",
             effets: [{ objet: "OBJ-08", quantite: -1 }],
-          },
-          {
-            si: [["objet", "OBJ-09"]],
-            texte:
-              "Il rappuie la pique contre le montant de la porte. Elle y était très bien.",
-            effets: [{ objet: "OBJ-09", quantite: -1 }],
           },
           {
             si: [],
@@ -180,22 +198,22 @@ export const storylets = {
     priorite: 7,
     poids: 10,
     duree_segments: 1,
-    etat_local_initial: {},
+    etat_local_initial: { pique: 0 },
     texte: {
       arrivee:
-        "L'atelier est au fond, deux marches plus bas. L'établi tient encore. La meule est là, la manivelle prise dans la rouille, mais elle tourne si on force. Au mur, les crochets des outils sont vides. Les tiroirs de l'établi ont gonflé et ne ferment plus.",
+        "L'atelier est au fond, deux marches plus bas. L'établi tient encore. La meule est là, la manivelle prise dans la rouille, mais elle tourne si on force. Une pique est couchée sur l'établi, le fer déposé à côté du bois : quelqu'un la remontait. Au mur, les crochets des outils sont vides et les tiroirs ont gonflé.",
       base:
-        "L'établi et la meule. La manivelle tourne si on force. Les tiroirs bâillent.",
+        "L'établi, la meule, la pique en deux morceaux dessus. Les tiroirs bâillent et la manivelle tourne si on force.",
       variantes: [
         {
           si: [["usure>=", "OBJ-01", 70]],
           ajout:
-            "L'arc n'a rien à demander. La corde est bonne, le bois n'a pas bougé. C'est le reste qui travaille.",
+            "L'arc n'a rien à demander : la corde est bonne et le bois n'a pas bougé.",
         },
         {
           si: [["usure<=", "OBJ-03", 40]],
           ajout:
-            "La lame accroche à la sortie du fourreau. Elle a mordu quelque chose de dur, et ça se voit depuis.",
+            "La lame accroche à la sortie du fourreau, elle a mordu quelque chose de dur et ça se voit depuis.",
         },
       ],
     },
@@ -231,6 +249,24 @@ export const storylets = {
             effets: [
               { usure: "OBJ-01", valeur: 30 },
               { xp: 10 },
+            ],
+          },
+        ],
+      },
+      {
+        id: "PIQUE",
+        libelle: "Remonter la pique et la sangler au dos",
+        apparait_si: [["!local", "pique"]],
+        cout: { segments: 1 },
+        issues: [
+          {
+            si: [],
+            texte:
+              "Le fer rentre dans le bois d'un coup de paume et la goupille tient. Elle dépasse d'une tête au-dessus de lui et elle prendra dans les branches. Elle tient loin, aussi.",
+            effets: [
+              { objet: "OBJ-09", tire: true },
+              { local: "pique", "=": true },
+              { xp: 5 },
             ],
           },
         ],
@@ -276,22 +312,27 @@ export const storylets = {
     priorite: 6,
     poids: 10,
     duree_segments: 1,
-    etat_local_initial: {},
+    etat_local_initial: { corselet: 0 },
     texte: {
       arrivee:
-        "La salle de garde est à l'étage. L'escalier tient d'un côté, celui du mur. En haut, une paillasse crevée, une table, et le tableau des tours encore cloué au bois. La meurtrière donne plein est, sur la vallée.",
+        "La salle de garde est à l'étage. L'escalier tient d'un côté, celui du mur. En haut, une paillasse crevée, une table, et le tableau des tours encore cloué au bois. Un corselet de cuir bouilli pend au dossier d'une chaise. La meurtrière donne plein est, sur la vallée.",
       base:
-        "Le tableau des tours au mur, la paillasse par terre, la meurtrière sur l'est.",
+        "Le tableau des tours au mur, la paillasse par terre, le corselet sur la chaise, la meurtrière sur l'est.",
       variantes: [
         {
           si: [["etat", "affame"]],
           ajout:
-            "Un coin de toile dépasse sous la paillasse. Un sac roulé serré. On ne roule pas un sac comme ça pour y mettre du linge.",
+            "Un coin de toile dépasse sous la paillasse, un sac roulé serré comme on ne roule pas du linge.",
         },
         {
           si: [["surcharge"]],
           ajout:
-            "Il pose son chargement au bas des marches. L'escalier ne tiendrait pas les deux.",
+            "Il pose son chargement au bas des marches, parce que l'escalier ne tiendrait pas les deux.",
+        },
+        {
+          si: [["competence", "C09"]],
+          ajout:
+            "Le tableau est écrit de deux mains, et la seconde n'a servi que pour les six dernières lignes.",
         },
       ],
     },
@@ -302,6 +343,18 @@ export const storylets = {
         observation: true,
         cout: { segments: 1 },
         issues: [
+          {
+            si: [["competence", "C09"], ["!flag", "f_indice_3"]],
+            texte:
+              "Les dernières lignes sont nettes. La moitié du poste partie vers l'est, trois semaines avant l'attaque. En dessous, l'ordre recopié d'une main pressée, et le nom au bas, capitaine Vairon. Le même nom revient sur la feuille des vivres, à la même semaine, pour des rations doublées. Des ordres pareils, il en a vu passer. Ça se décide loin et ça se paie ici.",
+            effets: [
+              { connaissance_sortilege: "+1" },
+              { flag: "f_indice_3" },
+              { pnj_statut: { id: "PNJ-V1", valeur: "cite" } },
+              { journal: "p06_tableau", majeure: true },
+              { xp: 30 },
+            ],
+          },
           {
             si: [["!flag", "f_indice_3"]],
             texte:
@@ -318,6 +371,35 @@ export const storylets = {
             si: [],
             texte: "Il relit les mêmes lignes. Elles ne disent pas autre chose.",
             effets: [],
+          },
+        ],
+      },
+      {
+        id: "CORSELET",
+        libelle: "Prendre le corselet de cuir sur la chaise",
+        apparait_si: [["!local", "corselet"]],
+        cout: { segments: 1 },
+        issues: [
+          {
+            si: [["objet", "OBJ-11"]],
+            texte:
+              "Il essaie les deux, l'un par-dessus l'autre, et ça ne va pas. Il laisse la cotte pliée sur la table et sangle le cuir à la place. Moins de fer sur le dos, et les jambes durent plus longtemps.",
+            effets: [
+              { objet: "OBJ-11", quantite: -1 },
+              { objet: "OBJ-10", tire: true },
+              { local: "corselet", "=": true },
+              { xp: 10 },
+            ],
+          },
+          {
+            si: [],
+            texte:
+              "Le cuir bouilli a gardé la forme de celui qui le portait. Les courroies sont raides mais entières. Il le sangle par-dessus la chemise.",
+            effets: [
+              { objet: "OBJ-10", tire: true },
+              { local: "corselet", "=": true },
+              { xp: 5 },
+            ],
           },
         ],
       },

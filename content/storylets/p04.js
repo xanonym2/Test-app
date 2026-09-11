@@ -136,6 +136,7 @@ export const storylets = {
         cout: { segments: 1 },
         modif_proba: [
           { si: [["local", "lu"]], valeur: 20 },
+          { si: [["competence", "C02"]], valeur: 15 },
           { si: [["stat>=", "adresse", 4]], valeur: 12 },
           { si: [["objet", "OBJ-14"]], valeur: 10 },
           { si: [["etat", "epuise"]], valeur: -10 },
@@ -353,6 +354,12 @@ export const storylets = {
         apparait_si: [["!etat", "blesse_jambe"]],
         observation: true,
         issues: [
+          {
+            si: [["competence", "C02"], ["!local", "trace_lue"]],
+            texte:
+              "On remonte par le bas-côté, sous le vent, sans se montrer. Ils sont une douzaine. Deux perches et une toile portent quelqu'un qui ne marche plus. Ils s'arrêtent tous les cinquante pas, et personne ne ferme la marche derrière eux.",
+            effets: [{ local: "trace_lue", "=": true }, { xp: 15 }],
+          },
           {
             si: [["local", "trace_lue"]],
             texte:
