@@ -75,3 +75,23 @@ Automatique à chaque décision validée, dans le stockage local de l'appareil.
 Le paquet est versionné (`engine/schema.js`, `VERSION_SAUVEGARDE`) et
 `engine/save.js` porte la chaîne de migrations. Une sauvegarde plus récente
 que le binaire est refusée plutôt que corrompue.
+
+## Ce que mesure le vérificateur
+
+Sur trente parties automatiques, un robot qui mange, se soigne, dépense ses
+points, prend ses compétences et vise les lieux jamais vus :
+
+| Mesure | Valeur |
+|---|---|
+| Plantages | 0 / 30 |
+| Durée d'une partie | ~8 jours de jeu |
+| Niveau atteint | 6,2 en moyenne · 2,9 compétences prises |
+| Couverture | 16,2 scènes sur 22 · 4,7 lieux sur 6 |
+| Savoir | 1,5 indice sur 3 |
+| Parties où la survie a mordu | 16 / 30 |
+| Fins distinctes atteintes | 5, plus la mort |
+
+Une partie ne voit ni toutes les scènes, ni tous les indices, ni toutes les
+compétences : les groupes de compétences se ferment au premier choix, et les
+deux recrues du camp s'excluent. C'est ce qui rend la partie suivante
+différente.

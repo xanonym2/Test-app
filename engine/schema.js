@@ -40,7 +40,7 @@ export const PALIERS_USURE = [
 export const NIVEAU_MAX = 8;
 
 // XP cumulée requise pour atteindre le niveau N (index = niveau - 1).
-export const SEUILS_XP = [0, 40, 95, 170, 265, 385, 530, 700];
+export const SEUILS_XP = [0, 35, 85, 150, 230, 325, 440, 570];
 
 // Niveaux auxquels une compétence est proposée (1 tous les 2 niveaux).
 export const NIVEAUX_COMPETENCE = [2, 4, 6, 8];

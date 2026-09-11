@@ -8,6 +8,7 @@ import { composerTexte, optionsVisibles, resoudreOption, ouvrirStorylet } from '
 import { bilan } from '../engine/badges.js';
 import { appliquerEffets } from '../engine/effects.js';
 import { retirerObjet } from '../engine/items.js';
+import { depenserPointStat, apprendreCompetence, competencesProposees } from '../engine/progression.js';
 
 const OPS = new Set([...operateursConnus, 'ou', 'non']);
 const EFFETS = new Set([
@@ -196,7 +197,7 @@ function verifier() {
 // ---------------------------------------------------------------- parties auto
 // Un joueur raisonnable mange quand il a faim et se soigne quand il saigne :
 // c'est ce que permet l'écran d'inventaire, donc le robot le fait aussi.
-function entretien(E) {
+function entretien(E, seedLocal = 0) {
   const conso = (base) => {
     const it = E.inventaire.find((i) => i.base === base);
     if (!it) return false;
@@ -212,6 +213,19 @@ function entretien(E) {
       if (b.categorie !== 'consommable') continue;
       if ((b.effets_consommation ?? []).some((e) => (e.faim ?? 0) < 0) && conso(id)) break;
     }
+  }
+  // Un joueur dépense ses points et prend ses compétences : le robot aussi,
+  // ce qui exerce au passage la fermeture des groupes exclusifs.
+  const ordre = ['vigueur', 'perception', 'adresse', 'sangfroid'];
+  while (E.heros.points_stat > 0) {
+    const avant = E.heros.points_stat;
+    for (const st of ordre) if (E.heros.points_stat > 0 && depenserPointStat(E, st)) break;
+    if (E.heros.points_stat === avant) break;
+  }
+  while (E.heros.competence_a_choisir > 0) {
+    const p = competencesProposees(E);
+    if (!p.length) break;
+    if (!apprendreCompetence(E, p[(E.heros.niveau + seedLocal) % p.length].id)) break;
   }
   if (E.heros.sante <= 12) {
     for (const id of Object.keys(db.objets)) {
@@ -231,7 +245,8 @@ function partieAuto(seed, maxActions = 400) {
   try {
     while (!partieTerminee(E) && actions < maxActions) {
       actions += 1;
-      entretien(E);
+      E.faim_pic = Math.max(E.faim_pic ?? 0, E.heros.faim);
+      entretien(E, seed % 7);
       const s = db.storylets[E.systeme.storylet_courant];
       if (!s) {
         const acc = pointsAccessibles(E).filter((p) => !p.bloque);
@@ -277,6 +292,11 @@ function partieAuto(seed, maxActions = 400) {
   return {
     actions, jours: E.temps.jour, niveau: E.heros.niveau, fin: E.fin?.id ?? null,
     points: E.stats_partie.points_visites,
+    sante: E.heros.sante, sante_max: 20 + E.heros.stats.vigueur * 5,
+    groupes_fermes: E.heros.groupes_fermes.length,
+    degats: E.stats_partie.degats_subis, faim_pic: E.faim_pic ?? 0,
+    combats: E.stats_partie.combats_gagnes + E.stats_partie.combats_evites,
+    competences: E.heros.competences.length,
     vus: vus.size, badges: b.badges.filter((x) => x.obtenu).length,
     savoir: E.recit.connaissance_sortilege, xp: E.heros.xp,
     compagnons: E.compagnons.length,
@@ -328,7 +348,11 @@ if (res.length) {
   console.log('  niveau moy   :', moy('niveau'), '| xp moy :', moy('xp'));
   console.log('  scènes vues  :', moy('vus'), '/', ids.length, '| points visités :', moy('points'), '/ 6');
   console.log('  savoir moy   :', moy('savoir'), '| badges moy :', moy('badges'));
-  console.log('  compagnons   :', moy('compagnons'));
+  console.log('  compagnons   :', moy('compagnons'), '| compétences prises :', moy('competences'), '| groupes fermés :', moy('groupes_fermes'));
+  console.log('  santé finale :', moy('sante'), '/', moy('sante_max'), '| dégâts subis :', moy('degats'));
+  console.log('  pic de faim  :', moy('faim_pic'), '/ 100 | combats :', moy('combats'));
+  const tendus = res.filter((r) => r.faim_pic >= 90 || r.sante <= 8).length;
+  console.log('  parties où la survie a mordu :', tendus, '/', res.length);
   const fins = {};
   for (const r of res) fins[r.fin ?? 'aucune'] = (fins[r.fin ?? 'aucune'] ?? 0) + 1;
   console.log('  fins         :', JSON.stringify(fins));
