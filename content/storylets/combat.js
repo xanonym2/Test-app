@@ -102,6 +102,50 @@ export const storylets = {
         cout: { objet: { "OBJ-02": 1 }, fatigue: 3 },
         issues: [
           {
+            si: [
+              ["competence", "C07"],
+              ["local>=", "touche", 1],
+              ["ou", [["local=", "ennemi", "CRE-01"]], [["local=", "ennemi", "CRE-02"]]],
+            ],
+            sortie: true,
+            texte:
+              "Il laisse venir, puis il tire au moment exact où le poids passe sur la jambe touchée. La flèche entre au défaut de l'épaule. L'orc s'arrête, met un genou, et ne le relève pas.",
+            effets: [
+              { stat_partie: { compteur: "fleches_tirees", valeur: 1 } },
+              { stat_partie: { compteur: "orcs_vaincus", valeur: 1 } },
+              { stat_partie: { compteur: "combats_gagnes", valeur: 1 } },
+              { xp: 35 },
+            ],
+          },
+          {
+            si: [
+              ["competence", "C07"],
+              ["local>=", "touche", 1],
+              ["ou", [["local=", "ennemi", "CRE-03"]], [["local=", "ennemi", "CRE-04"]]],
+            ],
+            sortie: true,
+            texte:
+              "Il attend que l'homme se remette en garde et tire dans ce temps-là. C'est fini debout, à vingt pas, sans échange.",
+            effets: [
+              { stat_partie: { compteur: "fleches_tirees", valeur: 1 } },
+              { stat_partie: { compteur: "humains_vaincus", valeur: 1 } },
+              { stat_partie: { compteur: "combats_gagnes", valeur: 1 } },
+              { xp: 35 },
+            ],
+          },
+          {
+            si: [["competence", "C07"], ["local>=", "touche", 1]],
+            sortie: true,
+            texte:
+              "Il attend qu'elle se pose sur la patte saine et lâche. La flèche prend derrière l'épaule. Elle fait trois pas de côté et se couche.",
+            effets: [
+              { stat_partie: { compteur: "fleches_tirees", valeur: 1 } },
+              { stat_partie: { compteur: "betes_vaincues", valeur: 1 } },
+              { stat_partie: { compteur: "combats_gagnes", valeur: 1 } },
+              { xp: 35 },
+            ],
+          },
+          {
             si: [["local>=", "touche", 1]],
             texte:
               "La deuxième part plus bas. Elle porte. Le pas se casse. L'autre continue, mais il faut maintenant qu'il y mette de la volonté.",
@@ -169,6 +213,17 @@ export const storylets = {
             ],
           },
           {
+            si: [["competence", "C03"]],
+            texte:
+              "Les cailloux partent sous lui mais il arrive la garde haute. Il prend l'échange sur le plat de l'arme au lieu des côtes, et il rend le sien. Ils sont au contact, et ce n'est pas lui qui recule.",
+            effets: [
+              { local: "touche", "+=": 1 },
+              { local: "garde", "=": 2 },
+              { sante_heros: -3 },
+              { xp: 15 },
+            ],
+          },
+          {
             si: [],
             texte:
               "Les cailloux plats partent sous lui à mi-chemin. Il arrive mal, frappe quand même, et prend l'échange dans les côtes. Ils sont au contact, maintenant.",
@@ -187,6 +242,15 @@ export const storylets = {
         apparait_si: [["!local", "couvert"]],
         cout: { fatigue: 5 },
         issues: [
+          {
+            si: [["competence", "C03"], ["local>=", "garde", 2]],
+            texte:
+              "Il rompt en tenant la distance de bras, le fer entre eux deux. L'autre ne trouve pas d'angle. Le tronc revient dans son dos et la distance est refaite sans rien payer.",
+            effets: [
+              { local: "couvert", "=": true },
+              { local: "garde", "=": 0 },
+            ],
+          },
           {
             si: [["local>=", "garde", 2]],
             texte:
@@ -251,6 +315,16 @@ export const storylets = {
               { stat_partie: { compteur: "betes_vaincues", valeur: 1 } },
               { stat_partie: { compteur: "combats_gagnes", valeur: 1 } },
               { xp: 30 },
+            ],
+          },
+          {
+            si: [["competence", "C03"]],
+            texte:
+              "Il entre par le côté ouvert, touche, et reste à distance de bras pendant que l'autre cherche l'angle. Rien ne passe. Ils sont nez à nez, et c'est lui qui a gardé la main.",
+            effets: [
+              { local: "touche", "+=": 1 },
+              { local: "garde", "=": 2 },
+              { xp: 15 },
             ],
           },
           {
