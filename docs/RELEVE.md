@@ -3,6 +3,10 @@
 Écrit à l'étape 1. **Factuel** : aucune recommandation, sauf le classement
 proposé au §5, qui n'est qu'une proposition.
 
+> **Mis à jour le 21/09/2026.** Deux constats de ce relevé — la soif morte et la
+> mort en voyage — ont été corrigés depuis, et les 46 « à revoir » résorbés. Les
+> §3.3, §3.5 et §7 disent l'état d'après ; le reste est inchangé.
+
 Dépôt à `e8ef398`, branche `claude/new-session-ftellm`.
 
 ---
@@ -208,22 +212,26 @@ stockés : ils sont dérivés à la lecture (`etatsAutomatiques`).
 
 ### 3.3 L'état `assoiffe`
 
-**Il ne se déclenche jamais.**
+**Au moment du relevé, il ne se déclenchait jamais.** `assoiffe` était déclaré
+dans `engine/schema.js`, portait un libellé, et **trois endroits le retiraient** —
+l'eau (`OBJ-05`), une option de `ST-P03-01`, une option de `ST-P04-01` — mais
+**aucun code ni aucun contenu ne le posait**. Vérifié : sur 40 parties × 60
+segments, il n'apparaissait pas une fois. Dans `ST-P04-01`, une variante, une
+option entière et un modificateur de probabilité étaient donc morts.
 
-`assoiffe` est déclaré dans `engine/schema.js`, porte un libellé dans
-`content/libelles.js`, et **trois endroits le retirent** — l'eau (`OBJ-05`),
-une option de `ST-P03-01`, une option de `ST-P04-01`. Mais **aucun code ni
-aucun contenu ne le pose** : `etatsAutomatiques()` ne dérive que `affame` et
-`epuise`, et les seuls `{ etat: ... }` écrits par le contenu sont
-`blesse_leger` (4 fois) et `blesse_jambe` (2 fois).
+**Corrigé le 21/09/2026** (contrat M15). La soif reste un état, pas une jauge :
+elle se dérive de `heros.segments_sans_boire`, que le temps incrémente et que
+boire remet à zéro.
 
-Vérifié : sur 40 parties × 60 segments, `assoiffe` n'apparaît pas une fois.
+| | |
+|---|---|
+| Seuil | **12 segments** sans boire, soit deux jours de jeu (`SEUIL_SOIF`) |
+| Coût | **+2 de fatigue par segment**, **+1 de pénalité d'action**. Jamais de santé |
+| Ce qui désaltère | tout effet `{ retire_etat: "assoiffe" }` — le contenu existant n'a pas bougé |
+| Mesuré | **2,6 gorgées par run**, plus long jeûne 16,5 segments |
 
-Conséquence mesurable — dans `ST-P04-01`, sont donc **morts** :
-une variante de texte (`si: [["etat","assoiffe"]]`), une option entière
-(`apparait_si: [["etat","assoiffe"], ["!local","bu"]]`) et un modificateur de
-probabilité (`valeur: -12`). Le dilemme de l'eau que l'ordre pédagogique
-`P03` → `P04` doit installer ne se produit pas.
+L'ancrage de calibration est `SPEC_EQUILIBRAGE` §5 bis : « un run type demande
+3 rations et 3 gourdes ». Les branches mortes de `ST-P04-01` sont vivantes.
 
 ### 3.4 Déroulé de `ST-CBT-01`
 
@@ -247,20 +255,19 @@ probabilité (`valeur: -12`). Le dilemme de l'eau que l'ordre pédagogique
 
 ### 3.5 Santé du héros à 0
 
-Deux chemins, qui ne se valent pas :
-
 - **Par une issue de storylet** — `resoudreOption()` teste, après avoir fait
   s'écouler les segments : `if (E.heros.sante <= 0 && !E.fin) E.fin = { id: 'FIN-MORT' }`.
-  L'interface bascule sur le bilan au retour de `valider()`.
-- **Par l'attrition pendant un voyage** — `voyager()` appelle
-  `avancerSegments()` mais **ne teste pas la santé**, et `allerA()` côté
-  interface ne le teste pas non plus. Vérifié : santé 0, `E.fin` reste `null`,
-  `partieTerminee()` renvoie `true`. Le bilan n'arrive qu'au prochain choix
-  validé, qui pose alors `FIN-MORT`.
+- **Par l'attrition pendant un voyage** — au moment du relevé, `voyager()`
+  appelait `avancerSegments()` **sans tester la santé**, et l'interface non plus :
+  santé 0, `E.fin` à `null`, le bilan n'arrivait qu'au prochain choix validé.
+  **Corrigé le 21/09/2026** : la fin se pose dans `avancerSegments()`, donc sur
+  tous les chemins qui font s'écouler le temps, et l'interface bascule dès
+  l'arrivée. Un cas de test le prouve.
 
-Depuis l'étape 1, une issue **tirée au sort** ne peut plus amener la santé
-sous 1 (contrat §4, règle 9) ; une issue **choisie par le contenu** le peut
-toujours.
+Une issue **tirée au sort** ne peut pas amener la santé sous 1 (contrat §4,
+règle 9) ; une issue **choisie par le contenu** le peut. Ce que recouvre « le
+héros ne meurt jamais » est clarifié dans `SPEC_DESIGN` §4.5 : **l'adversaire ne
+tue jamais, la négligence si.**
 
 ### 3.6 De `fin` au bilan
 
@@ -1055,33 +1062,13 @@ export const storylets = {
 
 ## 7. Les « à revoir » sur l'héritage v1
 
-Remontés par les contrôles ajoutés à l'étape 1. **46 au total, 0 bloquant.**
-Non corrigés, conformément à la mission.
+Au moment du relevé : **46, dont 0 bloquant**. Trois familles, toutes résorbées
+le 21/09/2026.
 
-```
-bloquants : 0 | à revoir : 46
-  ~ nom_perime (9) : ST-OUV-01 [arrivee:Mathieu], ST-OUV-02 [arrivee:Joé], ST-OUV-02 [issueA0:Mathieu], ST-OUV-02 [optB:Joé], ST-OUV-02 [issueB0:Joé], pnj [PNJ-F1.nom:Mathieu], pnj [PNJ-F2.nom:Joé], journal [ouv_forge:Mathieu], journal [ouv_maison:Joé]
-  ~ mot_rare (28) : ST-P01-01 [issueA1:layon], ST-P01-01 [issueA2:layon], ST-P01-02 [optA:layon], ST-P01-02 [issueA0:layon], ST-P01-02 [issueB0:layon], ST-P04-01 [arrivee:dévers], ST-P04-01 [arrivee:layon], ST-P04-01 [optC:dévers], ST-P04-01 [issueE1:layon], ST-P04-02 [arrivee:layon], ST-P04-02 [base:layon], ST-P05-03 [issueB1:layon], ST-P05-03 [issueC1:layon], ST-P05-03 [issueN1:layon], ST-P05-03 [issueD1:layon], ST-EVT-02 [arrivee:dévers], ST-EVT-02 [variante1:dévers], points [P04.nom:layon], points [P04.nom_court:layon], points [P04.note_carte:dévers], objets [OBJ-14.description:dévers], creatures [CRE-06.nom:dévers], departs [D02.description:dévers], mutateurs [M05.description:dévers], voyage [generiques[1]:layon], voyage [conditionnelles[0].texte:dévers], journal [layon_passe:layon], journal [layon_chute:layon]
-  ~ indice_et_journal (9) : ST-P01-01 [optA:2], ST-P01-02 [optA:0], ST-P02-02 [optB:0], ST-P05-03 [optB:0], ST-P05-03 [optC:0], ST-P05-03 [optN:0], ST-P05-03 [optD:0], ST-P06-03 [optTABLEAU:0], ST-P06-03 [optTABLEAU:1]
-```
+| Famille | Nombre | Traitement |
+|---|---|---|
+| `nom_perime` | 9 | `Mathieu` → **Mathias**, `Joé` → **Jonas** (contrat M06). Storylets d'ouverture, `pnj.js`, journal. Les identifiants `PNJ-F1` et `PNJ-F2` n'ont pas bougé |
+| `mot_rare` | 28 | Deux mots seulement : `layon` → **sentier**, `dévers` → **talus**. `P04` devient **« Le Sentier Coupé »** (contrat §3 : un terrain concret, une cause visible). `CRE-06` devient « Ours des pentes ». Les drapeaux `f_layon_*` et les clés de journal `layon_*` restent inchangés : le contrat veut les identifiants stables et indépendants du nom affiché |
+| `indice_et_journal` | 9 | Les quatre entrées de journal concernées décrivaient des **interprétations d'indices**, pas des actes — et lues ensemble au bilan, elles s'alignaient en dossier d'enquête, exactement ce que `SPEC_ECRANS` §170 dit qui détruirait le retournement. Retirées, clés comprises |
 
-### Lecture
-
-- **`nom_perime` (9)** — `Mathieu` et `Joé` sont les noms v1 des frères. Le
-  canon les remplace par `Mathias` et `Jonas`. Occurrences dans `ST-OUV-01`,
-  `ST-OUV-02`, `content/pnj.js` (`PNJ-F1`, `PNJ-F2`) et deux clés de journal.
-  Les deux storylets concernés sont proposés « retirés » au §5 ; restent les
-  fiches PNJ et le journal.
-- **`mot_rare` (28)** — deux mots seulement : `layon` (16) et `dévers` (12).
-  `layon` est le nom même de `P04` (`points.js`, deux champs) et irrigue
-  `ST-P01-01`, `ST-P01-02`, `ST-P04-01`, `ST-P04-02`, `ST-P05-03` et deux
-  clés de journal. `dévers` touche aussi `objets.js`, `creatures.js`
-  (le nom de `CRE-06`), `departs.js`, `mutateurs.js` et `voyage.js`.
-  Le contrat §3 signalait déjà « Le Layon » comme à renommer.
-- **`indice_et_journal` (9)** — neuf issues posent un indice et une entrée de
-  journal ensemble, ce que le contrat §18 interdit désormais. Concentrées sur
-  les quatre storylets porteurs d'indices : `ST-P01-01`, `ST-P01-02`,
-  `ST-P02-02`, `ST-P05-03`, `ST-P06-03`.
-- **Aucune occurrence** de `lexique_chretien`, `mot_sensible`,
-  `issue_tiree_letale`, `majeur_sans_issue_partielle` ni
-  `indice_dans_recombinable` dans le contenu v1.
+**État après correction : 0 bloquant, 0 à revoir.**

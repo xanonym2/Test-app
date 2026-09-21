@@ -77,6 +77,8 @@ comme un assouplissement.
 | M12 | §4, §5 | **A1 tranché** — combat par `si`, exploration par tirage. Nouvelle règle 9 : l'aléatoire coûte, il ne tue jamais | Extension | Oui — contrôle dès maintenant ; plancher de santé 🔨 moteur |
 | M13 | §6 | **A2 tranché** — l'eau reste un objet, la soif un état. Specs corrigées | Correction des specs | Non |
 | M14 | §4 | **A3 tranché** — réussite partielle obligatoire sur les storylets majeurs et les jalons (`majeur: true`, `partielle: true`) | Extension | Oui — 🔨 accepter les deux champs, puis contrôler |
+| M15 | §6 | **Rythme de la soif fixé** — `assoiffe` se dérive de 12 segments sans boire ; boire remet le compteur à zéro. Le chantier ouvert par M13 est refermé | Extension | Oui — cas de test dédié |
+| M16 | §4 r. 9 | **Mort du héros clarifiée** — un adversaire ne tue jamais (`SPEC_DESIGN` §4.5) ; seule l'attrition met fin au run. La contradiction §2.5 / §4.5 est levée | Clarification | Non — le moteur v3 n'a pas d'état de défaite |
 
 ### Arbitrages
 
@@ -502,6 +504,17 @@ quoi il sert — jamais un chiffre de règle.
 
 **[v2] L'eau (A2, tranché).** L'eau reste un objet, la soif un état. Les specs
 (`SPEC_EQUILIBRAGE` §5, `SPEC_ECRANS`) sont corrigées en conséquence.
+
+**Rythme de la soif (M15).** `assoiffe` n'est pas stocké : il se dérive de
+`heros.segments_sans_boire`, que le temps incrémente et que boire remet à zéro.
+Seuil : **12 segments**, soit deux jours de jeu (`engine/schema.js`,
+`SEUIL_SOIF`). Assoiffé coûte **+2 de fatigue par segment** et **+1 de pénalité
+d'action** — la soif se paie en effort, jamais en santé.
+
+Tout effet `{ retire_etat: "assoiffe" }` vaut « boire » : le contenu qui existait
+déjà fonctionne sans changement. Calibré sur « un run type demande 3 gourdes »
+(`SPEC_EQUILIBRAGE` §5 bis) et mesuré à **2,6 gorgées par run** sur les parties
+automatiques.
 
 ### Modificateurs — `content/modificateurs.js`
 

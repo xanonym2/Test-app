@@ -18,7 +18,7 @@ export const departs = {
   "D02": {
     id: "D02",
     nom: "Rentré blessé",
-    description: "Une mauvaise chute sur le dévers : tu commences blessé, avec moins de santé et des gestes moins sûrs. En échange tu portes une lame longue, qui vaut bien mieux que ton couteau.",
+    description: "Une mauvaise chute sur le talus : tu commences blessé, avec moins de santé et des gestes moins sûrs. En échange tu portes une lame longue, qui vaut bien mieux que ton couteau.",
     inventaire: [
       { base: "OBJ-07", usure: 70 },
     ],

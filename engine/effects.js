@@ -79,6 +79,12 @@ function appliquerEffet(E, ef, ctx, declenchements) {
   }
 
   if (ef.retire_etat !== undefined) {
+    // La soif n'est pas stockée : elle se dérive du temps depuis le dernier
+    // verre. La retirer, c'est boire.
+    if (ef.retire_etat === 'assoiffe') {
+      E.heros.segments_sans_boire = 0;
+      E.stats_partie.gorgees_bues += 1;
+    }
     E.heros.etats = E.heros.etats.filter((x) => x !== ef.retire_etat);
     return { cle: 'etat_perdu', id: ef.retire_etat };
   }

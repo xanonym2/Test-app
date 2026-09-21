@@ -61,7 +61,7 @@ export const storylets = {
           {
             si: [["local=", "couche", 1]],
             reussite: true,
-            texte: "Je reste. Les yeux s'habituent. À l'est, sur l'épaule de la colline, un mur droit. Trop droit pour du rocher : le vieux poste. Et entre les deux versants, une coupe étroite dans les arbres. Un layon. Il monte raide.",
+            texte: "Je reste. Les yeux s'habituent. À l'est, sur l'épaule de la colline, un mur droit. Trop droit pour du rocher : le vieux poste. Et entre les deux versants, une coupe étroite dans les arbres. Un sentier coupé. Il monte raide.",
             effets: [
               { local: "couche", "+=": 1 },
               { debloque_point: "P06" },
@@ -71,13 +71,12 @@ export const storylets = {
           {
             si: [["local=", "couche", 2]],
             reussite: true,
-            texte: "Sous les hêtres, une fumée basse et plate. Du bois mouillé, du monde. Il y a un camp là-dedans.\n\nPlus loin, bien à l'ouest du layon, deux silhouettes courtes sur la crête d'en face. Des orcs. Là où il ne devrait pas encore y en avoir. Ils déferlent, voilà tout.",
+            texte: "Sous les hêtres, une fumée basse et plate. Du bois mouillé, du monde. Il y a un camp là-dedans.\n\nPlus loin, bien à l'ouest du sentier coupé, deux silhouettes courtes sur la crête d'en face. Des orcs. Là où il ne devrait pas encore y en avoir. Ils déferlent, voilà tout.",
             effets: [
               { local: "couche", "+=": 1 },
               { debloque_point: "P05" },
               { connaissance_sortilege: "+1" },
               { flag: "f_indice_1" },
-              { journal: "p01_orcs_ouest", majeure: false },
             ],
           },
         ],
@@ -167,7 +166,7 @@ export const storylets = {
     options: [
       {
         id: "A",
-        libelle: "Suivre la crête d'en face, du layon jusqu'au bout",
+        libelle: "Suivre la crête d'en face, du sentier coupé jusqu'au bout",
         cout: { segments: 1 },
         apparait_si: [["!flag", "f_indice_1"]],
         epuisable: false,
@@ -178,11 +177,10 @@ export const storylets = {
           {
             si: [],
             reussite: true,
-            texte: "Deux silhouettes courtes passent la ligne de crête, bien à l'ouest du layon. Des orcs. Ils ne devraient pas être déjà si loin de chez eux. Ils déferlent, voilà tout.",
+            texte: "Deux silhouettes courtes passent la ligne de crête, bien à l'ouest du sentier coupé. Des orcs. Ils ne devraient pas être déjà si loin de chez eux. Ils déferlent, voilà tout.",
             effets: [
               { connaissance_sortilege: "+1" },
               { flag: "f_indice_1" },
-              { journal: "p01_orcs_ouest", majeure: false },
             ],
           },
         ],
@@ -199,7 +197,7 @@ export const storylets = {
           {
             si: [],
             reussite: true,
-            texte: "Ferme au nord, saules au sud, layon au milieu, poste à l'est. Je me répète l'ordre jusqu'à ce qu'il tienne tout seul. Les jambes redescendent.",
+            texte: "Ferme au nord, saules au sud, sentier coupé au milieu, poste à l'est. Je me répète l'ordre jusqu'à ce qu'il tienne tout seul. Les jambes redescendent.",
             effets: [{ fatigue: -12 }],
           },
         ],
@@ -244,6 +242,4 @@ export const storylets = {
 };
 
 export const journal = {
-  p01_orcs_ouest:
-    "Depuis la crête, j'ai vu des orcs bien plus à l'ouest qu'il n'aurait dû y en avoir.",
 };

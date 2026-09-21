@@ -6,9 +6,13 @@ import { operateursConnus } from '../engine/conditions.js';
 import { nouvellePartie, voyager, rafraichirScene, pointsAccessibles, partieTerminee } from '../engine/game.js';
 import { composerTexte, optionsVisibles, resoudreOption, ouvrirStorylet } from '../engine/storylets.js';
 import { bilan } from '../engine/badges.js';
+import * as schema from '../engine/schema.js';
+import { migrer, chaineComplete } from '../engine/migrations.js';
+import { avancerSegments as avancerSegmentsTest } from '../engine/time.js';
 import { appliquerEffets } from '../engine/effects.js';
 import { retirerObjet } from '../engine/items.js';
 import { depenserPointStat, apprendreCompetence, competencesProposees } from '../engine/progression.js';
+import { tousLesEtats } from '../engine/derive.js';
 
 const OPS = new Set([...operateursConnus, 'ou', 'non']);
 const EFFETS = new Set([
@@ -358,6 +362,43 @@ function testMortEnVoyage() {
   return { sante: E.heros.sante, fin: E.fin?.id ?? null, ok: E.heros.sante <= 0 && E.fin?.id === 'FIN-MORT' };
 }
 
+
+// La soif : un état dérivé du temps depuis le dernier verre, pas une jauge.
+function testSoif() {
+  const { SEUIL_SOIF } = schema;
+  const E = nouvellePartie({ seed: 11 });
+  const avant = tousLesEtats(E.heros).includes('assoiffe');
+  avancerSegmentsTest(E, SEUIL_SOIF - 1);
+  const juste_avant = tousLesEtats(E.heros).includes('assoiffe');
+  avancerSegmentsTest(E, 1);
+  const au_seuil = tousLesEtats(E.heros).includes('assoiffe');
+  appliquerEffets(E, [{ retire_etat: 'assoiffe' }]);
+  const apres_boire = tousLesEtats(E.heros).includes('assoiffe');
+  return {
+    seuil: SEUIL_SOIF, avant, juste_avant, au_seuil, apres_boire,
+    ok: !avant && !juste_avant && au_seuil && !apres_boire,
+  };
+}
+
+
+// La chaîne de migration : une sauvegarde d'une version antérieure doit
+// remonter jusqu'à la version courante sans perdre ce qu'elle contenait.
+function testMigration() {
+  const complete = chaineComplete();
+  const E = nouvellePartie({ seed: 21 });
+  // On simule une sauvegarde v1 : l'état courant amputé de ce que v2 a ajouté.
+  const v1 = JSON.parse(JSON.stringify(E));
+  delete v1.heros.segments_sans_boire;
+  const migre = migrer({ version: 1, etat: v1 });
+  const trop_recent = migrer({ version: schema.VERSION_SAUVEGARDE + 1, etat: {} });
+  const champ = migre?.heros?.segments_sans_boire === 0;
+  const preserve = migre?.heros?.sante === E.heros.sante
+    && migre?.temps?.jour === E.temps.jour
+    && (migre?.inventaire ?? []).length === E.inventaire.length;
+  return { complete, champ, preserve, refus_futur: trop_recent === null,
+           ok: complete && champ && preserve && trop_recent === null };
+}
+
 // ---------------------------------------------------------------- parties auto
 // Un joueur raisonnable mange quand il a faim et se soigne quand il saigne :
 // c'est ce que permet l'écran d'inventaire, donc le robot le fait aussi.
@@ -391,6 +432,13 @@ function entretien(E, seedLocal = 0) {
     if (!p.length) break;
     if (!apprendreCompetence(E, p[(E.heros.niveau + seedLocal) % p.length].id)) break;
   }
+  if (tousLesEtats(E.heros).includes('assoiffe')) {
+    for (const id of Object.keys(db.objets)) {
+      const b = db.objets[id];
+      if (b.categorie !== 'consommable') continue;
+      if ((b.effets_consommation ?? []).some((e) => e.retire_etat === 'assoiffe') && conso(id)) break;
+    }
+  }
   if (E.heros.sante <= 12) {
     for (const id of Object.keys(db.objets)) {
       const b = db.objets[id];
@@ -410,6 +458,7 @@ function partieAuto(seed, maxActions = 400) {
     while (!partieTerminee(E) && actions < maxActions) {
       actions += 1;
       E.faim_pic = Math.max(E.faim_pic ?? 0, E.heros.faim);
+      E.soif_pic = Math.max(E.soif_pic ?? 0, E.heros.segments_sans_boire ?? 0);
       entretien(E, seed % 7);
       const s = db.storylets[E.systeme.storylet_courant];
       if (!s) {
@@ -461,6 +510,8 @@ function partieAuto(seed, maxActions = 400) {
     degats: E.stats_partie.degats_subis, faim_pic: E.faim_pic ?? 0,
     combats: E.stats_partie.combats_gagnes + E.stats_partie.combats_evites,
     competences: E.heros.competences.length,
+    gorgees: E.stats_partie.gorgees_bues,
+    soif_pic: E.soif_pic ?? 0,
     vus: vus.size, badges: b.badges.filter((x) => x.obtenu).length,
     savoir: E.recit.connaissance_sortilege, xp: E.heros.xp,
     compagnons: E.compagnons.length,
@@ -504,6 +555,20 @@ console.log('  issue choisie, -999 santé         : santé', gf.voulue.sante, '|
 console.log('  attendu : 1 / aucune, puis 0 / FIN-MORT  →', gf.ok ? 'CONFORME' : 'ÉCHEC');
 if (!gf.ok) console.log('  ! le garde-fou du contrat §4 règle 9 ne tient pas');
 
+const so = testSoif();
+console.log('\n=== SOIF ===');
+console.log('  seuil :', so.seuil, 'segments sans boire');
+console.log('  avant :', so.avant ? 'assoiffé' : 'non', '| à', so.seuil - 1, ':', so.juste_avant ? 'assoiffé' : 'non',
+            '| à', so.seuil, ':', so.au_seuil ? 'assoiffé' : 'non', '| après avoir bu :', so.apres_boire ? 'assoiffé' : 'non');
+console.log('  attendu : non, non, assoiffé, non          →', so.ok ? 'CONFORME' : 'ÉCHEC');
+
+const mg = testMigration();
+console.log('\n=== SAUVEGARDE ===');
+console.log('  version courante :', schema.VERSION_SAUVEGARDE, '| chaîne complète :', mg.complete ? 'oui' : 'NON');
+console.log('  v1 migrée : champ ajouté', mg.champ ? 'oui' : 'NON', '| reste préservé', mg.preserve ? 'oui' : 'NON',
+            '| sauvegarde plus récente refusée', mg.refus_futur ? 'oui' : 'NON');
+console.log('  →', mg.ok ? 'CONFORME' : 'ÉCHEC');
+
 const mv = testMortEnVoyage();
 console.log('  mort d\'attrition en voyage        : santé', mv.sante, '| fin', mv.fin ?? 'aucune');
 console.log('  attendu : 0 / FIN-MORT                   →', mv.ok ? 'CONFORME' : 'ÉCHEC');
@@ -527,10 +592,11 @@ if (res.length) {
   console.log('  compagnons   :', moy('compagnons'), '| compétences prises :', moy('competences'), '| groupes fermés :', moy('groupes_fermes'));
   console.log('  santé finale :', moy('sante'), '/', moy('sante_max'), '| dégâts subis :', moy('degats'));
   console.log('  pic de faim  :', moy('faim_pic'), '/ 100 | combats :', moy('combats'));
+  console.log('  gorgées bues :', moy('gorgees'), '| plus long sans boire :', moy('soif_pic'), 'segments (seuil', schema.SEUIL_SOIF + ')');
   const tendus = res.filter((r) => r.faim_pic >= 90 || r.sante <= 8).length;
   console.log('  parties où la survie a mordu :', tendus, '/', res.length);
   const fins = {};
   for (const r of res) fins[r.fin ?? 'aucune'] = (fins[r.fin ?? 'aucune'] ?? 0) + 1;
   console.log('  fins         :', JSON.stringify(fins));
 }
-process.exit(graves.length || ko || !gf.ok || !mv.ok ? 1 : 0);
+process.exit(graves.length || ko || !gf.ok || !mv.ok || !so.ok || !mg.ok ? 1 : 0);

@@ -50,7 +50,7 @@ export const mutateurs = {
     id: "M05",
     nom: "Route coupée",
     groupe: "route",
-    description: "Un pan de dévers est descendu sur le sentier : le passage reste fermé trois jours.",
+    description: "Un pan de talus est descendu sur le sentier : le passage reste fermé trois jours.",
     effets: [
       { lieu_bloque: { id: "P04", duree_jours: 3 } },
     ],

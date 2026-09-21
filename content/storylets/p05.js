@@ -345,14 +345,13 @@ export const storylets = {
               { connaissance_sortilege: "+1" },
               { flag: "f_indice_3" },
               { pnj_statut: { id: "PNJ-V1", valeur: "cite" } },
-              { journal: "charretier_garnison" },
               { xp: 25 },
             ],
           },
           {
             si: [],
             texte:
-              "Sur les soldats, il a déjà tout dit. Il donne autre chose : le vieux poste au-dessus du layon n'a jamais été vidé. Le toit est tombé dedans, alors personne n'y monte.",
+              "Sur les soldats, il a déjà tout dit. Il donne autre chose : le vieux poste au-dessus du sentier coupé n'a jamais été vidé. Le toit est tombé dedans, alors personne n'y monte.",
             effets: [{ debloque_point: "P06" }, { xp: 15 }],
           },
         ],
@@ -372,14 +371,13 @@ export const storylets = {
               { connaissance_sortilege: "+1" },
               { flag: "f_indice_3" },
               { pnj_statut: { id: "PNJ-V1", valeur: "cite" } },
-              { journal: "charretier_garnison" },
               { xp: 25 },
             ],
           },
           {
             si: [],
             texte:
-              "Il range les flèches dans sa botte. Sur les soldats, il a déjà tout dit. Il donne le vieux poste, au-dessus du layon : le toit est tombé dedans, alors personne n'y monte, alors rien n'en est sorti.",
+              "Il range les flèches dans sa botte. Sur les soldats, il a déjà tout dit. Il donne le vieux poste, au-dessus du sentier coupé : le toit est tombé dedans, alors personne n'y monte, alors rien n'en est sorti.",
             effets: [{ debloque_point: "P06" }, { xp: 15 }],
           },
         ],
@@ -399,14 +397,13 @@ export const storylets = {
               { connaissance_sortilege: "+1" },
               { flag: "f_indice_3" },
               { pnj_statut: { id: "PNJ-V1", valeur: "cite" } },
-              { journal: "charretier_garnison" },
               { xp: 25 },
             ],
           },
           {
             si: [],
             texte:
-              "Devant les autres, il lâche autre chose : le vieux poste au-dessus du layon n'a jamais été vidé. Le toit est tombé dedans, alors personne n'y monte, alors rien n'en est sorti.",
+              "Devant les autres, il lâche autre chose : le vieux poste au-dessus du sentier coupé n'a jamais été vidé. Le toit est tombé dedans, alors personne n'y monte, alors rien n'en est sorti.",
             effets: [{ debloque_point: "P06" }, { xp: 15 }],
           },
         ],
@@ -427,14 +424,13 @@ export const storylets = {
               { connaissance_sortilege: "+1" },
               { flag: "f_indice_3" },
               { pnj_statut: { id: "PNJ-V1", valeur: "cite" } },
-              { journal: "charretier_garnison" },
               { xp: 25 },
             ],
           },
           {
             si: [],
             texte:
-              "Il fait recommencer deux fois le même rang de caisses. À la nuit, il paye en paroles : le vieux poste au-dessus du layon n'a pas été vidé, le toit est tombé dedans, personne n'y monte.",
+              "Il fait recommencer deux fois le même rang de caisses. À la nuit, il paye en paroles : le vieux poste au-dessus du sentier coupé n'a pas été vidé, le toit est tombé dedans, personne n'y monte.",
             effets: [{ fatigue: 18 }, { debloque_point: "P06" }, { xp: 15 }],
           },
         ],
@@ -582,6 +578,5 @@ export const journal = {
   recrue_devant: "Un homme du camp a pris la tête de la marche, et la hache avec.",
   recrue_arriere: "Une femme du camp l'a suivi, trois pas en arrière, à regarder les bas-côtés.",
   camp_seul: "Il est ressorti du camp des fuyards comme il y était entré : seul.",
-  charretier_garnison: "Un colporteur lui a vendu le départ de la garnison vers l'est, et le nom du capitaine Vairon.",
   camp_defait: "Le camp des fuyards s'était défait avant qu'il reparte.",
 };

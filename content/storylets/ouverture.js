@@ -16,7 +16,7 @@ export const storylets = {
     texte: {
       arrivee: [
         "Le col domine Val-de-Garde. Quatre routes en partent. Celle du roi, celle des marchands, celle des mages. La quatrième descend chez les orcs : personne ne la prend. La guerre s'est finie il y a huit ans. La paix tient.",
-        "Le poste de garde est vide depuis longtemps. Plus bas, la forge de Mathieu fume : il travaille tard.",
+        "Le poste de garde est vide depuis longtemps. Plus bas, la forge de Mathias fume : il travaille tard.",
         "Je rentre avec un lièvre. Le jour baisse. Mes collets sont sur le versant nord. Deux de mes flèches sont restées dans le pin mort, au-dessus du sentier.",
       ].join("\n\n"),
       base: "Le col domine Val-de-Garde. En bas, la forge fume. Le jour baisse.",
@@ -91,7 +91,7 @@ export const storylets = {
     texte: {
       arrivee: [
         "Le feu a pris par le bas. La forge brûle toute seule, le toit tombé dedans.",
-        "Ils avancent maison par maison. Vingt, peut-être plus. Les maisons du haut tiennent encore. Celle de Joé est ouverte.",
+        "Ils avancent maison par maison. Vingt, peut-être plus. Les maisons du haut tiennent encore. Celle de Jonas est ouverte.",
         "Le vent pousse la fumée vers le nord. Elle couvre le fond du village. Sur la route de l'ouest, des gens courent vers les hêtres. Deux orcs les suivent.",
         "J'ai mon arc. Ça ne suffit pas.",
       ].join("\n\n"),
@@ -121,7 +121,7 @@ export const storylets = {
           {
             si: [],
             reussite: true,
-            texte: "Le marteau est par terre, devant l'enclume. La porte de derrière est ouverte. Pas de sang. Personne. Mathieu n'est pas là. La chaleur me chasse avant que je puisse crier son nom. Je ressors par le jardin. Le bois de l'ouest commence là.",
+            texte: "Le marteau est par terre, devant l'enclume. La porte de derrière est ouverte. Pas de sang. Personne. Mathias n'est pas là. La chaleur me chasse avant que je puisse crier son nom. Je ressors par le jardin. Le bois de l'ouest commence là.",
             effets: [
               { sante_heros: -6 },
               { pnj_statut: { id: "PNJ-F1", valeur: "disparu" } },
@@ -135,7 +135,7 @@ export const storylets = {
       },
       {
         id: "B",
-        libelle: "Monter aux maisons du haut, chez Joé",
+        libelle: "Monter aux maisons du haut, chez Jonas",
         cout: { segments: 1, fatigue: 10 },
         epuisable: false,
         observation: false,
@@ -145,7 +145,7 @@ export const storylets = {
           {
             si: [],
             reussite: true,
-            texte: "La porte bat. Le feu n'est pas monté jusqu'ici. Le lit est défait, le coffre ouvert, son arbalète n'y est plus. Joé est parti avec. Je ne sais pas quand. En bas, ça monte vers moi. Je sors par-derrière. Les hêtres sont à cinquante pas.",
+            texte: "La porte bat. Le feu n'est pas monté jusqu'ici. Le lit est défait, le coffre ouvert, son arbalète n'y est plus. Jonas est parti avec. Je ne sais pas quand. En bas, ça monte vers moi. Je sors par-derrière. Les hêtres sont à cinquante pas.",
             effets: [
               { pnj_statut: { id: "PNJ-F2", valeur: "disparu" } },
               { flag: "f_ouv_maison" },
@@ -224,9 +224,9 @@ export const storylets = {
 
 export const journal = {
   ouv_forge:
-    "La forge était vide et le marteau par terre. Mathieu n'y était pas.",
+    "La forge était vide et le marteau par terre. Mathias n'y était pas.",
   ouv_maison:
-    "Le coffre de Joé était ouvert et son arbalète n'y était plus. Il était parti avant moi.",
+    "Le coffre de Jonas était ouvert et son arbalète n'y était plus. Il était parti avant moi.",
   ouv_fleches:
     "J'ai tiré du talus sur ceux qui suivaient la route, pour que les autres atteignent les hêtres.",
   ouv_ouest:

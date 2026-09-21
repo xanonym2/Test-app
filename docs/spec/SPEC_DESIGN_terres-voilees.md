@@ -342,6 +342,17 @@ Le héros ne meurt jamais. Mais l'issue d'un échec **dépend de l'adversaire**,
 
 > **Règle :** l'échec ne tue pas, mais il doit coûter assez pour ne jamais devenir une porte de sortie gratuite. Un échec indolore annule tout le système de risque.
 
+**Ce que « le héros ne meurt jamais » veut dire exactement** *(clarifié le 21/09/2026)*. Cette section gouverne **l'échec face à un adversaire** : perdre une confrontation ne tue pas, elle prend — du temps, de l'équipement, de la santé, une information. C'est compatible avec la permadeath de §2.5 et la « parfois une mort » de §2.6 bis, qui parlent de la **fin d'un run**.
+
+| Ce qui peut finir un run | Ce qui ne le peut pas |
+|---|---|
+| L'attrition — faim, fatigue, soif, blessures négligées | Perdre un combat ou une confrontation |
+| Les choix du joueur, écrits par le contenu | Un tirage au sort (§4, règle 9) |
+
+**Autrement dit : l'adversaire ne tue jamais, la négligence si.** C'est ce qui donne un enjeu réel à la couche de survie — sans elle, rien ne pourrait terminer un run, et la permadeath serait décorative.
+
+**État du moteur.** La v3 n'a aucun état de défaite : un combat s'y résout par branches, il n'existe pas de « tu as perdu ». Les issues différenciées du tableau ci-dessus s'implémentent donc avec la **couche tactique** (étape 4), pas avant. La fin `FIN-MORT` de la v3 est une mort d'attrition et reste conforme.
+
 **Exception — l'ouverture :** aucune mort ni capture n'est possible pendant la razzia. Une situation critique déclenche une **fuite forcée**, et le joueur repart avec un départ appauvri (moins de ressources, blessure, aucune information). La scène enseigne, elle ne punit pas.
 
 ---
@@ -1516,7 +1527,7 @@ Toute nouvelle scène, tout nouveau contenu doit passer ces tests :
 
 ## 15. Questions ouvertes — ne pas trancher sans arbitrage
 
-1. **Calibrage chiffré** — PV, dégâts, courbes de niveau, coûts de fatigue et de faim, rythme de la soif, seuils de badges. Aucune valeur n'est arrêtée.
+1. **Calibrage chiffré** — PV, dégâts, courbes de niveau, coûts de fatigue et de faim, seuils de badges. Aucune valeur n'est arrêtée. *(Le rythme de la soif, lui, est arrêté depuis le 21/09/2026 : `engine/schema.js`, `SEUIL_SOIF`.)*
 2. **Nombre de zones et de POI par chapitre** — l'estimation de §8.10 (25-35 POI accessibles) est provisoire et doit être validée en test.
 3. **Calibrage du budget `danger:N`** (§9.5) — les ordres de grandeur proposés sont provisoires.
 4. **Volume cible de storylets** par pool et par zone.
@@ -1597,3 +1608,5 @@ Toute nouvelle scène, tout nouveau contenu doit passer ces tests :
 | 21/09/2026 | Trois paliers obligatoires sur les scènes majeures et les jalons seulement ; deux issues distinctes ailleurs |
 | 21/09/2026 | La soif n'est pas une jauge : l'eau est un objet, la soif un état (modèle v3) |
 | 21/09/2026 | Épargner ne coûte jamais d'expérience : XP par unité mise hors de combat, pas par unité tuée |
+| 21/09/2026 | Rythme de la soif arrêté : état dérivé de 12 segments sans boire, coût en fatigue, jamais en santé |
+| 21/09/2026 | Mort du héros clarifiée : un adversaire ne tue jamais (§4.5), seule l'attrition finit un run (§2.5) |

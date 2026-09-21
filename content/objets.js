@@ -194,7 +194,7 @@ export const objets = {
     protection: null,
     empilable: false,
     usable: true,
-    description: "Elle ouvre les descentes de dévers et les passages qu'on devrait sinon contourner.",
+    description: "Elle ouvre les descentes de talus et les passages qu'on devrait sinon contourner.",
   },
 
   "OBJ-15": {

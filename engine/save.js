@@ -1,25 +1,10 @@
 // Sauvegarde versionnée. Règle non négociable n°2 : versionner dès le jour 1.
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { VERSION_SAUVEGARDE } from './schema.js';
+import { migrer } from './migrations.js';
 
 const CLE = 'vdg:partie';
 const CLE_REGLAGES = 'vdg:reglages';
-
-// Chaîne de migrations : migrations[n] transforme une sauvegarde v(n) en v(n+1).
-const migrations = {
-  // 1: (etat) => { ...etat, nouveauChamp: valeur }
-};
-
-export function migrer(paquet) {
-  let { version, etat } = paquet;
-  while (version < VERSION_SAUVEGARDE) {
-    const m = migrations[version];
-    if (!m) return null; // migration manquante : sauvegarde inutilisable
-    etat = m(etat);
-    version += 1;
-  }
-  return etat;
-}
 
 export async function sauvegarder(etat) {
   try {
@@ -36,8 +21,6 @@ export async function charger() {
     const brut = await AsyncStorage.getItem(CLE);
     if (!brut) return null;
     const paquet = JSON.parse(brut);
-    if (typeof paquet.version !== 'number') return null;
-    if (paquet.version > VERSION_SAUVEGARDE) return null; // sauvegarde plus récente que le binaire
     return migrer(paquet);
   } catch (e) {
     return null;

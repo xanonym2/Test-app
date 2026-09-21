@@ -1,5 +1,5 @@
 // Valeurs dérivées. Règle non négociable n°3 : ne jamais stocker ce qui se calcule.
-import { PALIERS_USURE, SEUILS_XP, NIVEAU_MAX, SEUILS } from './schema.js';
+import { PALIERS_USURE, SEUILS_XP, NIVEAU_MAX, SEUILS, SEUIL_SOIF } from './schema.js';
 import { getDb } from './db.js';
 
 export function santeMax(stats) {
@@ -112,11 +112,31 @@ export function etatsAutomatiques(heros) {
   const out = [];
   if (heros.faim >= SEUILS.affame) out.push('affame');
   if (heros.fatigue >= SEUILS.epuise) out.push('epuise');
+  if ((heros.segments_sans_boire ?? 0) >= SEUIL_SOIF) out.push('assoiffe');
   return out;
 }
 
 export function tousLesEtats(heros) {
   return Array.from(new Set([...(heros.etats ?? []), ...etatsAutomatiques(heros)]));
+}
+
+// Réserve d'eau : l'eau est un objet, le contenant en fixe le plafond.
+export function reserveEau(E) {
+  const db = getDb();
+  // L'eau se reconnaît à ce qu'elle fait — boire désaltère — et le contenant
+  // à ce qu'il déclare. Le moteur n'a donc aucun identifiant de contenu écrit.
+  const idEau = Object.keys(db.objets).find((k) =>
+    (db.objets[k].effets_consommation ?? []).some((e) => e.retire_etat === 'assoiffe'));
+  const idContenant = Object.keys(db.objets).find((k) => db.objets[k].capacite_eau !== undefined);
+  const portee = E.inventaire
+    .filter((i) => i.base === idEau)
+    .reduce((s2, i) => s2 + (i.quantite ?? 1), 0);
+  const contenant = E.inventaire.some((i) => i.base === idContenant);
+  return {
+    portee,
+    capacite: contenant ? (db.objets[idContenant]?.capacite_eau ?? 0) : 0,
+    contenant,
+  };
 }
 
 // Pénalité globale appliquée aux jets d'action.
@@ -128,6 +148,7 @@ export function penaliteEtats(heros) {
   if (e.includes('blesse_jambe')) p += 1;
   if (e.includes('epuise')) p += 2;
   if (e.includes('affame')) p += 1;
+  if (e.includes('assoiffe')) p += 1;
   return p;
 }
 

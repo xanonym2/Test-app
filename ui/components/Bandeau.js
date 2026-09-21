@@ -3,7 +3,7 @@ import { View, Text, Pressable } from 'react-native';
 import { T, ESP, TYPO } from '../theme.js';
 import { Jauge } from './Base.js';
 import { getDb } from '../../engine/db.js';
-import { santeMax, tousLesEtats, encombrement } from '../../engine/derive.js';
+import { santeMax, tousLesEtats, encombrement, reserveEau } from '../../engine/derive.js';
 
 function Mini({ nom, valeur, max, couleur, inverse }) {
   return (
@@ -24,6 +24,8 @@ export function Bandeau({ E, onEtats }) {
   const etats = tousLesEtats(E.heros);
   const enc = encombrement(E);
   const meteo = db.meteo.table.find((m) => m.id === E.temps.meteo);
+  const eau = reserveEau(E);
+  const aSoif = etats.includes('assoiffe');
 
   return (
     <View style={{ backgroundColor: T.fond2, borderBottomWidth: 1, borderBottomColor: T.bord, paddingHorizontal: ESP.lg, paddingTop: ESP.sm, paddingBottom: ESP.sm }}>
@@ -36,8 +38,13 @@ export function Bandeau({ E, onEtats }) {
         <Text style={[TYPO.minuscule, { marginHorizontal: 6 }]}>·</Text>
         <Text style={TYPO.minuscule}>{meteo?.nom ?? ''}</Text>
         <View style={{ flex: 1 }} />
+        {eau.contenant ? (
+          <Text style={[TYPO.minuscule, { color: aSoif ? T.danger : eau.portee === 0 ? T.faim : T.texteDoux }]}>
+            {'EAU ' + eau.portee + '/' + eau.capacite}
+          </Text>
+        ) : null}
         {enc.surcharge ? (
-          <Text style={[TYPO.minuscule, { color: T.danger }]}>SURCHARGE</Text>
+          <Text style={[TYPO.minuscule, { color: T.danger, marginLeft: 8 }]}>SURCHARGE</Text>
         ) : null}
       </View>
 

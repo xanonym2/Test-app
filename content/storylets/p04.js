@@ -1,9 +1,9 @@
-// P04 — Le Layon. Système enseigné : le risque, l'échec, la confiance.
+// P04 — Le Sentier coupé. Système enseigné : le risque, l'échec, la confiance.
 
 export const storylets = {
   "ST-P04-01": {
     id: "ST-P04-01",
-    titre_travail: "Layon — la coulée",
+    titre_travail: "Sentier coupé — la coulée",
     lieu: { type: "point_interet", cible: "P04" },
     conditions: { requis: [], interdit: [] },
     unique: true,
@@ -13,7 +13,7 @@ export const storylets = {
     etat_local_initial: { lu: false, bu: false },
     texte: {
       arrivee:
-        "Le layon monte droit, puis la pente a lâché. La terre est partie sur vingt pas, jusqu'au lit du ruisseau ; en bas, il est à sec, plein de pierres claires. Le dévers est de l'argile dure comme une tuile, et rien n'y tient. Un hêtre mort est tombé en travers ; le vent remonte le layon et le fait bouger par rafales.",
+        "Le sentier monte droit, puis la pente a lâché. La terre est partie sur vingt pas, jusqu'au lit du ruisseau ; en bas, il est à sec, plein de pierres claires. Le talus est de l'argile dure comme une tuile, et rien n'y tient. Un hêtre mort est tombé en travers ; le vent remonte le sentier et le fait bouger par rafales.",
       base:
         "La coulée n'a pas bougé. Argile dure, le hêtre mort en travers, le vent qui remonte par rafales. En bas, les pierres claires du ruisseau à sec.",
       variantes: [
@@ -72,7 +72,7 @@ export const storylets = {
       },
       {
         id: "C",
-        libelle: "Traverser le dévers en biais, à plat sur l'argile",
+        libelle: "Traverser le talus en biais, à plat sur l'argile",
         cout: { segments: 1 },
         modif_proba: [
           { si: [["stat>=", "adresse", 4]], valeur: 15 },
@@ -210,7 +210,7 @@ export const storylets = {
           {
             si: [],
             texte:
-              "Le boyau est froid et sent la racine coupée. À plat ventre sur toute la longueur, coudes et genoux. Il ressort derrière la coulée, là où le layon redevient un layon.",
+              "Le boyau est froid et sent la racine coupée. À plat ventre sur toute la longueur, coudes et genoux. Il ressort derrière la coulée, là où le sentier redevient un sentier.",
             effets: [
               { fatigue: 15 },
               { flag: "f_layon_evite" },
@@ -242,7 +242,7 @@ export const storylets = {
 
   "ST-P04-02": {
     id: "ST-P04-02",
-    titre_travail: "Layon — après la coulée",
+    titre_travail: "Sentier coupé — après la coulée",
     lieu: { type: "point_interet", cible: "P04" },
     conditions: {
       requis: [
@@ -262,9 +262,9 @@ export const storylets = {
     etat_local_initial: { vu_jambe: false, trace_lue: false },
     texte: {
       arrivee:
-        "Passé la coulée, le layon redevient plat. Dans la poussière, des pieds nus et un bâton traîné : un groupe est monté vers le nord, il y a moins d'un jour. Ils marchaient serré et lentement, et ils se sont arrêtés souvent. Une outre crevée a été jetée au bord, encore humide à l'intérieur.",
+        "Passé la coulée, le sentier redevient plat. Dans la poussière, des pieds nus et un bâton traîné : un groupe est monté vers le nord, il y a moins d'un jour. Ils marchaient serré et lentement, et ils se sont arrêtés souvent. Une outre crevée a été jetée au bord, encore humide à l'intérieur.",
       base:
-        "Le layon est plat, ici. Les pieds nus vont toujours vers le nord. L'outre crevée sèche au bord du passage.",
+        "Le sentier est plat, ici. Les pieds nus vont toujours vers le nord. L'outre crevée sèche au bord du passage.",
       variantes: [
         {
           si: [["etat", "blesse_jambe"]],
@@ -419,7 +419,7 @@ export const storylets = {
 };
 
 export const journal = {
-  layon_passe: "Il a franchi la coulée du layon par ses propres moyens.",
-  layon_chute: "L'argile du layon a lâché sous lui ; il est tombé jusqu'aux pierres du ruisseau.",
+  layon_passe: "Il a franchi la coulée du sentier par ses propres moyens.",
+  layon_chute: "L'argile du sentier a lâché sous lui ; il est tombé jusqu'aux pierres du ruisseau.",
   layon_force: "Il est reparti sur une jambe qui ne portait plus, sans attendre.",
 };

@@ -24,6 +24,7 @@ export function etatVierge(seed) {
       sante: santeMax(stats),
       fatigue: 10,
       faim: 15,
+      segments_sans_boire: 0,
       etats: [],
     },
     inventaire: [],

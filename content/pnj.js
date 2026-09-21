@@ -73,7 +73,7 @@ export const pnj = {
 
   "PNJ-F1": {
     id: "PNJ-F1",
-    nom: "Mathieu",
+    nom: "Mathias",
     minimal: true,
     statut_initial: "disparu",
     note: "Ton frère, vingt ans, forgeron du village. Personne ne l'a vu depuis l'attaque.",
@@ -81,7 +81,7 @@ export const pnj = {
 
   "PNJ-F2": {
     id: "PNJ-F2",
-    nom: "Joé",
+    nom: "Jonas",
     minimal: true,
     statut_initial: "disparu",
     note: "Ton frère aîné, vingt-huit ans. Parti avant l'attaque, sans nouvelles depuis.",

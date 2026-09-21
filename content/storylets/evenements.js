@@ -131,7 +131,7 @@ export const storylets = {
 
   "ST-EVT-02": {
     id: "ST-EVT-02",
-    titre_travail: "Nuit — le dévers et le sapin mort",
+    titre_travail: "Nuit — le talus et le sapin mort",
     lieu: { type: "partout" },
     conditions: { requis: [["segment>=", 5]], interdit: [] },
     unique: false,
@@ -141,7 +141,7 @@ export const storylets = {
     etat_local_initial: { feu: 0 },
     texte: {
       arrivee:
-        "La roche du dévers a pris le soleil toute la journée. Elle en rend encore un peu au creux, à hauteur d'épaule. Trois pas plus loin, un sapin mort : les branches basses sont sèches et cassent net. Le vent descend de la vallée et il ne tombera pas avant le jour.",
+        "La roche du talus a pris le soleil toute la journée. Elle en rend encore un peu au creux, à hauteur d'épaule. Trois pas plus loin, un sapin mort : les branches basses sont sèches et cassent net. Le vent descend de la vallée et il ne tombera pas avant le jour.",
       base:
         "La roche garde un peu de chaleur au creux. Le sapin mort donne ses branches basses. Le vent descend toujours.",
       variantes: [
@@ -153,7 +153,7 @@ export const storylets = {
         {
           si: [["meteo", "pluie"]],
           ajout:
-            "La pluie entre en biais sous le dévers. Le bois mort boit tout ce qui tombe.",
+            "La pluie entre en biais sous le talus. Le bois mort boit tout ce qui tombe.",
         },
         {
           si: [["local", "feu"]],

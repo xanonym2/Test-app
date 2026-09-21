@@ -1,7 +1,7 @@
 // Constantes de règles. Aucun texte narratif : uniquement des identifiants,
 // des seuils et des barèmes. Les libellés affichables vivent dans /content.
 
-export const VERSION_SAUVEGARDE = 1;
+export const VERSION_SAUVEGARDE = 2;
 
 export const STATS = ['vigueur', 'adresse', 'perception', 'sangfroid'];
 
@@ -54,10 +54,17 @@ export const COUT_SEGMENT = { fatigue: 6, faim: 5 };
 export const SEGMENTS_NUIT = [5, 6];
 export const MALUS_NUIT_FATIGUE = 4;
 
+// La soif n'est pas une jauge : c'est un état, dérivé du temps écoulé depuis
+// le dernier verre. Calibré sur « un run type demande 3 gourdes »
+// (SPEC_EQUILIBRAGE §5 bis) : 12 segments = deux jours de jeu.
+export const SEUIL_SOIF = 12;
+export const MALUS_SOIF_FATIGUE = 2;
+
 // Seuils de bascule d'état automatique.
 export const SEUILS = {
   affame: 70,
   epuise: 75,
+  assoiffe: SEUIL_SOIF,
   fatigue_max: 100,
   faim_max: 100,
 };
@@ -79,6 +86,7 @@ export const STATS_PARTIE_INITIALES = {
   objets_repares: 0,
   repas_pris: 0,
   eau_partagee: 0,
+  gorgees_bues: 0,
   compagnons_recrutes: 0,
   compagnons_perdus: 0,
   pnj_morts: 0,

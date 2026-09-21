@@ -88,12 +88,19 @@ s'ajoute à côté, par de nouveaux départs, jusqu'à ce que Tom décide de la 
 
 ### Questions ouvertes — ne pas trancher seul
 
-- **La mort du héros.** Dans `SPEC_DESIGN`, la section « États d'échec — le héros
-  ne meurt pas » dit qu'il ne meurt jamais (capture, laissé pour mort) ; les §2.4
-  et §2.5 parlent de sa mort ; la v3 a une fin `FIN-MORT`. Sans effet sur les
-  étapes 1 et 2 — la razzia ne peut pas tuer. À trancher par Tom avant l'étape 3.
-- **La famille Ancel** (chaîne C de la razzia) : inventée, jamais validée. Notée
-  « à valider » au canon.
+*Aucune en attente.* Les trois dernières ont été tranchées le 21/09/2026 :
+
+- **La mort du héros** → `SPEC_DESIGN` §4.5. **L'adversaire ne tue jamais, la
+  négligence si.** §4.5 gouverne l'échec face à un adversaire — perdre une
+  confrontation prend du temps, de l'équipement, de la santé, jamais la vie.
+  §2.5 et §2.6 bis parlent de la fin d'un run, que seule l'attrition provoque.
+  Rien à implémenter avant la couche tactique : le moteur v3 n'a aucun état de
+  défaite. `FIN-MORT` est une mort d'attrition et reste conforme.
+- **Le rythme de la soif** → contrat §6 (M15) et `engine/schema.js`. État dérivé
+  de 12 segments sans boire, payé en fatigue, jamais en santé.
+- **La famille Ancel** → validée au canon. Elle situe Jonas au matin de la
+  razzia et ouvre la chaîne C ; elle ne porte ni faction, ni secret, ni lien
+  avec les retournements, et c'est ce qui la rend sans risque.
 
 ---
 
@@ -104,7 +111,7 @@ s'ajoute à côté, par de nouveaux départs, jusqu'à ce que Tom décide de la 
 | Runtime | React Native 0.86.3 + React 19.2.3 |
 | Framework | Expo SDK 57 (managed, prebuild) |
 | Moteur JS | Hermes, bundle ~1,8 Mo |
-| Persistance | `@react-native-async-storage/async-storage` 3.1.1 (localStorage sur le web) |
+| Persistance | `@react-native-async-storage/async-storage` 3.1.1 (localStorage sur le web) · sauvegarde **v2** |
 | Build Android | Gradle via GitHub Actions · EAS profil `preview` en secours |
 | Web | Export statique Expo, hébergé — mis en place à l'étape 1 |
 | Langage | JavaScript ES modules. Pas de TypeScript. |
@@ -161,7 +168,8 @@ engine/                   ── LE MOTEUR ── ~1 480 lignes, zéro texte nar
   progression.js            points de stat, compétences à groupes exclusifs
   badges.js                 évaluation des badges + bilan de fin
   game.js                   création de partie, carte, voyage, orchestration
-  save.js                   sauvegarde versionnée + chaîne de migrations
+  save.js                   sauvegarde versionnée (stockage)
+  migrations.js             la chaîne de migrations, isolée pour être testable
 
 content/                  ── LES DONNÉES ── ~5 000 lignes
   CONTRAT.md                les règles de contenu — fait autorité
@@ -169,9 +177,10 @@ content/                  ── LES DONNÉES ── ~5 000 lignes
   index.js                  assemblage + injection dans le moteur
   meta.js points.js meteo.js pression.js voyage.js
   objets.js modificateurs.js creatures.js pnj.js
-  competences.js badges.js departs.js mutateurs.js journal.js
+  competences.js badges.js departs.js mutateurs.js
   libelles.js               tous les mots de l'UI qui ne sont pas de la narration
   storylets/                ouverture · p01..p06 · combat · evenements
+                            chaque fichier exporte aussi ses clés de journal
 
 ui/                       ── L'INTERFACE ── ~1 475 lignes
   theme.js                  palette sobre, espacements, typographie
@@ -214,24 +223,23 @@ rapports de lot.
 
 ### État de référence (à ne pas dégrader)
 
-Remesuré à la fin de l'étape 1.
+Remesuré après la passe de cohérence du 21/09/2026.
 
 ```
-bloquants : 0 | à revoir : 46 | parties OK : 30 / 30 (crashs : 0)
+bloquants : 0 | à revoir : 0 | parties OK : 30 / 30 (crashs : 0)
 garde-fou « l'aléatoire ne tue jamais » : conforme
+soif : seuil 12 segments, conforme · mort d'attrition en voyage : conforme
+sauvegarde v2 : chaîne de migration conforme
 jours moy 8,0 · niveau moy 6,2 · 2,9 compétences prises · 2,9 groupes fermés
-scènes vues 16,2 / 22 · points visités 4,7 / 6 · savoir 1,5 / 3
+scènes vues 16,1 / 22 · points visités 4,7 / 6 · savoir 1,6 / 3
+gorgées bues 2,6 · plus long jeûne 16,5 segments
 survie qui mord : 16 / 30 · 5 fins distinctes + la mort
 ```
 
-**Ce qui a changé depuis la mesure v3 : les « à revoir » passent de 0 à 46.**
-Aucune dégradation du contenu — ce sont les sept contrôles ajoutés à l'étape 1
-qui voient enfin l'héritage v1. Trois familles, détaillées dans
-`docs/RELEVE.md` §7 : noms périmés (9), mots rares (28, deux mots seulement —
-`layon` et `dévers`), indice et entrée de journal sur la même issue (9). Les
-chiffres de jeu sont inchangés : le garde-fou de la règle 9 ne modifie aucune
-partie automatique, parce qu'aucune issue tirée du contenu v1 n'amenait le
-héros sous 1.
+**Les 46 « à revoir » sont résorbés** — noms périmés, mots rares et co-occurrence
+indice/journal. Détail et traitement dans `docs/RELEVE.md` §7. Les chiffres de
+jeu n'ont pas bougé : la soif ajoute une pression réelle sans déplacer
+l'équilibre, et le robot boit comme le ferait un joueur prévenu.
 
 ### Les ratios à surveiller
 

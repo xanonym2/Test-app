@@ -351,7 +351,6 @@ export const storylets = {
               { connaissance_sortilege: "+1" },
               { flag: "f_indice_3" },
               { pnj_statut: { id: "PNJ-V1", valeur: "cite" } },
-              { journal: "p06_tableau", majeure: true },
               { xp: 30 },
             ],
           },
@@ -363,7 +362,6 @@ export const storylets = {
               { connaissance_sortilege: "+1" },
               { flag: "f_indice_3" },
               { pnj_statut: { id: "PNJ-V1", valeur: "cite" } },
-              { journal: "p06_tableau", majeure: true },
               { xp: 25 },
             ],
           },
@@ -459,5 +457,4 @@ export const storylets = {
 export const journal = {
   p06_arsenal: "Au vieux poste, il a pris sur les murs ce que la Couronne y avait laissé.",
   p06_reparation: "Il a remis son arme en état sur la meule du vieux poste.",
-  p06_tableau: "Le tableau des tours du vieux poste donnait la moitié de la garnison partie vers l'est, trois semaines avant l'attaque.",
 };

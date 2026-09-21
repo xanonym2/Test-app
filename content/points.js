@@ -38,13 +38,13 @@ export const points = {
 
   "P04": {
     id: "P04",
-    nom: "Le Layon",
-    nom_court: "Layon",
+    nom: "Le Sentier Coupé",
+    nom_court: "Sentier coupé",
     zone: "Z01",
     type_lieu: "sentier",
     territoire: "bois",
     voisins: { P01: 2, P03: 1, P05: 1 },
-    note_carte: "Un sentier de débardage qui coupe par le dévers : c'est plus court, et le sol lâche.",
+    note_carte: "Un sentier de débardage qui coupe par le talus : c'est plus court, et le sol lâche.",
   },
 
   "P05": {

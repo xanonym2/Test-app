@@ -251,7 +251,6 @@ export const storylets = {
               { local: "rien_pris", "=": true },
               { connaissance_sortilege: "+1" },
               { flag: "f_indice_2" },
-              { journal: "ferme_rien_pris" },
               { xp: 25 },
             ],
           },
@@ -523,8 +522,6 @@ export const storylets = {
 };
 
 export const journal = {
-  ferme_rien_pris:
-    "À la ferme, les bêtes avaient été tuées et le sel était resté sur l'étagère.",
   ferme_bete_evitee:
     "Quelque chose rôdait autour de la ferme ; je l'ai laissé passer sans me montrer.",
 };

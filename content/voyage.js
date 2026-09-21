@@ -8,7 +8,7 @@ export const voyage = {
   // transition dirigée ne correspond.
   generiques: [
     "Le sentier monte en pente douce sous les hêtres. Le vent vient de face : ce qui est devant ne t'a pas encore senti.",
-    "Tu coupes par un vieux layon. Les ronces ont repris le milieu du passage, personne n'est venu par là depuis des semaines.",
+    "Tu coupes par un vieux sentier. Les ronces ont repris le milieu du passage, personne n'est venu par là depuis des semaines.",
     "Un geai crie deux fois plus loin, puis se tait. Tu attends que les bruits reprennent avant de repartir.",
     "La terre laisse place à la pierre et tes pas se mettent à sonner. Tu poses les talons plus doucement.",
     "Des traces de chevreuil coupent le chemin, nettes, de ce matin. Rien ne les a suivies.",
@@ -19,7 +19,7 @@ export const voyage = {
   conditionnelles: [
     {
       si: [["meteo", "pluie"]],
-      texte: "La pluie tombe droit et colle la chemise au dos. Le chemin tourne en boue et le pied part à chaque dévers.",
+      texte: "La pluie tombe droit et colle la chemise au dos. Le chemin tourne en boue et le pied part à chaque talus.",
     },
     {
       si: [["etat", "blesse_jambe"]],

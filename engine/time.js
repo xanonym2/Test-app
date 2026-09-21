@@ -1,5 +1,5 @@
 // Temps, météo, pression de fond.
-import { SEGMENTS_PAR_JOUR, COUT_SEGMENT, SEGMENTS_NUIT, MALUS_NUIT_FATIGUE, SEUILS } from './schema.js';
+import { SEGMENTS_PAR_JOUR, COUT_SEGMENT, SEGMENTS_NUIT, MALUS_NUIT_FATIGUE, MALUS_SOIF_FATIGUE, SEUIL_SOIF, SEUILS } from './schema.js';
 import { choixPondere } from './rng.js';
 import { getDb } from './db.js';
 import { perimer } from './items.js';
@@ -28,7 +28,10 @@ export function avancerSegments(E, n) {
   let restant = Math.max(0, Math.round(n));
   while (restant > 0) {
     const nuit = SEGMENTS_NUIT.includes(E.temps.segment);
-    E.heros.fatigue = Math.min(SEUILS.fatigue_max, E.heros.fatigue + COUT_SEGMENT.fatigue + (nuit ? MALUS_NUIT_FATIGUE : 0));
+    // La soif se paie en effort, pas en santé : elle alourdit chaque segment.
+    E.heros.segments_sans_boire = (E.heros.segments_sans_boire ?? 0) + 1;
+    const soif = E.heros.segments_sans_boire >= SEUIL_SOIF ? MALUS_SOIF_FATIGUE : 0;
+    E.heros.fatigue = Math.min(SEUILS.fatigue_max, E.heros.fatigue + COUT_SEGMENT.fatigue + (nuit ? MALUS_NUIT_FATIGUE : 0) + soif);
     E.heros.faim = Math.min(SEUILS.faim_max, E.heros.faim + COUT_SEGMENT.faim);
     E.stats_partie.segments_ecoules += 1;
 

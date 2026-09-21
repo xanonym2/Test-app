@@ -49,7 +49,7 @@ export const creatures = {
 
   "CRE-06": {
     id: "CRE-06",
-    nom: "Ours de dévers",
+    nom: "Ours des pentes",
     type: "bete",
     pv: 34,
     degats: 12,
