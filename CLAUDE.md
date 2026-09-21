@@ -214,14 +214,24 @@ rapports de lot.
 
 ### État de référence (à ne pas dégrader)
 
-Mesuré sur la v3. Remesuré à la fin de l'étape 1, puis réécrit ici.
+Remesuré à la fin de l'étape 1.
 
 ```
-bloquants : 0 | à revoir : 0 | parties OK : 30 / 30 (crashs : 0)
+bloquants : 0 | à revoir : 46 | parties OK : 30 / 30 (crashs : 0)
+garde-fou « l'aléatoire ne tue jamais » : conforme
 jours moy 8,0 · niveau moy 6,2 · 2,9 compétences prises · 2,9 groupes fermés
 scènes vues 16,2 / 22 · points visités 4,7 / 6 · savoir 1,5 / 3
 survie qui mord : 16 / 30 · 5 fins distinctes + la mort
 ```
+
+**Ce qui a changé depuis la mesure v3 : les « à revoir » passent de 0 à 46.**
+Aucune dégradation du contenu — ce sont les sept contrôles ajoutés à l'étape 1
+qui voient enfin l'héritage v1. Trois familles, détaillées dans
+`docs/RELEVE.md` §7 : noms périmés (9), mots rares (28, deux mots seulement —
+`layon` et `dévers`), indice et entrée de journal sur la même issue (9). Les
+chiffres de jeu sont inchangés : le garde-fou de la règle 9 ne modifie aucune
+partie automatique, parce qu'aucune issue tirée du contenu v1 n'amenait le
+héros sous 1.
 
 ### Les ratios à surveiller
 
