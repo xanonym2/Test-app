@@ -96,6 +96,110 @@ function verifStyle(id, ou, texte, maxMots) {
   if (/\b\d+\s*(pv|points? de vie|%|xp)\b/i.test(texte)) note(1, id, 'texte_qui_calcule', ou);
 }
 
+
+// ---------------------------------------------------------------- étape 1
+// Contrôles ajoutés par docs/PRODUCTION.md §6. Gravité : bloquant sur tout
+// storylet nouveau, « à revoir » sur l'héritage v1 — la v3 doit continuer à se
+// construire. Les mots sensibles restent « à revoir » partout : un mot n'est
+// pas une faute, c'est son usage comme explication qui l'est.
+const HERITAGE = /^ST-(OUV|P0[1-6]|CBT|EVT|FIN)/;
+const LETTRE = 'A-Za-zÀ-ÖØ-öø-ÿ';
+const motif = (m) => new RegExp(`(?<![${LETTRE}])${m}e?s?(?![${LETTRE}])`, 'iu');
+
+const LEXIQUES = [
+  { type: 'mot_rare', dur: true, mots: ['dévers', 'layon', 'combe', 'gibet', 'nef', 'cloître'] },
+  { type: 'lexique_chretien', dur: true, mots: ['église', 'chapelle', 'cierge', 'messe', 'prêtre', 'saint', 'abbaye'] },
+  { type: 'nom_perime', dur: true, mots: ['Mathieu', 'Joé', 'Matt', 'Joe'] },
+  { type: 'mot_sensible', dur: false, mots: ['sortilège', 'emprise', 'ensorcelé', 'magie'] },
+];
+
+const estIndice = (e) =>
+  e.connaissance_sortilege !== undefined ||
+  (typeof e.flag === 'string' && e.flag.startsWith('f_indice'));
+
+function verifLexique(id, ou, texte, dur) {
+  if (!texte) return;
+  for (const L of LEXIQUES) {
+    for (const m of L.mots) {
+      if (motif(m).test(texte)) note(L.dur && dur ? 1 : 0, id, L.type, ou + ':' + m);
+    }
+  }
+}
+
+function textesStorylet(s) {
+  const out = [];
+  if (s.texte?.arrivee) out.push(['arrivee', s.texte.arrivee]);
+  if (s.texte?.base) out.push(['base', s.texte.base]);
+  (s.texte?.variantes ?? []).forEach((v, i) => {
+    if (v.ajout) out.push(['variante' + i, v.ajout]);
+    if (v.remplace) out.push(['variante' + i, v.remplace]);
+  });
+  (s.regles_locales ?? []).forEach((r, i) =>
+    (r.alors ?? []).forEach((a) => { if (a.texte_force) out.push(['regle' + i, a.texte_force]); }));
+  (s.options ?? []).forEach((o) => {
+    if (o.libelle) out.push(['opt' + o.id, o.libelle]);
+    (o.issues ?? []).forEach((x, i) => { if (x.texte) out.push(['issue' + o.id + i, x.texte]); });
+  });
+  return out;
+}
+
+function verifEtape1(id, s) {
+  const dur = !HERITAGE.test(id);
+
+  for (const [ou, texte] of textesStorylet(s)) verifLexique(id, ou, texte, dur);
+
+  // Un storylet recombinable est rejouable n'importe où : il ne peut pas porter
+  // un indice, qui doit tomber une fois et à un endroit précis.
+  const recombinable = s.lieu?.type !== 'point_interet' && s.lieu?.type !== 'declenche_uniquement';
+
+  for (const o of s.options ?? []) {
+    const issues = o.issues ?? [];
+    const tirable = issues.some((x) => x.probabilite !== undefined);
+
+    for (const [i, x] of issues.entries()) {
+      const effets = x.effets ?? [];
+      const ou = 'opt' + o.id + ':' + i;
+
+      if (x.probabilite !== undefined) {
+        for (const e of effets) {
+          if (e.retire_compagnon !== undefined) note(dur ? 1 : 0, id, 'issue_tiree_letale', ou + ':retire_compagnon');
+          if (e.fin !== undefined) note(dur ? 1 : 0, id, 'issue_tiree_letale', ou + ':fin');
+        }
+      }
+      if (effets.some(estIndice) && effets.some((e) => e.journal !== undefined)) {
+        note(dur ? 1 : 0, id, 'indice_et_journal', ou);
+      }
+      if (recombinable && effets.some(estIndice)) {
+        note(dur ? 1 : 0, id, 'indice_dans_recombinable', ou);
+      }
+    }
+
+    if (s.majeur && tirable && !issues.some((x) => x.partielle)) {
+      note(dur ? 1 : 0, id, 'majeur_sans_issue_partielle', o.id);
+    }
+  }
+}
+
+// Le lexique vaut aussi hors storylets : les noms périmés vivent dans pnj.js.
+function chainesDe(valeur, chemin, out) {
+  if (typeof valeur === 'string') out.push([chemin, valeur]);
+  else if (Array.isArray(valeur)) valeur.forEach((v, i) => chainesDe(v, chemin + '[' + i + ']', out));
+  else if (valeur && typeof valeur === 'object') {
+    for (const [k, v] of Object.entries(valeur)) chainesDe(v, chemin ? chemin + '.' + k : k, out);
+  }
+  return out;
+}
+
+function verifLexiqueDonnees() {
+  for (const [section, contenu] of Object.entries(db)) {
+    if (section === 'storylets') continue;
+    for (const [chemin, texte] of chainesDe(contenu, '', [])) {
+      // Les données v1 sont de l'héritage : « à revoir », jamais bloquant.
+      verifLexique(section, chemin, texte, false);
+    }
+  }
+}
+
 let bilanVierge;
 
 function verifier() {
@@ -162,7 +266,10 @@ function verifier() {
     }
     if (!aSortie) note(1, id, 'aucune_sortie', '');
     if (!modifieEtat) note(1, id, 'sans_effet', '');
+    verifEtape1(id, s);
   }
+
+  verifLexiqueDonnees();
 
   // --- compétences réellement utilisées
   const brut = JSON.stringify(db.storylets);
@@ -192,6 +299,49 @@ function verifier() {
   if (!db.storylets[db.meta.storylet_ouverture]) note(1, 'meta', 'ouverture_inconnue', db.meta.storylet_ouverture);
 
   return { ids, parLieu };
+}
+
+// ------------------------------------------------- garde-fou : plancher santé
+// Contrat §4, règle 9. Deux cas symétriques : sans les deux, la preuve ne vaut
+// rien — un plancher qui s'applique partout interdirait aussi la mort voulue.
+function testPlancherSante() {
+  const ID = '__TEST-PLANCHER';
+  const storylet = (issues) => ({
+    id: ID,
+    titre_travail: 'cas de test',
+    lieu: { type: 'declenche_uniquement' },
+    conditions: { requis: [], interdit: [] },
+    unique: false,
+    priorite: 1,
+    poids: 1,
+    texte: { base: '.' },
+    options: [{ id: 'A', libelle: 'test', cout: {}, sortie: true, issues }],
+  });
+
+  const jouer = (issues) => {
+    db.storylets[ID] = storylet(issues);
+    const E = nouvellePartie({ seed: 7 });
+    ouvrirStorylet(E, ID);
+    resoudreOption(E, 'A');
+    delete db.storylets[ID];
+    return { sante: E.heros.sante, fin: E.fin?.id ?? null };
+  };
+
+  // Tirée au sort : le héros reste debout.
+  const tiree = jouer([
+    { probabilite: 100, si: [], texte: '.', effets: [{ sante_heros: -999 }] },
+    { probabilite: 0, si: [], texte: '.', effets: [] },
+  ]);
+  // Choisie par le contenu : la mort reste possible.
+  const voulue = jouer([
+    { si: [], texte: '.', effets: [{ sante_heros: -999 }] },
+  ]);
+
+  return {
+    tiree,
+    voulue,
+    ok: tiree.sante === 1 && tiree.fin === null && voulue.sante === 0 && voulue.fin === 'FIN-MORT',
+  };
 }
 
 // ---------------------------------------------------------------- parties auto
@@ -333,6 +483,13 @@ const grouper = (l) => {
 for (const [t, l] of Object.entries(grouper(graves))) console.log('  ! ' + t + ' (' + l.length + ') : ' + l.join(', '));
 for (const [t, l] of Object.entries(grouper(legers))) console.log('  ~ ' + t + ' (' + l.length + ') : ' + l.join(', '));
 
+console.log('\n=== GARDE-FOU : L\'ALÉATOIRE NE TUE JAMAIS ===');
+const gf = testPlancherSante();
+console.log('  issue tirée au sort, -999 santé   : santé', gf.tiree.sante, '| fin', gf.tiree.fin ?? 'aucune');
+console.log('  issue choisie, -999 santé         : santé', gf.voulue.sante, '| fin', gf.voulue.fin ?? 'aucune');
+console.log('  attendu : 1 / aucune, puis 0 / FIN-MORT  →', gf.ok ? 'CONFORME' : 'ÉCHEC');
+if (!gf.ok) console.log('  ! le garde-fou du contrat §4 règle 9 ne tient pas');
+
 console.log('\n=== PARTIES AUTOMATIQUES ===');
 let ko = 0;
 const res = [];
@@ -357,4 +514,4 @@ if (res.length) {
   for (const r of res) fins[r.fin ?? 'aucune'] = (fins[r.fin ?? 'aucune'] ?? 0) + 1;
   console.log('  fins         :', JSON.stringify(fins));
 }
-process.exit(graves.length || ko ? 1 : 0);
+process.exit(graves.length || ko || !gf.ok ? 1 : 0);

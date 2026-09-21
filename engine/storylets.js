@@ -108,13 +108,15 @@ function bonusProbabilite(E, o) {
   return b;
 }
 
+// Retourne l'issue retenue et si elle a été tirée au sort : c'est ce qui
+// distingue un revers choisi par le contenu d'un revers dû au hasard.
 function choisirIssue(E, o) {
   const L = E.systeme.etat_local;
   const ctx = { tour: E.systeme.tour };
   const eligibles = (o.issues ?? []).filter((i) => evaluerConditions(E, i.si, L, ctx));
-  if (!eligibles.length) return null;
-  if (eligibles.length === 1) return eligibles[0];
-  if (eligibles.every((i) => i.probabilite === undefined)) return eligibles[0];
+  if (!eligibles.length) return { issue: null, tiree: false };
+  if (eligibles.length === 1) return { issue: eligibles[0], tiree: false };
+  if (eligibles.every((i) => i.probabilite === undefined)) return { issue: eligibles[0], tiree: false };
 
   const bonus = bonusProbabilite(E, o);
   const pond = eligibles.map((i) => {
@@ -124,7 +126,7 @@ function choisirIssue(E, o) {
   });
   const c = choixPondere(E.systeme.rng, pond);
   E.systeme.rng = c.etat;
-  return c.valeur.issue;
+  return { issue: c.valeur.issue, tiree: true };
 }
 
 // Valide un choix. Retourne { texte, traces, fin, sortie, declenchements }.
@@ -144,8 +146,13 @@ export function resoudreOption(E, optionId) {
   if (cout.fatigue) appliquerEffets(E, [{ fatigue: cout.fatigue }]);
   if (cout.usure_arme) appliquerEffets(E, [{ usure: 'arme_equipee', valeur: -cout.usure_arme }]);
 
-  const issue = choisirIssue(E, o);
-  const res = appliquerEffets(E, issue?.effets ?? [], { local: E.systeme.etat_local });
+  // Contrat §4, règle 9 : l'aléatoire coûte, il ne tue jamais. Une issue tirée
+  // au sort ne peut pas faire descendre la santé du héros sous 1.
+  const { issue, tiree } = choisirIssue(E, o);
+  const res = appliquerEffets(E, issue?.effets ?? [], {
+    local: E.systeme.etat_local,
+    plancher_sante: tiree,
+  });
 
   if (o.epuisable) E.systeme.options_epuisees.push(o.id);
   if (o.observation) E.stats_partie.observations += 1;

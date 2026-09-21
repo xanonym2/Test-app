@@ -54,7 +54,10 @@ function appliquerEffet(E, ef, ctx, declenchements) {
   if (ef.sante_heros !== undefined) {
     const max = santeMax(E.heros.stats);
     const avant = E.heros.sante;
-    E.heros.sante = bornes(E.heros.sante + ef.sante_heros, 0, max);
+    // Contrat §4, règle 9 : sous plancher, un revers tiré au sort laisse
+    // toujours le héros debout. Il ne ressuscite pas pour autant.
+    const min = ctx.plancher_sante ? Math.min(1, avant) : 0;
+    E.heros.sante = bornes(E.heros.sante + ef.sante_heros, min, max);
     if (ef.sante_heros < 0) E.stats_partie.degats_subis += avant - E.heros.sante;
     return { cle: 'sante', valeur: E.heros.sante - avant };
   }
