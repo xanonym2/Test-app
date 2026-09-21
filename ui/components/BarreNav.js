@@ -20,11 +20,16 @@ export function BarreNav({ ecran, setEcran, E }) {
           <Pressable
             key={o}
             onPress={() => setEcran(o)}
-            style={({ pressed }) => ({ flex: 1, alignItems: 'center', paddingVertical: 6, opacity: pressed ? 0.6 : 1 })}
+            style={({ pressed }) => ({ flex: 1, alignItems: 'center', paddingVertical: 6, paddingHorizontal: 3, opacity: pressed ? 0.6 : 1 })}
           >
             <View style={{ height: 2, width: 18, backgroundColor: actif ? T.accent : 'transparent', marginBottom: 5, borderRadius: 1 }} />
-            <View>
-              <Text style={{ fontSize: 10.5, letterSpacing: 0.2, color: actif ? T.texte : T.texteFaible, fontWeight: actif ? '600' : '400' }}>
+            <View style={{ maxWidth: '100%' }}>
+              {/* Six onglets sur 390 px : sans cette réduction, les deux plus
+                  longs libellés se touchent. La cible n'en garde que cinq. */}
+              <Text
+                numberOfLines={1}
+                style={{ fontSize: 9.5, letterSpacing: 0, textAlign: 'center', color: actif ? T.texte : T.texteFaible, fontWeight: actif ? '600' : '400' }}
+              >
                 {l[o] ?? o}
               </Text>
               {pastilles[o] ? (

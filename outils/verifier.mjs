@@ -344,6 +344,20 @@ function testPlancherSante() {
   };
 }
 
+
+// La mort par attrition doit poser la fin même hors d'un choix, sinon le bilan
+// n'arrive qu'au prochain clic — le joueur continue de jouer mort.
+function testMortEnVoyage() {
+  const E = nouvellePartie({ seed: 5 });
+  E.geo.points_decouverts = Object.keys(db.points);
+  E.heros.sante = 3;
+  E.heros.faim = 99;
+  E.heros.fatigue = 100;
+  const cible = pointsAccessibles(E).find((p) => !p.bloque);
+  voyager(E, cible.id);
+  return { sante: E.heros.sante, fin: E.fin?.id ?? null, ok: E.heros.sante <= 0 && E.fin?.id === 'FIN-MORT' };
+}
+
 // ---------------------------------------------------------------- parties auto
 // Un joueur raisonnable mange quand il a faim et se soigne quand il saigne :
 // c'est ce que permet l'écran d'inventaire, donc le robot le fait aussi.
@@ -490,6 +504,11 @@ console.log('  issue choisie, -999 santé         : santé', gf.voulue.sante, '|
 console.log('  attendu : 1 / aucune, puis 0 / FIN-MORT  →', gf.ok ? 'CONFORME' : 'ÉCHEC');
 if (!gf.ok) console.log('  ! le garde-fou du contrat §4 règle 9 ne tient pas');
 
+const mv = testMortEnVoyage();
+console.log('  mort d\'attrition en voyage        : santé', mv.sante, '| fin', mv.fin ?? 'aucune');
+console.log('  attendu : 0 / FIN-MORT                   →', mv.ok ? 'CONFORME' : 'ÉCHEC');
+if (!mv.ok) console.log('  ! la fin ne se pose pas hors d\'un choix validé');
+
 console.log('\n=== PARTIES AUTOMATIQUES ===');
 let ko = 0;
 const res = [];
@@ -514,4 +533,4 @@ if (res.length) {
   for (const r of res) fins[r.fin ?? 'aucune'] = (fins[r.fin ?? 'aucune'] ?? 0) + 1;
   console.log('  fins         :', JSON.stringify(fins));
 }
-process.exit(graves.length || ko || !gf.ok ? 1 : 0);
+process.exit(graves.length || ko || !gf.ok || !mv.ok ? 1 : 0);

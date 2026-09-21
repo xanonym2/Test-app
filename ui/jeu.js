@@ -126,6 +126,14 @@ export function FournisseurJeu({ children }) {
     const transition = texteVoyage(etat, pointId);
     const r = voyager(etat, pointId);
     if (!r.ok) { setMessage('bloque'); return; }
+    // Mourir de faim en chemin termine la partie tout de suite, sans attendre
+    // le prochain choix validé.
+    if (etat.fin || partieTerminee(etat)) {
+      setSelection(null);
+      setEcran('bilan');
+      pousser(etat, { fil: transition ? [{ k: 'v', t: transition }] : [], options: [], storylet: null });
+      return;
+    }
     const sc = etat.systeme.storylet_courant ? scenePour(etat) : { fil: [], options: [], storylet: null };
     setSelection(null);
     setEcran('scene');

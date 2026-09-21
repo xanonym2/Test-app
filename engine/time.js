@@ -50,6 +50,11 @@ export function avancerSegments(E, n) {
     evenements.push(...echeancesDues(E));
     restant -= 1;
   }
+  // L'attrition tue aussi hors d'un choix — en voyage, par exemple. La fin se
+  // pose ici pour que tous les chemins qui font s'écouler le temps la voient.
+  if (E.heros.sante <= 0 && !E.fin) {
+    E.fin = { id: 'FIN-MORT', jour: E.temps.jour, segment: E.temps.segment };
+  }
   return evenements;
 }
 
