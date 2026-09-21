@@ -1,0 +1,17 @@
+# Publication de la version web jouable.
+# Le vérificateur passe avant la construction : un contenu cassé ne doit pas
+# plus atteindre le web que l'APK.
+
+[build]
+  command = "npm run verif && npx expo export --platform web"
+  publish = "dist"
+
+[build.environment]
+  # Même version que la CI Android (.github/workflows/android-apk.yml).
+  NODE_VERSION = "22"
+
+# L'application n'a pas de routeur : toute adresse retombe sur la page unique.
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
