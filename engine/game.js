@@ -73,9 +73,11 @@ export function tirerMutateurs(E, nombre = 2) {
   return pris;
 }
 
+// Un départ « hors tirage » reste choisissable à l'écran titre mais ne sort
+// jamais du tirage : une tranche de campagne n'est pas une variante de run.
 export function tirerDepart(E) {
   const db = getDb();
-  const liste = Object.values(db.departs);
+  const liste = Object.values(db.departs).filter((d) => !d.hors_tirage);
   const r = entier(E.systeme.rng, liste.length);
   E.systeme.rng = r.etat;
   return liste[r.valeur].id;

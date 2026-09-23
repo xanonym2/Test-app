@@ -17,6 +17,13 @@ export const meta = {
     { base: "OBJ-05", quantite: 1 },
     { base: "OBJ-06", quantite: 1 },
   ],
+  // Message hors fiction, affiché une seule fois sur l'écran de transition
+  // quand un compagnon mortel rejoint le groupe (SPEC_DESIGN §6.9).
+  message_permadeath: {
+    titre: "Un compagnon, pas une ressource",
+    texte: "Mathias peut mourir, et sa mort est définitive. Aucune sauvegarde ne le ramènera, aucune relance ne l'effacera : une partie suivante saura qu'il est tombé. Il le dit lui-même — il n'est pas soldat.",
+  },
+
   fins: {
     "FIN-MORT": {
       id: "FIN-MORT",

@@ -71,12 +71,27 @@ export const pnj = {
     depart: "D03",
   },
 
+  // Mathias — fiche complète (CONTRAT §8). Il garde l'identifiant PNJ-F1 : un
+  // identifiant ne change jamais, même quand le rôle du personnage change.
+  // Mortel dès le départ, sans exception (SPEC_DESIGN §6.9).
   "PNJ-F1": {
     id: "PNJ-F1",
     nom: "Mathias",
-    minimal: true,
-    statut_initial: "disparu",
-    note: "Ton frère, vingt ans, forgeron du village. Personne ne l'a vu depuis l'attaque.",
+    role: "melee",
+    stats: { vigueur: 3, adresse: 1, perception: 2, sangfroid: 3 },
+    competences: [],
+    niveau: 1,
+    niveau_max: 5,
+    montee: ["vigueur", "vigueur", "sangfroid"],
+    equipement: ["OBJ-08", "OBJ-13"],
+    confiance_initiale: 3,
+    apport_hors_combat: "Il remet en état ce qui casse : une lame ébréchée, une boucle arrachée, un manche fendu.",
+    description: "Ton frère, vingt ans, forgeron de Val-de-Garde. Il frappe plus fort que quiconque et ne sait pas se couvrir : il n'a jamais été soldat, et il le dit lui-même.",
+    recrutable: false,
+    mortel_permanent: true,
+    trait: "Bras de forge",
+    trait_note: "Ses dégâts ne baissent jamais avec la fatigue. En attente du roster (CONTRAT §24).",
+    statut_initial: "vivant_allie",
   },
 
   "PNJ-F2": {

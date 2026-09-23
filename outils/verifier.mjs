@@ -448,9 +448,9 @@ function entretien(E, seedLocal = 0) {
   }
 }
 
-function partieAuto(seed, maxActions = 400) {
+function partieAuto(seed, maxActions = 400, depart = null) {
   let E;
-  try { E = nouvellePartie({ seed }); } catch (e) { return { erreur: 'creation:' + e.message }; }
+  try { E = nouvellePartie(depart ? { seed, depart } : { seed }); } catch (e) { return { erreur: 'creation:' + e.message }; }
   let actions = 0;
   let bloque = 0;
   const vus = new Set();
@@ -511,6 +511,9 @@ function partieAuto(seed, maxActions = 400) {
     combats: E.stats_partie.combats_gagnes + E.stats_partie.combats_evites,
     competences: E.heros.competences.length,
     gorgees: E.stats_partie.gorgees_bues,
+    razzia_temps: E.stats_partie.razzia_temps ?? 0,
+    chaines: ['f_vdg_chaine_a','f_vdg_chaine_b','f_vdg_chaine_c','f_vdg_chaine_d']
+      .filter((x) => E.recit.flags[x]).length,
     soif_pic: E.soif_pic ?? 0,
     vus: vus.size, badges: b.badges.filter((x) => x.obtenu).length,
     savoir: E.recit.connaissance_sortilege, xp: E.heros.xp,
@@ -587,7 +590,10 @@ if (res.length) {
   console.log('  parties OK   :', res.length, '/ 30   (crashs :', ko + ')');
   console.log('  actions moy  :', moy('actions'), '| jours moy :', moy('jours'));
   console.log('  niveau moy   :', moy('niveau'), '| xp moy :', moy('xp'));
-  console.log('  scènes vues  :', moy('vus'), '/', ids.length, '| points visités :', moy('points'), '/ 6');
+  // Le bloc v3 ne peut voir que les storylets hors tranche : le dénominateur
+  // doit rester le sien, sinon l'ajout d'une tranche fait chuter le ratio.
+  const horsTranche = ids.filter((x) => !x.startsWith('ST-VDG-')).length;
+  console.log('  scènes vues  :', moy('vus'), '/', horsTranche, '| points visités :', moy('points'), '/ 6');
   console.log('  savoir moy   :', moy('savoir'), '| badges moy :', moy('badges'));
   console.log('  compagnons   :', moy('compagnons'), '| compétences prises :', moy('competences'), '| groupes fermés :', moy('groupes_fermes'));
   console.log('  santé finale :', moy('sante'), '/', moy('sante_max'), '| dégâts subis :', moy('degats'));
@@ -599,4 +605,30 @@ if (res.length) {
   for (const r of res) fins[r.fin ?? 'aucune'] = (fins[r.fin ?? 'aucune'] ?? 0) + 1;
   console.log('  fins         :', JSON.stringify(fins));
 }
-process.exit(graves.length || ko || !gf.ok || !mv.ok || !so.ok || !mg.ok ? 1 : 0);
+
+// --- La tranche MVP 1, mesurée à part : elle a son propre départ.
+console.log('\n=== TRANCHE MVP 1 (départ D04) ===');
+let koT = 0;
+const resT = [];
+for (let s = 1; s <= 30; s++) {
+  const r = partieAuto(s * 613, 400, 'D04');
+  if (r.erreur) { koT++; if (koT <= 3) console.log('  CRASH seed', s, ':', r.erreur, r.pile ?? ''); }
+  else resT.push(r);
+}
+const atteintT1 = resT.filter((r) => r.fin === 'FIN-T1').length;
+if (resT.length) {
+  const moyT = (k) => (resT.reduce((a, r) => a + (r[k] ?? 0), 0) / resT.length).toFixed(1);
+  console.log('  parties OK   :', resT.length, '/ 30   (crashs :', koT + ')');
+  console.log('  FIN-T1 atteinte :', atteintT1, '/ 30   (exigé : au moins 10)');
+  const dansTranche = ids.filter((x) => x.startsWith('ST-VDG-')).length;
+  console.log('  actions moy  :', moyT('actions'), '| scènes vues :', moyT('vus'), '/', dansTranche);
+  console.log('  xp moy       :', moyT('xp'), '| niveau moy :', moyT('niveau'));
+  console.log('  chaînes bouclées :', moyT('chaines'), '/ 4   | horloge finale :', moyT('razzia_temps'), '/ 7');
+  const parChaines = {};
+  for (const r of resT) parChaines[r.chaines] = (parChaines[r.chaines] ?? 0) + 1;
+  console.log('  répartition  :', JSON.stringify(parChaines));
+  const finsT = {};
+  for (const r of resT) finsT[r.fin ?? 'aucune'] = (finsT[r.fin ?? 'aucune'] ?? 0) + 1;
+  console.log('  fins         :', JSON.stringify(finsT));
+}
+process.exit(graves.length || ko || koT || atteintT1 < 10 || !gf.ok || !mv.ok || !so.ok || !mg.ok ? 1 : 0);

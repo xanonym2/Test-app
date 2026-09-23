@@ -12,8 +12,24 @@ export function badgesObtenus(E) {
   return evaluerBadges(E).filter((b) => b.obtenu);
 }
 
+// Combien d'indices distincts le contenu peut poser. Compté, jamais écrit en
+// dur : le nombre change à chaque tranche ajoutée.
+export function indicesExistants(db) {
+  const vus = new Set();
+  for (const s of Object.values(db.storylets)) {
+    const effets = [];
+    for (const o of s.options ?? []) for (const x of o.issues ?? []) effets.push(...(x.effets ?? []));
+    for (const r of s.regles_locales ?? []) effets.push(...(r.alors ?? []));
+    for (const e of effets) {
+      if (typeof e.flag === 'string' && e.flag.startsWith('f_indice')) vus.add(e.flag);
+    }
+  }
+  return vus.size;
+}
+
 export function bilan(E) {
   const db = getDb();
+  const indicesTotal = indicesExistants(db);
   const zonesConnues = E.geo.points_decouverts;
   const toutesZones = Object.keys(db.points);
   return {
@@ -44,12 +60,13 @@ export function bilan(E) {
     decisions: E.journal.filter((j) => j.cle),
     savoir: E.recit.connaissance_sortilege,
     savoir_max: 5,
+    indices_total: indicesTotal,
     compteurs: { ...E.stats_partie },
     badges: evaluerBadges(E),
     // « Ce qui a été raté » : on signale le volume manqué, jamais son contenu.
     manques: {
       storylets_non_vus: Object.keys(db.storylets).length - Object.keys(E.systeme.storylets_vus).length,
-      indices_non_trouves: 3 - Math.min(3, E.stats_partie.indices_trouves),
+      indices_non_trouves: Math.max(0, indicesTotal - E.stats_partie.indices_trouves),
       points_non_atteints: toutesZones.filter((p) => !(E.geo.points_visites[p] > 0)).length,
       competences_non_prises: Object.keys(db.competences).length - E.heros.competences.length,
     },

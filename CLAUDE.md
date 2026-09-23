@@ -4,8 +4,10 @@ Jeu d'aventure narrative et tactique, médiéval-fantastique. Cible : Steam, ach
 unique. Tout se développe depuis un iPhone, via Claude Code : **aucune étape ne
 doit exiger un poste de travail.**
 
-**Où on en est.** La v3 (« Val-de-Garde ») est jouable : une zone, 6 points
-d'intérêt, 22 storylets, une partie de 4 à 5 h. Le jeu cible est une **campagne
+**Où on en est.** Deux tranches jouables. La v3 (« Val-de-Garde ») : une zone,
+6 points d'intérêt, 22 storylets, 4 à 5 h. Et **MVP 1 « Les vingt premières
+minutes »** (départ `D04`) : l'ouverture, la razzia à moyeu et l'après, 11
+storylets, jusqu'à `FIN-T1`. Le jeu cible est une **campagne
 en trois chapitres**, construite **par-dessus** la v3 : moteur, vérificateur et
 écrans sont gardés. Rien ne se réécrit.
 
@@ -74,8 +76,8 @@ Le détail est dans `docs/spec/`.
 
 | Étape | Contenu | Mission |
 |---|---|---|
-| **1 — Préparation** | Kit en place, cible web hébergée, contrôles ajoutés au vérificateur, relevé du moteur | `docs/prompts/etape-1.md` |
-| **2 — MVP 1 « Les vingt premières minutes »** | Ouverture, razzia, après. Contenu seul, nouveau départ `D04` | `docs/prompts/etape-2.md` |
+| ~~1 — Préparation~~ | **Fait.** Kit, cible web, contrôles, relevé du moteur | `docs/prompts/etape-1.md` |
+| ~~2 — MVP 1 « Les vingt premières minutes »~~ | **Fait.** Ouverture, razzia, après, départ `D04`, compagnon Mathias. Rapport : `docs/lots/MVP1.md` | `docs/prompts/etape-2.md` |
 | 3 — MVP 2 « La route » | Jalons, pression sur jalons, 8 POI de la Couronne, lots recombinables | à venir |
 | 4 — MVP 3 « La première escarmouche » | Couche tactique, isolée | à venir |
 | Plus tard | Sauvegarde de partie, bestiaire persistant, 5 zones, magie | — |
@@ -179,7 +181,8 @@ content/                  ── LES DONNÉES ── ~5 000 lignes
   objets.js modificateurs.js creatures.js pnj.js
   competences.js badges.js departs.js mutateurs.js
   libelles.js               tous les mots de l'UI qui ne sont pas de la narration
-  storylets/                ouverture · p01..p06 · combat · evenements
+  storylets/                v3 : ouverture · p01..p06 · combat · evenements
+                            MVP 1 : vdg-ouverture · vdg-razzia
                             chaque fichier exporte aussi ses clés de journal
 
 ui/                       ── L'INTERFACE ── ~1 475 lignes
@@ -194,6 +197,7 @@ docs/
   spec/                     les specs de conception
   PRODUCTION.md             la chaîne de production du contenu
   RELEVE.md                 le relevé du moteur — écrit à l'étape 1
+  lots/MVP1.md              le rapport de la tranche MVP 1
   prompts/                  les missions
   lots/                     un rapport par lot de contenu
 
@@ -223,23 +227,25 @@ rapports de lot.
 
 ### État de référence (à ne pas dégrader)
 
-Remesuré après la passe de cohérence du 21/09/2026.
+Deux blocs mesurés séparément : `D04` est **hors tirage**, donc la tranche ne
+déplace jamais la mesure de la v3.
 
 ```
-bloquants : 0 | à revoir : 0 | parties OK : 30 / 30 (crashs : 0)
-garde-fou « l'aléatoire ne tue jamais » : conforme
-soif : seuil 12 segments, conforme · mort d'attrition en voyage : conforme
-sauvegarde v2 : chaîne de migration conforme
-jours moy 8,0 · niveau moy 6,2 · 2,9 compétences prises · 2,9 groupes fermés
-scènes vues 16,1 / 22 · points visités 4,7 / 6 · savoir 1,6 / 3
-gorgées bues 2,6 · plus long jeûne 16,5 segments
-survie qui mord : 16 / 30 · 5 fins distinctes + la mort
+bloquants : 0 | à revoir : 0
+garde-fou « l'aléatoire ne tue jamais » · soif · mort en voyage · migration : conformes
+
+v3           30/30 · jours 8,0 · niveau 6,2 · 2,9 compétences · 2,9 groupes fermés
+             scènes 16,1/22 · points 4,7/6 · savoir 1,6/3 · gorgées 2,6
+             survie qui mord 16/30 · 5 fins + la mort
+
+MVP 1 (D04)  30/30 · FIN-T1 30/30 · scènes 9,3/11
+             chaînes bouclées 1,6/4 — réparties 0:8 · 1:4 · 2:11 · 3:7
+             horloge finale 4,5/7
 ```
 
-**Les 46 « à revoir » sont résorbés** — noms périmés, mots rares et co-occurrence
-indice/journal. Détail et traitement dans `docs/RELEVE.md` §7. Les chiffres de
-jeu n'ont pas bougé : la soif ajoute une pression réelle sans déplacer
-l'équilibre, et le robot boit comme le ferait un joueur prévenu.
+**La métrique qui compte pour la razzia est « chaînes bouclées ».** La spec veut
+« deux, parfois trois ; il y en a quatre ». Si elle remonte vers 4, l'horloge a
+cessé de mordre.
 
 ### Les ratios à surveiller
 

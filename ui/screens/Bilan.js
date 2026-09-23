@@ -23,12 +23,23 @@ export function EcranBilan() {
   const b = bilan(E);
   const fin = db.meta.fins?.[b.fin?.id] ?? null;
   const obtenus = b.badges.filter((x) => x.obtenu);
+  // Le message de permadeath n'arrive jamais pendant la scène : ici, une fois,
+  // et seulement si un compagnon mortel a rejoint le groupe.
+  const permadeath = !!db.meta.message_permadeath
+    && E.compagnons.some((c) => db.pnj[c.id]?.mortel_permanent);
 
   return (
     <Page>
       <Titre>{fin?.nom ?? 'Fin de partie'}</Titre>
       {fin?.description ? (
         <Text style={[TYPO.narration, { marginBottom: ESP.lg, color: T.texteDoux }]}>{fin.description}</Text>
+      ) : null}
+
+      {permadeath ? (
+        <Panneau style={{ borderColor: T.accent, backgroundColor: T.selection }}>
+          <SousTitre style={{ color: T.accent }}>{db.meta.message_permadeath.titre}</SousTitre>
+          <Petit style={{ color: T.texte }}>{db.meta.message_permadeath.texte}</Petit>
+        </Panneau>
       ) : null}
 
       <Bloc titre={l.appris ?? 'Ce que vous avez appris'}>
@@ -40,7 +51,7 @@ export function EcranBilan() {
         </View>
         <Jauge valeur={b.savoir} max={b.savoir_max} couleur={T.accent} />
         <Petit style={{ marginTop: ESP.sm }}>
-          {b.compteurs.indices_trouves} indice{b.compteurs.indices_trouves > 1 ? 's' : ''} relevé{b.compteurs.indices_trouves > 1 ? 's' : ''} sur les trois qui traînaient dans cette région.
+          {b.compteurs.indices_trouves} indice{b.compteurs.indices_trouves > 1 ? 's' : ''} relevé{b.compteurs.indices_trouves > 1 ? 's' : ''} sur les {b.indices_total} qui traînaient sur le chemin.
         </Petit>
       </Bloc>
 

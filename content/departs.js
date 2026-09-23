@@ -39,4 +39,18 @@ export const departs = {
     ],
     storylet_ouverture: "ST-OUV-01",
   },
+
+  // D04 — MVP 1. Inventaire de la v3, neuf flèches : il en manque trois pour
+  // une bonne journée, et c'est voulu (mission étape 2).
+  "D04": {
+    id: "D04",
+    nom: "La razzia",
+    hors_tirage: true,
+    description: "Le dernier matin ordinaire à Val-de-Garde, puis ce qui lui arrive. Tu pars chasser avec neuf flèches — il en faudrait douze — et tu choisis ce que tu sauves quand tu reviens.",
+    inventaire: [],
+    effets: [
+      { stat_partie: { compteur: "vdg_matinee", valeur: 3 } },
+    ],
+    storylet_ouverture: "ST-VDG-01",
+  },
 };

@@ -94,4 +94,10 @@ export const STATS_PARTIE_INITIALES = {
   indices_trouves: 0,
   nuits_a_decouvert: 0,
   xp_gagnee: 0,
+  // Tranche MVP 1 — portés par le contenu, déclarés ici pour que le
+  // vérificateur les connaisse.
+  vdg_matinee: 0,
+  vdg_voix: 0,
+  razzia_temps: 0,
+  survivants: 0,
 };

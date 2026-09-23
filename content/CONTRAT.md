@@ -79,6 +79,8 @@ comme un assouplissement.
 | M14 | §4 | **A3 tranché** — réussite partielle obligatoire sur les storylets majeurs et les jalons (`majeur: true`, `partielle: true`) | Extension | Oui — 🔨 accepter les deux champs, puis contrôler |
 | M15 | §6 | **Rythme de la soif fixé** — `assoiffe` se dérive de 12 segments sans boire ; boire remet le compteur à zéro. Le chantier ouvert par M13 est refermé | Extension | Oui — cas de test dédié |
 | M16 | §4 r. 9 | **Mort du héros clarifiée** — un adversaire ne tue jamais (`SPEC_DESIGN` §4.5) ; seule l'attrition met fin au run. La contradiction §2.5 / §4.5 est levée | Clarification | Non — le moteur v3 n'a pas d'état de défaite |
+| M17 | §4 r. 6 | **Un beat de transition peut n'avoir qu'une option.** La règle « 3 à 5 options par tour » vaut pour un beat qui offre un choix ; `SPEC_CONTENU` impose des beats sans choix (la cloche, le retrait des orcs) | Clarification | Non — le vérificateur n'imposait pas de minimum |
+| M18 | §11 | Départ `D04` ajouté au plan, et notion de départ **hors tirage** | Extension du plan | Non |
 
 ### Arbitrages
 
@@ -325,7 +327,9 @@ choix ne dépasse pas **200 mots**.
    `partielle: true`.
 4. Un storylet qui ne modifie l'état d'aucune façon n'a pas sa place.
 5. Une **sortie est toujours disponible** à chaque tour (`sortie: true`).
-6. **3 à 5 options par tour.**
+6. **3 à 5 options par tour.** **[v2]** Vaut pour un beat qui offre un choix.
+   Un **beat de transition** — une scène qui se contente d'enchaîner, comme la
+   cloche ou le retrait des orcs — peut n'en avoir qu'une (M17).
 7. Une option d'**observation** coûtant du temps partout où il y a un risque.
 8. Les **différés** ont leur issue déterminée au moment du choix
    (`{ differe: { evenement, resolution, dans_jours } }`).
@@ -639,6 +643,7 @@ le twist correspondant atteint (§0 bis, règle 7).
 | `D01` | Parti chasser loin — arrive **plus tard**, mais avec de la chasse. `{ segments: 2 }`, plus de `OBJ-06`. |
 | `D02` | Blessé dès le début — `{ etat: 'blesse_leger' }`, `{ sante_heros: -8 }`, mais un objet de valeur en plus. |
 | `D03` | Accompagné d'un proche — `{ compagnon: 'PNJ-04' }` dès le départ, **qui peut mourir dans l'heure** (le contenu doit lui offrir une vraie fenêtre de mort). |
+| `D04` | **[v2] La razzia** — tranche MVP 1. Inventaire de la v3, neuf flèches : il en manque trois pour une bonne journée, et c'est voulu. Ouvre sur `ST-VDG-01`. Porte `hors_tirage: true` : **choisissable à l'écran titre, jamais tiré au hasard** — une tranche de campagne n'est pas une variante de run, et la v3 garde sa mesure de référence. |
 
 **[v2] 🔨 Départs de chapitre.** Le même mécanisme porte les packages de
 chapitre : `D-CH2`, `D-CH3`. Même schéma, plus une condition de déblocage lue

@@ -26,8 +26,11 @@ import * as p05 from './storylets/p05.js';
 import * as p06 from './storylets/p06.js';
 import * as combat from './storylets/combat.js';
 import * as evenements from './storylets/evenements.js';
+import * as vdgOuverture from './storylets/vdg-ouverture.js';
+import * as vdgRazzia from './storylets/vdg-razzia.js';
 
-const modules = [ouverture, p01, p02, p03, p04, p05, p06, combat, evenements];
+const modules = [ouverture, p01, p02, p03, p04, p05, p06, combat, evenements,
+                 vdgOuverture, vdgRazzia];
 
 export const storylets = Object.assign({}, ...modules.map((m) => m.storylets ?? {}));
 export const journal = Object.assign({}, ...modules.map((m) => m.journal ?? {}));

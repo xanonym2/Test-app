@@ -25,6 +25,15 @@ dès qu'un storylet l'affirme, il devient vrai pour tous les autres.
 - **Le toit des Ancel** · toit en réfection à Val-de-Garde ; Jonas y travaille le
   matin de la razzia, ce qui le situe hors de chez lui · `SPEC_CONTENU` §5.3,
   chaîne C · chapitre 1
+- **La tour de guet de Val-de-Garde** · sur le versant au-dessus du village ; sa
+  cloche n'a pas sonné depuis huit ans, depuis la paix · `ST-VDG-01` · chapitre 1
+- **La forge de Mathias** · ouverte des deux côtés, au milieu du village ; elle a
+  une porte qu'on peut barrer de l'intérieur et un appentis non barré dehors ·
+  `ST-VDG-02`, `ST-VDG-12` · chapitre 1
+- **Le cellier commun** · au bas du village, à l'écart des passages ·
+  `ST-VDG-14` · chapitre 1
+- **L'abri effondré** · près de l'autel du village ; une vieille femme le balaie ·
+  `ST-VDG-03` · chapitre 1
 
 ## Personnages secondaires
 
@@ -34,11 +43,25 @@ dès qu'un storylet l'affirme, il devient vrai pour tous les autres.
 
 ## Objets et choses vues
 
-*(vide)*
+- **Les empreintes de la piste de sang** · quatre doigts, griffes profondes, plus
+  large qu'un loup ; vues au sol pendant la chasse, sans que la bête soit
+  rencontrée · `ST-VDG-04` · chapitre 1
+- **L'échelle des Ancel** · restée contre le mur, le chaume à moitié posé, la
+  botte défaite. Elle y est encore après la razzia · `ST-VDG-13`, `ST-VDG-20` ·
+  chapitre 1
 
 ## Rumeurs — ce qu'on raconte
 
-*(vide)*
+*Trois phrases entendues au village le matin de la razzia. Personne ne les
+commente, personne n'enquête : elles se lisent comme du décor.*
+
+- **La relève de la garnison** · elle devait arriver au printemps, on est en été ;
+  deux hommes en moins ce mois-ci, personne pour les remplacer, depuis trois
+  mois · `ST-VDG-02`, `ST-VDG-03` · chapitre 1
+- **Le prix du sel** · il a pris un tiers depuis les foins, personne ne sait
+  pourquoi · `ST-VDG-03` · chapitre 1
+- **Les frères de l'Ordre** · ils ne sont pas passés au village ce mois-ci, ni le
+  mois d'avant · `ST-VDG-03` · chapitre 1
 
 ## À valider
 
