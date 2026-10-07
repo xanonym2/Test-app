@@ -12,7 +12,7 @@ import { avancerSegments as avancerSegmentsTest } from '../engine/time.js';
 import { appliquerEffets } from '../engine/effects.js';
 import { retirerObjet } from '../engine/items.js';
 import { depenserPointStat, apprendreCompetence, competencesProposees } from '../engine/progression.js';
-import { tousLesEtats } from '../engine/derive.js';
+import { tousLesEtats, sceneVerrouillee } from '../engine/derive.js';
 
 const OPS = new Set([...operateursConnus, 'ou', 'non']);
 const EFFETS = new Set([
@@ -381,6 +381,31 @@ function testSoif() {
 }
 
 
+// Les scènes déclenchées : rien ne les sélectionne, donc rien ne les ramène.
+// Le verrou que lit l'interface doit les couvrir toutes, et elles seules.
+function testScenesVerrouillees() {
+  const declenchees = Object.values(db.storylets).filter((s) => s.lieu?.type === 'declenche_uniquement');
+  const lieux = Object.values(db.storylets).filter((s) => s.lieu?.type !== 'declenche_uniquement');
+  const E = nouvellePartie({ seed: 31 });
+  const manquees = [];
+  for (const s of declenchees) {
+    ouvrirStorylet(E, s.id);
+    if (!sceneVerrouillee(E)) manquees.push(s.id);
+  }
+  const fausses = [];
+  for (const s of lieux) {
+    ouvrirStorylet(E, s.id);
+    if (sceneVerrouillee(E)) fausses.push(s.id);
+  }
+  E.systeme.storylet_courant = null;
+  const hors_scene = sceneVerrouillee(E);
+  return {
+    declenchees: declenchees.length, lieux: lieux.length, manquees, fausses, hors_scene,
+    ok: manquees.length === 0 && fausses.length === 0 && !hors_scene,
+  };
+}
+
+
 // La chaîne de migration : une sauvegarde d'une version antérieure doit
 // remonter jusqu'à la version courante sans perdre ce qu'elle contenait.
 function testMigration() {
@@ -572,6 +597,14 @@ console.log('  v1 migrée : champ ajouté', mg.champ ? 'oui' : 'NON', '| reste p
             '| sauvegarde plus récente refusée', mg.refus_futur ? 'oui' : 'NON');
 console.log('  →', mg.ok ? 'CONFORME' : 'ÉCHEC');
 
+const sv = testScenesVerrouillees();
+console.log('\n=== SCÈNES DÉCLENCHÉES — AUCUNE SORTIE PAR LA NAV ===');
+console.log('  scènes déclenchées :', sv.declenchees, '| scènes de lieu :', sv.lieux);
+console.log('  déclenchées non verrouillées :', sv.manquees.length ? sv.manquees.join(', ') : 'aucune',
+            '| lieux verrouillés à tort :', sv.fausses.length ? sv.fausses.join(', ') : 'aucun',
+            '| hors scène :', sv.hors_scene ? 'VERROUILLÉ' : 'libre');
+console.log('  →', sv.ok ? 'CONFORME' : 'ÉCHEC');
+
 const mv = testMortEnVoyage();
 console.log('  mort d\'attrition en voyage        : santé', mv.sante, '| fin', mv.fin ?? 'aucune');
 console.log('  attendu : 0 / FIN-MORT                   →', mv.ok ? 'CONFORME' : 'ÉCHEC');
@@ -631,4 +664,4 @@ if (resT.length) {
   for (const r of resT) finsT[r.fin ?? 'aucune'] = (finsT[r.fin ?? 'aucune'] ?? 0) + 1;
   console.log('  fins         :', JSON.stringify(finsT));
 }
-process.exit(graves.length || ko || koT || atteintT1 < 10 || !gf.ok || !mv.ok || !so.ok || !mg.ok ? 1 : 0);
+process.exit(graves.length || ko || koT || atteintT1 < 10 || !gf.ok || !mv.ok || !so.ok || !mg.ok || !sv.ok ? 1 : 0);

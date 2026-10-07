@@ -161,3 +161,12 @@ export function facteurDeplacement(etat) {
   if (encombrement(etat).surcharge) f += 0.5;
   return f;
 }
+
+// Une scène déclenchée n'est pas un lieu : rien ne la sélectionne, donc rien
+// ne la ramène. S'en éloigner ou la relancer y substituerait une scène de lieu
+// sans retour possible. L'interface lit ce verrou, elle ne le devine pas.
+export function sceneVerrouillee(E) {
+  const id = E?.systeme?.storylet_courant;
+  if (!id) return false;
+  return (getDb().storylets[id]?.lieu?.type ?? 'partout') === 'declenche_uniquement';
+}

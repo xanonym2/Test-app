@@ -8,6 +8,7 @@ import { ouvrirStorylet } from '../engine/storylets.js';
 import { depenserPointStat, apprendreCompetence, xpCompagnons } from '../engine/progression.js';
 import { sauvegarder, charger, effacer } from '../engine/save.js';
 import { retirerObjet } from '../engine/items.js';
+import { sceneVerrouillee } from '../engine/derive.js';
 import { appliquerEffets } from '../engine/effects.js';
 
 const Ctx = createContext(null);
@@ -145,7 +146,11 @@ export function FournisseurJeu({ children }) {
 
   const relancerScene = useCallback(() => {
     const etat = ref.current;
-    const id = rafraichirScene(etat);
+    // Une scène déclenchée ne se resélectionne pas : la rafraîchir lui
+    // substituerait une scène de lieu, qu'aucun déclencheur ne défera.
+    const id = sceneVerrouillee(etat)
+      ? etat.systeme.storylet_courant
+      : rafraichirScene(etat);
     const sc = id ? scenePour(etat) : { fil: [], options: [], storylet: null };
     setSelection(null);
     setEcran('scene');

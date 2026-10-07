@@ -127,7 +127,7 @@ export const storylets = {
           {
             reussite: true,
             si: [],
-            texte: "Le cellier commun est à l'écart de la poussée.",
+            texte: "Tu descends par la ruelle du bas, à contre-courant.",
             effets: [{ declenche: "ST-VDG-14" }],
           },
         ],

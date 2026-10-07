@@ -4,6 +4,7 @@ import { StatusBar } from 'expo-status-bar';
 
 import './content/index.js';
 import { T } from './ui/theme.js';
+import { sceneVerrouillee } from './engine/derive.js';
 import { FournisseurJeu, useJeu } from './ui/jeu.js';
 import { Bandeau } from './ui/components/Bandeau.js';
 import { BarreNav } from './ui/components/BarreNav.js';
@@ -36,7 +37,10 @@ function Contenu() {
     competences: EcranCompetences,
     compagnons: EcranCompagnons,
   };
-  const Ecran = ecrans[ecran] ?? EcranScene;
+  // Une scène déclenchée se quitte par un choix, jamais par la barre de nav.
+  const verrou = sceneVerrouillee(E);
+  const onglet = verrou && ecran === 'carte' ? 'scene' : ecran;
+  const Ecran = ecrans[onglet] ?? EcranScene;
 
   return (
     <View style={{ flex: 1, backgroundColor: T.fond }}>
@@ -44,7 +48,7 @@ function Contenu() {
       <View style={{ flex: 1 }}>
         <Ecran />
       </View>
-      <BarreNav ecran={ecran} setEcran={setEcran} E={E} />
+      <BarreNav ecran={onglet} setEcran={setEcran} E={E} sansCarte={verrou} />
     </View>
   );
 }

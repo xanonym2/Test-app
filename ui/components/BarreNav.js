@@ -6,15 +6,18 @@ import { getDb } from '../../engine/db.js';
 
 const ONGLETS = ['scene', 'carte', 'personnage', 'inventaire', 'competences', 'compagnons'];
 
-export function BarreNav({ ecran, setEcran, E }) {
+export function BarreNav({ ecran, setEcran, E, sansCarte }) {
   const l = getDb().libelles.nav ?? {};
+  // La carte est le seul onglet qui agit sur la partie : pendant une scène
+  // déclenchée, elle en ferait sortir sans retour.
+  const onglets = sansCarte ? ONGLETS.filter((o) => o !== 'carte') : ONGLETS;
   const pastilles = {
     personnage: (E?.heros.points_stat ?? 0) > 0,
     competences: (E?.heros.competence_a_choisir ?? 0) > 0,
   };
   return (
     <View style={{ flexDirection: 'row', backgroundColor: T.fond2, borderTopWidth: 1, borderTopColor: T.bord, paddingBottom: 6, paddingTop: 6 }}>
-      {ONGLETS.map((o) => {
+      {onglets.map((o) => {
         const actif = ecran === o;
         return (
           <Pressable
