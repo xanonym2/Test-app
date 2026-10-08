@@ -253,7 +253,12 @@ export const storylets = {
         "Ils sont sept, épaule contre épaule, en travers de la rue. Devant eux, les orcs ne chargent pas : ils cognent, ils reculent d'un pas, ils recommencent. Méthodiques.",
       base:
         "Sept hommes en travers de la rue. En face, ils cognent et reculent d'un pas, méthodiques.",
-      variantes: [],
+      variantes: [
+        {
+          si: [["flag", "f_vdg_voix_puits"]],
+          ajout: "Le soldat du puits, celui de ce matin, est au bout de la ligne.",
+        },
+      ],
     },
     regles_locales: [],
     options: [
@@ -279,7 +284,9 @@ export const storylets = {
               { stat_partie: { compteur: "orcs_vaincus", valeur: 3 } },
               { stat_partie: { compteur: "fleches_tirees", valeur: 3 } },
               { stat_partie: { compteur: "survivants", valeur: 2 } },
+              { flag: "f_vdg_ligne_sauves" },
               { xp: 30 },
+              { journal: "vdg_tir", majeure: true },
               { flag: "f_vdg_chaine_a" },
               { declenche: "ST-VDG-10" },
             ],
@@ -296,6 +303,7 @@ export const storylets = {
               { stat_partie: { compteur: "fleches_tirees", valeur: 3 } },
               { flag: "f_vdg_repere" },
               { xp: 25 },
+              { journal: "vdg_tir", majeure: true },
               { flag: "f_vdg_chaine_a" },
               { declenche: "ST-VDG-10" },
             ],
@@ -325,6 +333,7 @@ export const storylets = {
               { flag: "f_vdg_ligne_tenue" },
               { sante_heros: -6 },
               { xp: 35 },
+              { flag: "f_vdg_ligne_sauves" },
               { journal: "vdg_ligne", majeure: true },
               { flag: "f_vdg_chaine_a" },
               { declenche: "ST-VDG-10" },
@@ -343,6 +352,7 @@ export const storylets = {
               { etat: "blesse_leger" },
               { sante_heros: -10 },
               { xp: 25 },
+              { flag: "f_vdg_ligne_sauves" },
               { journal: "vdg_ligne", majeure: true },
               { flag: "f_vdg_chaine_a" },
               { declenche: "ST-VDG-10" },
@@ -370,6 +380,7 @@ export const storylets = {
               // Spec §5.4 : « ligne : cède immédiatement » — l'état 4, d'où qu'on parte.
               { stat_partie: { compteur: "razzia_temps", "=": 4 } },
               { stat_partie: { compteur: "survivants", valeur: 3 } },
+              { flag: "f_vdg_ligne_sauves" },
               { xp: 30 },
               { journal: "vdg_crie", majeure: true },
               { flag: "f_vdg_chaine_a" },
@@ -441,6 +452,11 @@ export const storylets = {
           si: [["local>=", "etape", 2]],
           remplace:
             "Tu frappes trois coups. Quelque chose racle de l'autre côté, puis la voix de Mathias, très bas, tout près du bois :\n\n« Ils sont vingt là-dedans. Femmes, gosses. Ils n'ont pas fait un bruit depuis que j'ai barré. Les orcs passent devant sans regarder. »\n\nUn silence.\n\n« Ne l'ouvre pas. »",
+        },
+        {
+          // On lui a demandé ce matin où était Jonas : il s'en souvient.
+          si: [["local>=", "etape", 2], ["flag", "f_vdg_jonas_situe"], ["!flag", "f_vdg_chaine_c"]],
+          ajout: "« Jonas était sur le toit des Ancel. Va voir. »",
         },
       ],
     },
@@ -641,6 +657,7 @@ export const storylets = {
               { objet: "OBJ-13", quantite: 1 },
               { stat_partie: { compteur: "razzia_temps", valeur: 1 } },
               { xp: 25 },
+              { journal: "vdg_appentis", majeure: true },
               { flag: "f_vdg_chaine_b" },
               { declenche: "ST-VDG-10" },
             ],
@@ -724,7 +741,7 @@ export const storylets = {
         {
           si: [["!flag", "f_vdg_jonas_situe"], ["!local", "trouve"]],
           remplace:
-            "Tu ne sais pas où il est. Il pouvait être n'importe où.",
+            "Ce matin, il descendait d'une échelle. Tu ne sais pas laquelle.",
         },
         {
           // Trouvé sur place : l'arrivée validée, que la première vue n'a pas montrée.
@@ -858,6 +875,7 @@ export const storylets = {
               { flag: "f_vdg_piste_jonas" },
               { stat_partie: { compteur: "razzia_temps", valeur: 2 } },
               { xp: 25 },
+              { journal: "vdg_sol", majeure: true },
               { flag: "f_vdg_chaine_c" },
               { declenche: "ST-VDG-10" },
             ],
@@ -924,8 +942,8 @@ export const storylets = {
         "Le cellier commun, au bas du village. Personne n'y pense.",
       variantes: [
         {
-          si: [["surcharge"]],
-          ajout: "Le sac tire déjà sur les épaules. Il faudra choisir.",
+          si: [["flag", "f_vdg_voix_sud"]],
+          ajout: "La charrette du marchand est restée devant le cellier, les sacs de sel encore dessus.",
         },
       ],
     },
@@ -953,6 +971,7 @@ export const storylets = {
               { objet: "OBJ-05", quantite: 2 },
               { stat_partie: { compteur: "razzia_temps", valeur: 2 } },
               { xp: 25 },
+              { journal: "vdg_charge", majeure: true },
               { flag: "f_vdg_chaine_d" },
               { declenche: "ST-VDG-10" },
             ],
@@ -968,6 +987,7 @@ export const storylets = {
               { objet: "OBJ-05", quantite: 1 },
               { stat_partie: { compteur: "razzia_temps", valeur: 2 } },
               { xp: 15 },
+              { journal: "vdg_charge", majeure: true },
               { flag: "f_vdg_chaine_d" },
               { declenche: "ST-VDG-10" },
             ],
@@ -993,6 +1013,7 @@ export const storylets = {
               { stat_partie: { compteur: "razzia_temps", valeur: 2 } },
               { stat_partie: { compteur: "survivants", valeur: 4 } },
               { xp: 30 },
+              { flag: "f_vdg_familles" },
               { journal: "vdg_prevenu", majeure: true },
               { flag: "f_vdg_chaine_d" },
               { declenche: "ST-VDG-10" },
@@ -1023,6 +1044,7 @@ export const storylets = {
               // Il roule, mais il faut le sortir de là : un temps de plus que le sac.
               { stat_partie: { compteur: "razzia_temps", valeur: 3 } },
               { xp: 25 },
+              { journal: "vdg_chariot", majeure: true },
               { flag: "f_vdg_chaine_d" },
               { declenche: "ST-VDG-10" },
             ],
@@ -1073,6 +1095,12 @@ export const storylets = {
         "Ils sortent de la forge. Les hommes de la ligne sont morts. Jonas n'est nulle part.",
       variantes: [
         {
+          // La chaîne A a tiré des hommes de la ligne : « morts », mais pas tous.
+          si: [["flag", "f_vdg_ligne_sauves"]],
+          remplace:
+            "La porte de la forge s'ouvre en fin d'après-midi. Ils sortent un par un, vingt, peut-être plus. Personne n'a rien.\n\nLes hommes de la ligne sont morts, presque tous. On compte ceux qui restent avant la nuit.\n\nL'échelle est toujours contre le mur des Ancel, le chaume à moitié posé. Jonas n'est ni parmi les morts, ni parmi les vivants.",
+        },
+        {
           si: [["ou", [["flag", "f_vdg_route_tete"]], [["flag", "f_vdg_route_flot"]]]],
           ajout:
             "Tu n'as rien vu de tout ça. Tu l'apprends sur le chemin, à la nuit, de ceux qui te rattrapent.",
@@ -1081,6 +1109,14 @@ export const storylets = {
           si: [["flag", "f_vdg_piste_jonas"]],
           ajout:
             "Tu sais dans quelle direction ils sont partis. C'est tout ce que tu sais.",
+        },
+        {
+          si: [["flag", "f_vdg_voix_autel"]],
+          ajout: "La vieille femme de l'autel sort la dernière, son balai à la main.",
+        },
+        {
+          si: [["flag", "f_vdg_familles"]],
+          ajout: "Les deux familles du cellier remontent du bas du village.",
         },
         {
           // Parti sur la route, on ne le trouve pas « déjà là » : il rattrape.
@@ -1100,7 +1136,54 @@ export const storylets = {
         observation: false,
         deplacement: false,
         sortie: true,
+        // Une seule réplique, la première qui tient : ce qui s'est passé à la
+        // porte, puis l'invitation du matin, puis l'absence. Le reste est validé.
         issues: [
+          {
+            reussite: true,
+            si: [["flag", "f_vdg_rdv_mathias"]],
+            texte:
+              "« Je n'ai pas ouvert. » Un temps. « Personne ne viendra le dire à leur place. » Il pose la masse et la reprend aussitôt, parce qu'il ne sait pas quoi faire de ses mains. « Je ne suis pas soldat. Je viens quand même. »",
+            effets: [
+              { compagnon: "PNJ-F1" },
+              { pnj_statut: { id: "PNJ-F2", valeur: "disparu" } },
+              { flag: "f_vdg_frappe" },
+              { acte: 2 },
+              { xp: 40 },
+              { journal: "vdg_mission", majeure: true },
+              { fin: "FIN-T1" },
+            ],
+          },
+          {
+            reussite: true,
+            si: [["flag", "f_vdg_invite_mathias"], ["objet", "OBJ-06"]],
+            texte:
+              "« Tu as ramené quelque chose. » Il regarde ce que tu portes, puis la rue. « Personne ne viendra le dire à leur place. » Il pose la masse et la reprend aussitôt, parce qu'il ne sait pas quoi faire de ses mains. « Je ne suis pas soldat. Je viens quand même. »",
+            effets: [
+              { compagnon: "PNJ-F1" },
+              { pnj_statut: { id: "PNJ-F2", valeur: "disparu" } },
+              { flag: "f_vdg_frappe" },
+              { acte: 2 },
+              { xp: 40 },
+              { journal: "vdg_mission", majeure: true },
+              { fin: "FIN-T1" },
+            ],
+          },
+          {
+            reussite: true,
+            si: [["!flag", "f_vdg_chaine_b"]],
+            texte:
+              "« Tu n'es pas venu à la forge. » Il te regarde. « Personne ne viendra le dire à leur place. » Il pose la masse et la reprend aussitôt, parce qu'il ne sait pas quoi faire de ses mains. « Je ne suis pas soldat. Je viens quand même. »",
+            effets: [
+              { compagnon: "PNJ-F1" },
+              { pnj_statut: { id: "PNJ-F2", valeur: "disparu" } },
+              { flag: "f_vdg_frappe" },
+              { acte: 2 },
+              { xp: 40 },
+              { journal: "vdg_mission", majeure: true },
+              { fin: "FIN-T1" },
+            ],
+          },
           {
             reussite: true,
             si: [],
@@ -1123,10 +1206,15 @@ export const storylets = {
 };
 
 export const journal = {
+  vdg_tir: "Il a tiré trois flèches depuis le toit du puits.",
   vdg_ligne: "Il a pris place dans la ligne, entre deux hommes qu'il connaissait depuis l'enfance.",
   vdg_crie: "Il a crié aux derniers de reculer vers la forge.",
   vdg_porte: "Il est resté une minute à parler à son frère à travers la porte barrée.",
+  vdg_appentis: "Il a pris ce qui restait sous l'appentis de la forge.",
+  vdg_sol: "Il a lu au pied de l'échelle des traces qui partaient vers le sud.",
   vdg_prevenu: "Il a prévenu deux familles cachées derrière le cellier avant de charger.",
+  vdg_charge: "Il a chargé au cellier commun tout ce qu'il pouvait porter.",
+  vdg_chariot: "Il a sorti du cellier un chariot à la ridelle cassée.",
   vdg_parti_tot: "Il a pris la route pendant qu'ils étaient encore sur la place.",
   vdg_parti_tard: "Il est parti au milieu des autres, quand le chemin était déjà plein.",
   vdg_mission: "Personne ne restait pour prévenir la Couronne. Il est parti le faire.",

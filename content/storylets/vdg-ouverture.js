@@ -93,7 +93,7 @@ export const storylets = {
               { stat_partie: { compteur: "vdg_matinee", valeur: -1 } },
               { flag: "f_vdg_dette_mathias" },
               { xp: 5 },
-              { journal: "vdg_demande", majeure: true },
+              { journal: "vdg_demande_deux", majeure: true },
               { declenche: "ST-VDG-02" },
             ],
           },
@@ -215,6 +215,8 @@ export const storylets = {
               "« Avec quoi ? Ma masse ? » Il rit. « Ramène quelque chose, je le ferai cuire. »",
             effets: [
               { confiance: { pnj: "PNJ-F1", valeur: 1 } },
+              { flag: "f_vdg_invite_mathias" },
+              { journal: "vdg_invite", majeure: true },
             ],
           },
         ],
@@ -268,6 +270,18 @@ export const storylets = {
       base:
         "La place, la route du sud, l'autel. On n'a pas le temps de tout prendre.",
       variantes: [
+        // Ce que la matinée a laissé se lit dès l'arrivée : le choix du seuil
+        // devient visible au moment où il compte.
+        {
+          si: [["tour", 1], ["local>=", "restantes", 3]],
+          remplace:
+            "Il faut passer par la place pour sortir du village. Trois chemins y mènent, et la matinée est encore entière : tu peux en prendre plus d'un.",
+        },
+        {
+          si: [["tour", 1], ["local<=", "restantes", 1]],
+          remplace:
+            "Il faut passer par la place pour sortir du village. Trois chemins y mènent, mais la matinée est déjà entamée : il n'y en aura qu'un.",
+        },
         {
           si: [["local<=", "restantes", 0]],
           ajout: "Le soleil monte. Les bois n'attendront pas.",
@@ -307,6 +321,7 @@ export const storylets = {
             effets: [
               { local: "restantes", "+=": -1 },
               { stat_partie: { compteur: "vdg_voix", valeur: 1 } },
+              { flag: "f_vdg_voix_puits" },
               { xp: 5 },
             ],
           },
@@ -330,6 +345,7 @@ export const storylets = {
             effets: [
               { local: "restantes", "+=": -1 },
               { stat_partie: { compteur: "vdg_voix", valeur: 1 } },
+              { flag: "f_vdg_voix_sud" },
               { xp: 5 },
             ],
           },
@@ -353,6 +369,7 @@ export const storylets = {
             effets: [
               { local: "restantes", "+=": -1 },
               { stat_partie: { compteur: "vdg_voix", valeur: 1 } },
+              { flag: "f_vdg_voix_autel" },
               { xp: 5 },
             ],
           },
@@ -664,5 +681,7 @@ export const storylets = {
 export const journal = {
   vdg_pointes: "Il a pris la matinée pour tailler trois pointes de plus.",
   vdg_demande: "Il a compté sur son frère pour les trois pointes qui manquaient.",
+  vdg_demande_deux: "Il a compté sur son frère pour ses pointes ; il n'en restait que deux.",
+  vdg_invite: "Il a proposé à Mathias de venir chasser avec lui.",
   vdg_parti_court: "Il est parti chasser avec neuf flèches, en sachant qu'il en manquait trois.",
 };

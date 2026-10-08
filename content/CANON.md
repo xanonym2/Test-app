@@ -43,6 +43,14 @@ dès qu'un storylet l'affirme, il devient vrai pour tous les autres.
 - **Jonas, le matin de la razzia** · sur un toit, une botte de chaume sous le
   bras, parfaitement ordinaire. Après : ni parmi les morts, ni parmi les
   vivants. Son échelle reste contre le mur des Ancel.
+- **Le soldat du puits** · celui qui attendait la relève, le matin de la razzia ;
+  au bout de la ligne quand elle se forme. `ST-VDG-03`, `ST-VDG-11` · chapitre 1
+- **Le marchand de la route du sud** · sa charrette reste devant le cellier
+  commun pendant la razzia, les sacs de sel encore dessus. `ST-VDG-14`
+- **La vieille femme de l'autel** · cachée dans la forge avec les autres ; elle
+  en sort la dernière, son balai à la main. `ST-VDG-20`
+- **Mathias à la porte** · il n'ouvre pas, et il le dit après. S'il a été
+  interrogé le matin, il renvoie son frère vers le toit des Ancel.
 
 ## Objets et choses vues
 

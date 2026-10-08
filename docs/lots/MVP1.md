@@ -2296,3 +2296,65 @@ disant. Rien d'autre n'a bougé.
 
 La v3 bouge d'un cheveu, par la pression corrigée : jours 7,9, survie qui mord
 17/30. Rien d'autre.
+
+
+---
+
+## 8. Personnalisation — ce que la tranche rend des choix passés
+
+Décision de Tom après l'audit : **augmenter la cohérence et la personnalisation
+de la narration en fonction des choix passés.** Aucune scène ajoutée : des
+rappels d'une phrase, posés au moment où le choix compte, et la dernière
+réplique de Mathias qui dépend de ce qui s'est passé entre les frères.
+
+### 8.1 Les rappels
+
+| Choix | Où il revient | Fréquence (600 parties) |
+|---|---|---|
+| Ce que la matinée a laissé (seuil, forge) | l'arrivée de la traversée dit si la matinée est entière ou entamée | 8 % · 75 % |
+| La voix du puits (traversée) | le soldat est au bout de la ligne (chaîne A) | 20 % |
+| La voix du sud | la charrette du marchand devant le cellier (chaîne D) | 11 % |
+| La voix de l'autel | la vieille femme sort la dernière de la forge (l'après) | 54 % |
+| Demander où est Jonas | Mathias, à la porte : « Jonas était sur le toit des Ancel. Va voir. » | 20 % |
+| Ne pas l'avoir demandé | « Ce matin, il descendait d'une échelle. Tu ne sais pas laquelle. » | 19 % |
+| Sauver des hommes de la ligne | « Les hommes de la ligne sont morts, presque tous. » | 20 % |
+| Prévenir les familles du cellier | elles remontent du bas du village (l'après) | 17 % |
+| Parler à Mathias à travers la porte | « Je n'ai pas ouvert. » | 23 % |
+| Lui proposer de venir, et ramener la chasse | « Tu as ramené quelque chose. » | 20 % |
+| Ne pas être allé à la forge | « Tu n'es pas venu à la forge. » | 40 % |
+
+Une partie en rencontre **3 à 5** ; aucune n'en rencontre zéro. Les trois
+voix de la traversée, qui ne servaient à rien, ont chacune une suite : le
+choix de la matinée — combien de voix — se paie désormais dans la razzia.
+
+### 8.2 Le journal
+
+Le bilan rend **4,2 décisions** par partie au lieu de 3,2 : le tir depuis le
+puits, l'appentis de la forge, les traces au pied de l'échelle, le cellier
+chargé, le chariot, l'invitation à Mathias. « Les trois pointes qui
+manquaient » ne se lit plus quand il n'en restait que deux.
+
+### 8.3 Contrat
+
+**M28 (extension)** : les rappels — un `ajout` de 20 mots au plus qui rend un
+choix passé — ne comptent pas dans le plafond de 3 variantes ; cinq au plus
+par storylet. Le plafond protégeait d'une chaîne logée dans un storylet, ce
+qu'une phrase ne peut pas faire. Il empêchait l'après de rendre ce que le
+joueur avait fait. Le vérificateur compte les deux séparément.
+
+### 8.4 Écarts au texte validé (s'ajoutent au §7.8)
+
+| Où | Écart | Pourquoi |
+|---|---|---|
+| ST-VDG-03 | deux versions de l'arrivée, selon la matinée ; la validée reste pour la matinée « presque entière » | la règle était invisible |
+| ST-VDG-13 | « Il pouvait être n'importe où » → « Ce matin, il descendait d'une échelle. Tu ne sais pas laquelle. » | tout joueur l'a vu sur l'échelle au beat 3 |
+| ST-VDG-20 | « sont morts, presque tous » quand la chaîne A a sauvé des hommes | sinon l'arrivée démentait la chaîne |
+| ST-VDG-20 Z | une phrase de Mathias avant la réplique validée, selon le parcours ; la réplique validée est intacte dans les quatre cas | personnalisation |
+| ST-VDG-14 | variante « le sac tire » (de moi, jamais vraie) retirée | morte |
+
+### 8.5 Ce que ça ne règle pas
+
+Partir tôt, le chariot et neuf flèches contre douze n'ont toujours pas de
+conséquence mécanique dans la tranche : leurs retombées sont celles de la
+route (MVP 2) et de la couche tactique (MVP 3). La tranche les rend au moins
+au journal.

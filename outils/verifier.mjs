@@ -236,8 +236,14 @@ function verifier() {
     verifStyle(id, 'arrivee', s.texte?.arrivee, 110);
     verifStyle(id, 'base', s.texte?.base, 70);
 
-    const nbVariantes = (s.texte?.variantes ?? []).length;
+    // §0 r. 12 : trois variantes au plus. Les rappels — un ajout de 20 mots au
+    // plus qui rend un choix passé — se comptent à part, cinq au plus (M28).
+    const variantes = s.texte?.variantes ?? [];
+    const estRappel = (v) => !v.remplace && v.ajout && mots(v.ajout) <= 20;
+    const nbVariantes = variantes.filter((v) => !estRappel(v)).length;
+    const nbRappels = variantes.filter(estRappel).length;
     if (nbVariantes > 3) note(0, id, 'trop_de_variantes', String(nbVariantes));
+    if (nbRappels > 5) note(0, id, 'trop_de_rappels', String(nbRappels));
     for (const [i, v] of (s.texte?.variantes ?? []).entries()) {
       verifConditions(id, 'variante' + i, v.si);
       verifStyle(id, 'variante' + i, v.ajout, 30);

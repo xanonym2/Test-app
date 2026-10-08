@@ -1,6 +1,6 @@
 # Contrat de contenu — Les Terres Voilées
 
-**Version 2.2** — 8 octobre 2026 · remplace la v1 « Val-de-Garde (MVP) » · 2.1 : arbitrages A1 à A3 rendus · 2.2 : M19 à M27, après l'audit du MVP 1
+**Version 2.2** — 8 octobre 2026 · remplace la v1 « Val-de-Garde (MVP) » · 2.1 : arbitrages A1 à A3 rendus · 2.2 : M19 à M28, après l'audit du MVP 1
 
 Ce document est la **spécification mécanique** du contenu. Il fixe les
 identifiants, les schémas de données, les valeurs d'équilibrage et les
@@ -90,6 +90,7 @@ comme un assouplissement.
 | M25 | §6, §16 | **`repare`** sur un objet : combien d'usure une unité rend ; le moteur reconnaît le matériel de réparation à ce champ, l'écran sait s'il y en a. **`apres`** sur une fin : la phrase de clôture du bilan, à la place du pied générique | Extension | Non |
 | M26 | §5, §4 r.9, §0 bis r.5 | **`stat_partie` accepte `'='`** — poser l'état d'un compteur, comme `local` : « la ligne cède » pose l'horloge à 4, elle ne saute pas de 4. **Règle 9 étendue au compagnon** : une issue tirée ne le tue ni par `sante_compagnon` ni par `pnj_statut: mort`. **§0 bis r.5 précisée** : elle vise une *unité mise hors de combat* — tuée, neutralisée, mise en fuite. Se dérober (`combats_evites` : se cacher, contourner, laisser passer) n'est pas épargner et peut rapporter moins | Extension · Clarification | Oui — `pnj_statut: mort` dans une issue tirée, clés de `cout` et `lieu.type` inconnus, sortie visible à chaque tour d'une scène déclenchée |
 | M27 | §4 | **Une fin ne se perd pas.** `ST-FIN-01` n'est plus unique : s'éloigner de la convergence par la carte la rendait inatteignable, et la partie ne finissait plus que par la mort. Elle revient au prochain lieu | Correction | Oui — une scène qui porte une fin est déclenchée ou non unique (`fin_perdable`) |
+| M28 | §0 r. 12 | **Les rappels.** Un `ajout` de 20 mots au plus qui rend un choix passé ne compte pas dans le plafond de 3 variantes ; cinq au plus par storylet. Le plafond protégeait d'une chaîne logée dans un storylet, ce qu'une phrase ne peut pas faire ; il empêchait l'après de la razzia de rendre ce que le joueur avait fait | Extension | Oui — plafond de 3 hors rappels, plafond de 5 rappels |
 
 ### Arbitrages
 
@@ -125,7 +126,9 @@ Elles viennent du brief et priment sur toute considération d'auteur.
 11. Longueurs : `texte.arrivee` ≤ 110 mots · `texte.base` ≤ 70 mots ·
     `variantes[].ajout` ≤ 30 mots · `issues[].texte` ≤ 70 mots ·
     `libelle` ≤ 12 mots.
-12. **2 à 3 variantes** conditionnelles par storylet, pas plus.
+12. **2 à 3 variantes** conditionnelles par storylet, pas plus. **[v2.2]** Les
+    **rappels** n'y comptent pas : un `ajout` de 20 mots au plus qui rend au
+    joueur un choix qu'il a fait plus tôt. Cinq au plus par storylet (M28).
 
 ## 0 bis. Règles du récit — non négociables **[v2]**
 
