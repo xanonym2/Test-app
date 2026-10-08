@@ -8,7 +8,7 @@ import { ouvrirStorylet } from '../engine/storylets.js';
 import { depenserPointStat, apprendreCompetence, xpCompagnons } from '../engine/progression.js';
 import { sauvegarder, charger, effacer } from '../engine/save.js';
 import { retirerObjet } from '../engine/items.js';
-import { sceneVerrouillee } from '../engine/derive.js';
+import { sceneVerrouillee, materielReparation } from '../engine/derive.js';
 import { appliquerEffets } from '../engine/effects.js';
 
 const Ctx = createContext(null);
@@ -31,6 +31,8 @@ export function FournisseurJeu({ children }) {
   const [message, setMessage] = useState(null);
   const ref = useRef(null);
   ref.current = E;
+  const sceneRef = useRef(scene);
+  sceneRef.current = scene;
 
   const pousser = useCallback((etat, sc) => {
     // Le fil affiché fait partie de « revenir exactement au même point » :
@@ -157,15 +159,26 @@ export function FournisseurJeu({ children }) {
     pousser(etat, sc);
   }, [pousser]);
 
+  // Un geste hors scène — inventaire, point de stat, compétence — peut rendre
+  // une option indisponible, ou disponible : les options affichées se
+  // recalculent, et la sélection tombe si elle n'y est plus. Le fil ne bouge pas.
+  const pousserOptions = useCallback((etat) => {
+    const s = getDb().storylets[etat.systeme.storylet_courant];
+    if (!s || etat.fin) { pousser(etat); return; }
+    const options = optionsVisibles(etat, s);
+    setSelection((sel) => (options.some((o) => o.id === sel && !o.indisponible) ? sel : null));
+    pousser(etat, { ...sceneRef.current, options, storylet: s });
+  }, [pousser]);
+
   const attribuerPoint = useCallback((stat) => {
     const etat = ref.current;
-    if (depenserPointStat(etat, stat)) pousser(etat);
-  }, [pousser]);
+    if (depenserPointStat(etat, stat)) pousserOptions(etat);
+  }, [pousserOptions]);
 
   const apprendre = useCallback((id) => {
     const etat = ref.current;
-    if (apprendreCompetence(etat, id)) pousser(etat);
-  }, [pousser]);
+    if (apprendreCompetence(etat, id)) pousserOptions(etat);
+  }, [pousserOptions]);
 
   const equiper = useCallback((uid) => {
     const etat = ref.current;
@@ -176,16 +189,16 @@ export function FournisseurJeu({ children }) {
     } else if (it.categorie === 'protection') {
       etat.equipement.protection = etat.equipement.protection === uid ? null : uid;
     }
-    pousser(etat);
-  }, [pousser]);
+    pousserOptions(etat);
+  }, [pousserOptions]);
 
   const jeter = useCallback((uid) => {
     const etat = ref.current;
     const it = etat.inventaire.find((i) => i.uid === uid);
     if (!it) return;
     retirerObjet(etat, it.base, 1);
-    pousser(etat);
-  }, [pousser]);
+    pousserOptions(etat);
+  }, [pousserOptions]);
 
   const utiliser = useCallback((uid) => {
     const etat = ref.current;
@@ -195,18 +208,19 @@ export function FournisseurJeu({ children }) {
     if (!base?.effets_consommation) return;
     appliquerEffets(etat, base.effets_consommation);
     retirerObjet(etat, it.base, 1);
-    pousser(etat);
-  }, [pousser]);
+    pousserOptions(etat);
+  }, [pousserOptions]);
 
   const reparer = useCallback((uid) => {
     const etat = ref.current;
     const it = etat.inventaire.find((i) => i.uid === uid);
     if (!it || it.usure === null || it.usure >= 100) return;
-    if (retirerObjet(etat, 'OBJ-13', 1) < 1) { setMessage('materiaux'); return; }
-    it.usure = Math.min(100, it.usure + 30);
+    const materiel = materielReparation(etat);
+    if (!materiel.id || retirerObjet(etat, materiel.id, 1) < 1) { setMessage('materiaux'); return; }
+    it.usure = Math.min(100, it.usure + materiel.valeur);
     etat.stats_partie.objets_repares += 1;
-    pousser(etat);
-  }, [pousser]);
+    pousserOptions(etat);
+  }, [pousserOptions]);
 
   const valeur = {
     E, ecran, setEcran, scene, selection, setSelection, message, setMessage,

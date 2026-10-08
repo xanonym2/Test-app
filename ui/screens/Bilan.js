@@ -110,8 +110,11 @@ export function EcranBilan() {
         </Bloc>
       ) : null}
 
-      {montre('survivants') && b.pnj.length ? (
+      {montre('survivants') && (b.pnj.length || b.compteurs.survivants > 0) ? (
         <Bloc titre={l.survivants ?? 'Qui a survécu'}>
+          {b.compteurs.survivants > 0 ? (
+            <Ligne gauche={db.libelles.lignes_bilan?.sauves ?? 'Sortis du village grâce à toi'} droite={b.compteurs.survivants} />
+          ) : null}
           {b.pnj.map((p) => (
             <Ligne
               key={p.id}
@@ -195,7 +198,7 @@ export function EcranBilan() {
 
       <Bouton variante="fort" onPress={abandonner}>Relancer une partie</Bouton>
       <Petit style={{ marginTop: ESP.sm, textAlign: 'center' }}>
-        Rien ne sera conservé. Sauf ce que tu sais maintenant.
+        {fin?.apres ?? 'Rien ne sera conservé. Sauf ce que tu sais maintenant.'}
       </Petit>
     </Page>
   );

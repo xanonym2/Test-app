@@ -170,3 +170,20 @@ export function sceneVerrouillee(E) {
   if (!id) return false;
   return (getDb().storylets[id]?.lieu?.type ?? 'partout') === 'declenche_uniquement';
 }
+
+// Le matériel de réparation se reconnaît à ce qu'il déclare (`repare`) : le
+// moteur n'a aucun identifiant d'objet écrit, et l'écran sait s'il y en a.
+export function materielReparation(E) {
+  const db = getDb();
+  const id = Object.keys(db.objets).find((k) => db.objets[k].repare !== undefined) ?? null;
+  const quantite = id
+    ? E.inventaire.filter((i) => i.base === id).reduce((s, i) => s + (i.quantite ?? 1), 0)
+    : 0;
+  return { id, quantite, valeur: id ? db.objets[id].repare : 0 };
+}
+
+// La confiance d'un PNJ se lit à un seul endroit : la valeur sociale si elle
+// existe, sinon la fiche. Effets, conditions et recrutement lisent ici.
+export function confianceDe(E, id) {
+  return E.social.confiance[id] ?? getDb().pnj[id]?.confiance_initiale ?? 0;
+}

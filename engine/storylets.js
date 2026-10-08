@@ -145,8 +145,10 @@ function choisirIssue(E, o) {
 export function resoudreOption(E, optionId) {
   const db = getDb();
   const s = db.storylets[E.systeme.storylet_courant];
-  const o = (s.options ?? []).find((x) => x.id === optionId);
-  if (!o) return null;
+  // L'option est revérifiée au moment de résoudre, pas seulement à l'affichage :
+  // entre les deux, l'inventaire a pu changer.
+  const o = optionsVisibles(E, s).find((x) => x.id === optionId);
+  if (!o || o.indisponible) return null;
 
   // Coûts payés d'abord.
   const cout = o.cout ?? {};

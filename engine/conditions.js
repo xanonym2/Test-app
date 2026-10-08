@@ -1,7 +1,7 @@
 // Évaluateur de conditions.
 // Une condition est un tableau terse : [operateur, ...arguments].
 // Une liste de conditions est un ET logique. ['ou', listeA, listeB, ...] pour un OU.
-import { tousLesEtats, encombrement } from './derive.js';
+import { tousLesEtats, encombrement, confianceDe } from './derive.js';
 
 function invStack(E, objetId) {
   return E.inventaire
@@ -72,8 +72,8 @@ const OPS = {
   compagnon: (E, id) => E.compagnons.some((c) => c.id === id && c.statut === 'actif'),
   '!compagnon': (E, id) => !E.compagnons.some((c) => c.id === id && c.statut === 'actif'),
   'compagnons>=': (E, n) => E.compagnons.filter((c) => c.statut === 'actif').length >= n,
-  'confiance>=': (E, id, n) => (E.social.confiance[id] ?? 0) >= n,
-  'confiance<=': (E, id, n) => (E.social.confiance[id] ?? 0) <= n,
+  'confiance>=': (E, id, n) => confianceDe(E, id) >= n,
+  'confiance<=': (E, id, n) => confianceDe(E, id) <= n,
   pnj_statut: (E, id, v) => (E.social.pnj_statut[id] ?? null) === v,
   'reputation>=': (E, f, n) => (E.social.reputation[f] ?? 0) >= n,
   'reputation<=': (E, f, n) => (E.social.reputation[f] ?? 0) <= n,

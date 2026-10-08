@@ -88,9 +88,10 @@ export function nouvellePartie({ depart = null, mutateurs = null, seed = null } 
   const E = etatVierge(seed ?? creerSeed());
 
   E.partie.depart = depart ?? tirerDepart(E);
-  E.partie.mutateurs = mutateurs ?? tirerMutateurs(E, 1 + (entier(E.systeme.rng, 2).valeur));
-
   const d = db.departs[E.partie.depart];
+  // Un départ peut fixer ses mutateurs — une tranche de campagne est un package
+  // défini, pas une variante de run tirée au sort.
+  E.partie.mutateurs = mutateurs ?? d.mutateurs ?? tirerMutateurs(E, 1 + (entier(E.systeme.rng, 2).valeur));
   // Équipement de départ commun, puis variation propre au départ.
   for (const o of [...(db.meta.inventaire_initial ?? []), ...(d.inventaire ?? [])]) {
     ajouterObjet(E, creerObjet(E, o.base, { quantite: o.quantite ?? 1, usure: o.usure }));
@@ -104,7 +105,9 @@ export function nouvellePartie({ depart = null, mutateurs = null, seed = null } 
     if (mut?.effets) appliquerEffets(E, mut.effets);
   }
 
-  E.temps.meteo = tirerMeteo(E);
+  // Un départ peut fixer l'heure et le ciel de son premier matin.
+  if (d.segment_initial !== undefined) E.temps.segment = d.segment_initial;
+  E.temps.meteo = d.meteo_initiale ?? tirerMeteo(E);
   E.geo.position = db.meta.point_depart;
   E.geo.points_decouverts = [...(db.meta.points_initiaux ?? [])];
 

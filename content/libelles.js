@@ -150,11 +150,15 @@ export const libelles = {
     equipe: "Ton équipe",
     ennemis: "Ennemis vaincus",
     zones_explorees: "Zones explorées",
-    zones_manquees: "Zones jamais atteintes",
     decisions: "Décisions",
     temps: "Temps écoulé",
     manque: "Ce que tu as manqué",
     badges: "Badges",
+  },
+
+  // Lignes du bilan — pas des blocs : une fin ne peut pas les demander.
+  lignes_bilan: {
+    sauves: "Sortis du village grâce à toi",
   },
 
   nav: {

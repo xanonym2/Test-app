@@ -8,7 +8,7 @@ export const competences = {
     groupe: "G1",
     niveau_min: 2,
     type: "passif",
-    description: "Vous tirez d'aplomb même le souffle court et la main froide. Les tirs longs ou de biais restent tentables là où un autre baisserait l'arc.",
+    description: "Tu tires d'aplomb même le souffle court et la main froide. Les tirs longs ou de biais restent tentables là où un autre baisserait l'arc.",
     effet_resume: "Ouvre et fiabilise les options de tir et de chasse.",
   },
 
@@ -18,7 +18,7 @@ export const competences = {
     groupe: "G1",
     niveau_min: 2,
     type: "passif",
-    description: "Vous posez le pied où le sol ne parle pas et lisez le vent avant d'avancer. Approcher sans être vu, ou décrocher sans être suivi, devient une vraie option.",
+    description: "Tu poses le pied où le sol ne parle pas et tu lis le vent avant d'avancer. Approcher sans être vu, ou décrocher sans être suivi, devient une vraie option.",
     effet_resume: "Ouvre des options d'approche et de retrait discrets.",
   },
 
@@ -28,7 +28,7 @@ export const competences = {
     groupe: "G2",
     niveau_min: 4,
     type: "passif",
-    description: "Vous tenez votre distance de bras et frappez quand l'autre s'ouvre. Un corps à corps engagé tourne plus vite en votre faveur.",
+    description: "Tu tiens ta distance de bras et tu frappes quand l'autre s'ouvre. Un corps à corps engagé tourne plus vite en ta faveur.",
     effet_resume: "Meilleures issues au corps à corps.",
   },
 
@@ -38,7 +38,7 @@ export const competences = {
     groupe: "G2",
     niveau_min: 4,
     type: "activable",
-    description: "Vous nettoyez, recousez et serrez une plaie avec ce que vous avez sur vous. Cela se fait au calme, jamais pendant un affrontement.",
+    description: "Tu nettoies, tu recouds et tu serres une plaie avec ce que tu as sur toi. Cela se fait au calme, jamais pendant un affrontement.",
     effet_resume: "Referme une blessure légère sans consommer de baume.",
   },
 
@@ -48,7 +48,7 @@ export const competences = {
     groupe: "G3",
     niveau_min: 6,
     type: "passif",
-    description: "Vous dites clairement quoi faire et on vous suit sans discuter. Vos compagnons vous accordent leur confiance plus vite et tiennent mieux quand ça tourne mal.",
+    description: "Tu dis clairement quoi faire et on te suit sans discuter. Tes compagnons t'accordent leur confiance plus vite et tiennent mieux quand ça tourne mal.",
     effet_resume: "Confiance des compagnons plus haute, appui plus efficace.",
   },
 
@@ -58,7 +58,7 @@ export const competences = {
     groupe: "G3",
     niveau_min: 6,
     type: "passif",
-    description: "Vous datez une trace, lisez le sens de la marche et comptez les passages. Le terrain vous dit qui est passé et depuis combien de temps.",
+    description: "Tu dates une trace, tu lis le sens de la marche et tu comptes les passages. Le terrain te dit qui est passé et depuis combien de temps.",
     effet_resume: "Ouvre des options de pistage et de repérage du terrain.",
   },
 
@@ -68,7 +68,7 @@ export const competences = {
     groupe: "G4",
     niveau_min: 8,
     type: "activable",
-    description: "Vous laissez passer les premiers échanges et mettez tout dans le suivant. Un adversaire déjà entamé tombe sans pouvoir répondre.",
+    description: "Tu laisses passer les premiers échanges et tu mets tout dans le suivant. Un adversaire déjà entamé tombe sans pouvoir répondre.",
     effet_resume: "Achève un adversaire affaibli, une fois par affrontement.",
   },
 
@@ -78,7 +78,7 @@ export const competences = {
     groupe: "G4",
     niveau_min: 8,
     type: "passif",
-    description: "Vous répartissez la charge et marchez sans vous plaindre. Vous emportez plus et vous arrivez moins entamé au bout de la journée.",
+    description: "Tu répartis la charge et tu marches sans te plaindre. Tu emportes plus et tu arrives moins entamé au bout de la journée.",
     effet_resume: "Charge portée plus élevée, marche moins coûteuse.",
   },
 
@@ -88,7 +88,7 @@ export const competences = {
     groupe: "G4",
     niveau_min: 8,
     type: "passif",
-    description: "Vous rapprochez ce que vous avez vu de ce qu'on vous a raconté. Ce qui ne colle pas vous saute aux yeux et vous savez quoi demander.",
+    description: "Tu rapproches ce que tu as vu de ce qu'on t'a raconté. Ce qui ne colle pas te saute aux yeux et tu sais quoi demander.",
     effet_resume: "Ouvre des lectures et des questions inaccessibles autrement.",
   },
 };

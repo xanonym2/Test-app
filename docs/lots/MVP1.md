@@ -1943,7 +1943,7 @@ Mesure sur 200 parties par politique (`mesure-stricte.mjs`, scratchpad) :
 
 | Politique | Avant | Après |
 |---|---|---|
-| **Stricte** — toujours une chaîne, jamais renoncer | 2 : 52 % · **3 : 45 %** · 4 : 2 % | 2 : 67 % · 3 : 33 % · 4 : 0 |
+| **Stricte** — toujours une chaîne, jamais renoncer | 2 : 52 % · **3 : 45 %** · 4 : 2 % | 2 : 75 % · 3 : 25 % · 4 : 0 |
 | Gourmande — une chaîne, renonce parfois | 2 : 35 % · 3 : 60 % | 1 : 20 % · 2 : 75 % · 3 : 5 % |
 | Aléatoire | 0-3, moy 1,07 | 0-3, moy 0,94 |
 
@@ -2027,6 +2027,117 @@ trouvailles retenues :
   départ (stats 2/3/3/2) : bonus inconditionnels. Passés à 4 dans la razzia : un
   point dépensé après l'ouverture les débloque.
 
+### 7.4 bis Fuites et impasses — second lecteur
+
+- **« Nouvelle partie » écrasait la partie en cours d'un seul tap**, sans
+  confirmation, sur un écran où le pouce part vite. L'écran titre demande un
+  second geste tant qu'une sauvegarde existe : « Effacer et recommencer » ou
+  « Garder la partie en cours ».
+- **Les options affichées survivaient à l'inventaire.** Choisir « Tirer »,
+  ranger l'arc, revenir : le choix se validait quand même, car
+  `resoudreOption` ne revérifiait ni `requiert`, ni `apparait_si`, ni le coût.
+  Le moteur revérifie au moment de résoudre, et l'interface recalcule les
+  options après chaque geste d'inventaire — la sélection tombe si elle n'y est
+  plus.
+- **« Tirer depuis le toit du puits » exigeait trois flèches, pas l'arc.** Il
+  l'exige, comme la chasse.
+- **« Les orcs pressent » retardait la pression d'un jour** au lieu de
+  l'avancer : signe inversé dans `engine/time.js`. Socle v3 ; l'état de
+  référence v3 bouge d'un cheveu.
+- **`D04` tirait un ou deux mutateurs** comme un run v3, alors que le package
+  d'une tranche est défini. Un départ peut fixer ses mutateurs (M23) ; `D04`
+  n'en a aucun.
+- **L'écran « Le jeu s'est arrêté »** n'avait pas de bouton : un plantage de
+  rendu lié à l'état aurait bloqué le téléphone pour de bon. Un bouton efface
+  la partie et rend le titre.
+- **Le robot du vérificateur s'évadait** d'une scène déclenchée sans option
+  — ce que l'interface ne fait plus. Il y reste coincé comme le joueur : une
+  impasse est désormais un plantage mesuré. Et un auto-test rejoue une
+  sauvegarde faite au milieu de la razzia : même scène, mêmes options, même
+  état.
+
+### 7.4 ter Téléphone et équilibrage — troisième et quatrième lecteurs
+
+Le troisième a joué dans Chromium en 390 × 844 et 390 × 664 (Safari avec ses
+barres) ; le quatrième a joué 4 800 parties sous seize politiques.
+
+- **44 px morts en haut sur le web** : le padding d'encoche iOS s'appliquait
+  aussi au navigateur. `Platform.select`, et le panneau d'options se borne à
+  40 % de la hauteur sur un petit écran au lieu de 290 px fixes.
+- **Le fil s'ouvrait défilé à la fin** : l'arrivée d'une scène nouvelle était
+  cachée selon la longueur de la précédente. On ne suit le fil qu'au tour
+  suivant de la même scène ; une scène nouvelle se lit depuis le haut.
+- **« Le jour se lève » sous « Milieu de journée »**, et un gel tiré au sort
+  sous « Le soleil monte » : un départ fixe son premier matin (M24). `D04`
+  ouvre au matin, ciel clair.
+- **« Une partie suivante saura qu'il est tombé »** puis, trois panneaux plus
+  bas, « Rien ne sera conservé » : une fin dit elle-même ce qui suit
+  (`apres`, M25). `FIN-T1` : « Le chapitre suivant partira d'ici. »
+- **« Réparer (matériaux) » était un bouton mort** sans matériel, et le
+  contrôleur de session portait un identifiant d'objet en dur. `OBJ-13` déclare
+  `repare: 30`, le moteur le reconnaît à ça (`materielReparation`), le bouton se
+  grise et le dit.
+- **Les neuf fiches de compétences vouvoyaient** ; elles tutoient, comme tout
+  le jeu.
+- **`survivants`, la récompense de la chaîne A et de « prévenir », n'était
+  affiché nulle part.** Le bilan le montre : « Sortis du village grâce à toi ».
+- **« Chercher un chariot » dominait « Charger »** : même coût, certain, deux
+  fois plus. Le chariot coûte 3 : vite et léger contre lent et lourd.
+- **La compétence du niveau 2 n'avait aucun effet dans la tranche.** Ce que
+  sa fiche promet est branché : « Main sûre à l'arc » +10 sur le tir de la
+  chasse et depuis le toit du puits ; « Pas silencieux » +10 sur la descente
+  vers le chevreuil, la rue vers la forge, l'attente de l'orc. Aucune option
+  nouvelle.
+- **« Demander à quelqu'un qui court »** s'épuisait au premier refus et tuait
+  la chaîne C sans préparation ; on retente sur place, un temps la tentative.
+- **« Ce que tu n'as pas fait, tu ne le feras plus »** se lisait à 4, au
+  moment précis où une troisième chaîne restait jouable — dans 100 % des
+  parties gourmandes. La phrase passe au retrait (7), où elle est vraie. Un
+  déplacement dans le texte validé, pas une coupe.
+- **L'XP de l'ouverture** : une réplique valait 10, soit le niveau 2 avant la
+  chasse dans 85 % des parties et quatre niveaux en vingt minutes (6 à 11 XP
+  par minute contre 1,5 en v3). Les répliques valent 5. Le barème complet de
+  la tranche contre la courbe v3 reste une décision pour Tom (§7.6).
+
+### 7.4 quater Relecture adverse du diff
+
+Quatre relecteurs ont repassé le diff pour le casser. Ce qui a tenu et a été
+corrigé :
+
+- **La chasse dévorait la journée** : quatre options à 1 segment, la cloche
+  sonnait « Nuit » et la forge s'ouvrait « en fin d'après-midi » sous « Nuit
+  profonde ». Monter aux bois coûte le segment, observer le chevreuil aussi
+  (règle 7), le reste de la chasse n'en coûte plus : la cloche sonne en milieu
+  de journée ou l'après-midi.
+- **« Mathias est déjà là où il avait dit »** se lisait aussi quand on était
+  parti sur la route, juste avant « ceux qui te rattrapent ». La variante ne
+  s'affiche plus sur la route. Et il pose la masse, plus « contre le mur » — la
+  phrase était de moi, et sur un chemin il n'y a pas de mur.
+- **Le commentaire d'en-tête de `vdg-razzia.js`** décrivait l'horloge d'avant.
+  Réécrit à l'échelle réelle.
+- **Le contrat** : M22 citait le mauvais paragraphe, §6 comptait 15 objets, et
+  une clé de `libelles.bilan` n'était lue nulle part.
+- Un relecteur proposait de fermer la forge, le toit et la réserve à 4 pour
+  que « Il te reste le temps d'une chose » soit toujours exact à 2-3. À 4, ce
+  serait « jamais trois chaînes » : la spec veut « parfois trois ». Le
+  « Peut-être » du texte validé porte cette incertitude ; gardé à 5.
+- Un relecteur notait que tout joueur a vu Jonas monter à une échelle au beat
+  3, et que « Il pouvait être n'importe où » (ST-VDG-13 sans la question du
+  matin) force le trait. La phrase est validée (`SPEC_CONTENU` §5.6) ; le
+  joueur sait qu'il est sur un toit, pas lequel. Laissé, signalé.
+
+- **Dépenser un point ou apprendre une compétence** laissait aussi les options
+  affichées périmées — six options v3 dépendent d'une compétence. Les deux
+  gestes passent par le même recalcul que l'inventaire (`pousserOptions`).
+- **La confiance avait trois lectures** : l'effet partait de la fiche, les
+  conditions et le recrutement non. Une seule dérivée, `confianceDe`, lue par
+  les trois. Et `PNJ-04` portait `confiance_initiale: 25` sur une jauge bornée
+  à 5 : ramenée à 5.
+- **Le contrôle M21** acceptait comme bloc du bilan n'importe quelle clé de
+  `libelles.bilan`, y compris un libellé de ligne. Les lignes vivent dans
+  `libelles.lignes_bilan` ; `libelles.bilan` ne contient que des blocs, et le
+  contrôle est exact.
+
 ### 7.5 Le reste de l'audit
 
 - **Le bilan** : une fin déclare les blocs qu'elle montre (M21). `FIN-T1` montre
@@ -2044,6 +2155,17 @@ trouvailles retenues :
 
 ### 7.6 Ce qui reste signalé, pas corrigé
 
+- **Partir tôt ne rapporte rien dans la tranche.** La spec §5.8 veut « une
+  position et une fenêtre de patrouilles » : c'est le premier POI de la route
+  (MVP 2) qui lira `f_vdg_route_tete` et `f_vdg_route_flot`. Dette inscrite.
+- **La courbe d'XP.** `SEUILS_XP` est celle d'un run v3 de 4 à 5 h ; la tranche
+  en consomme un quart en vingt minutes même après la retouche de l'ouverture.
+  Étirer la courbe (un nombre moteur, la mesure v3 bougera) ou accepter qu'un
+  chapitre de 1 h 30 monte vite : à Tom.
+- **Les pastilles** Personnage et Compétences s'allument pendant une scène
+  déclenchée et invitent à la quitter. Elles disent vrai ; les éteindre
+  masquerait des points à dépenser. Laissées.
+
 - ST-VDG-03 dit « on n'a pas le temps de les prendre tous » alors qu'avec la
   matinée entière, on prend les trois voix. Texte validé, contradiction de la
   spec elle-même : à Tom.
@@ -2051,18 +2173,22 @@ trouvailles retenues :
   qu'on frappe au couteau. Le coût s'affiche, l'objet usé est le mauvais ;
   corriger demanderait un coût d'usure ciblé que le schéma n'a pas.
 - Sortir d'une chaîne par Z puis y revenir remet son état local à zéro
-  (« Chercher chez lui » se rejoue). Renoncer coûte 1 temps, ce qui le rend
-  rare ; pas corrigé.
+  (« Chercher chez lui » se rejoue, la traversée vers la forge se repaie).
+  Renoncer coûte 1 temps, ce qui le rend rare, et revenir sur ses pas se repaie
+  en temps : cohérent. Un lecteur proposait de fermer pour de bon une chaîne
+  abandonnée (`!vu`) — c'est un choix de design, pas une faute : à Tom.
+- `duree_segments` n'est lu nulle part : donnée morte du schéma v3.
 - `vdg_voix`, `f_vdg_ligne_tenue`, `f_vdg_vue_haute`, `f_vdg_chariot` sont
   écrits et jamais lus : ce sont les retombées que la spec réserve à la suite.
 
 ### 7.7 État de référence après l'audit
 
 ```
-MVP 1 (D04)  30/30 · FIN-T1 30/30 · scènes 9,0/11
-             chaînes bouclées 1,3/4 — réparties 0:8 · 1:5 · 2:17
-             horloge finale 3,9/7
-             joueur strict (200 parties) : 2 chaînes 67 % · 3 chaînes 33 %
+MVP 1 (D04)  30/30 · FIN-T1 30/30 · scènes 9,2/11
+             chaînes bouclées 1,5/4 — réparties 0:6 · 1:4 · 2:19 · 3:1
+             horloge finale 4,4/7
+             joueur strict (200 parties) : 2 chaînes 75 % · 3 chaînes 25 %
 ```
 
-La v3 n'a pas bougé.
+La v3 bouge d'un cheveu, par la pression corrigée : jours 7,9, survie qui mord
+17/30. Rien d'autre.

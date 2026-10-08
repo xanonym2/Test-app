@@ -442,6 +442,40 @@ function testEntetes() {
 }
 
 
+// Reprendre une sauvegarde faite au milieu de la razzia doit rendre la même
+// scène, les mêmes options et le même état : le fil est persisté, les options
+// recalculées, rien d'autre ne doit bouger.
+function testReprise() {
+  const E = nouvellePartie({ seed: 51, depart: 'D04' });
+  let coups = 0;
+  while (coups < 14 && !partieTerminee(E)) {
+    const s = db.storylets[E.systeme.storylet_courant];
+    if (!s) break;
+    composerTexte(E, s);
+    const opts = optionsVisibles(E, s).filter((o) => !o.indisponible);
+    if (!opts.length) break;
+    const r = resoudreOption(E, opts[coups % opts.length].id);
+    if (!r) break;
+    if (r.declenchements.length) ouvrirStorylet(E, r.declenchements[0]);
+    coups += 1;
+  }
+  const s = db.storylets[E.systeme.storylet_courant];
+  const avant = optionsVisibles(E, s).map((o) => o.id + (o.indisponible ? '-' : '')).join(',');
+  const copie = migrer({ version: schema.VERSION_SAUVEGARDE, etat: JSON.parse(JSON.stringify(E)) });
+  const apres = copie ? optionsVisibles(copie, db.storylets[copie.systeme.storylet_courant]).map((o) => o.id + (o.indisponible ? '-' : '')).join(',') : null;
+  const memes = (a, b) => JSON.stringify(a) === JSON.stringify(b);
+  const ok = !!copie
+    && copie.systeme.storylet_courant === E.systeme.storylet_courant
+    && memes(copie.systeme.etat_local, E.systeme.etat_local)
+    && memes(copie.systeme.options_epuisees, E.systeme.options_epuisees)
+    && memes(copie.stats_partie, E.stats_partie)
+    && memes(copie.recit.flags, E.recit.flags)
+    && sceneVerrouillee(copie) === sceneVerrouillee(E)
+    && apres === avant;
+  return { coups, scene: E.systeme.storylet_courant, avant, apres, ok };
+}
+
+
 // La chaîne de migration : une sauvegarde d'une version antérieure doit
 // remonter jusqu'à la version courante sans perdre ce qu'elle contenait.
 function testMigration() {
@@ -538,13 +572,22 @@ function partieAuto(seed, maxActions = 400, depart = null) {
       composerTexte(E, s);
       E.systeme.premiere_vue = false;
       const opts = optionsVisibles(E, s).filter((o) => !o.indisponible);
-      if (!opts.length) { rafraichirScene(E); continue; }
+      // Depuis que l'interface verrouille une scène déclenchée, le robot doit
+      // s'y trouver coincé comme le joueur : une impasse est une faute de
+      // contenu, pas une occasion de changer de scène.
+      if (!opts.length) {
+        if (sceneVerrouillee(E)) return { erreur: 'impasse:' + s.id, actions };
+        rafraichirScene(E); continue;
+      }
       const obs = opts.filter((x) => x.observation);
       const o = (E.geo.points_decouverts.length < 4 && obs.length)
         ? obs[0]
         : opts[(actions * 7 + seed) % opts.length];
       const r = resoudreOption(E, o.id);
-      if (!r) { rafraichirScene(E); continue; }
+      if (!r) {
+        if (sceneVerrouillee(E)) return { erreur: 'option_refusee:' + s.id + ':' + o.id, actions };
+        rafraichirScene(E); continue;
+      }
       if (r.declenchements.length) { ouvrirStorylet(E, r.declenchements[0]); continue; }
       if (r.sortie) {
         const quitte = s.id;
@@ -647,6 +690,11 @@ console.log('  scènes à en-tête :', en.avec, '| muettes :', en.muettes.length
             '| hors scène :', en.hors_scene === null ? 'aucun' : 'UN EN-TÊTE');
 console.log('  →', en.ok ? 'CONFORME' : 'ÉCHEC');
 
+const rp = testReprise();
+console.log('\n=== REPRISE AU MILIEU DE LA RAZZIA ===');
+console.log('  coups joués :', rp.coups, '| scène :', rp.scene, '| options avant :', rp.avant, '| après :', rp.apres);
+console.log('  →', rp.ok ? 'CONFORME' : 'ÉCHEC');
+
 const mv = testMortEnVoyage();
 console.log('  mort d\'attrition en voyage        : santé', mv.sante, '| fin', mv.fin ?? 'aucune');
 console.log('  attendu : 0 / FIN-MORT                   →', mv.ok ? 'CONFORME' : 'ÉCHEC');
@@ -706,4 +754,4 @@ if (resT.length) {
   for (const r of resT) finsT[r.fin ?? 'aucune'] = (finsT[r.fin ?? 'aucune'] ?? 0) + 1;
   console.log('  fins         :', JSON.stringify(finsT));
 }
-process.exit(graves.length || ko || koT || atteintT1 < 10 || !gf.ok || !mv.ok || !so.ok || !mg.ok || !sv.ok || !en.ok ? 1 : 0);
+process.exit(graves.length || ko || koT || atteintT1 < 10 || !gf.ok || !mv.ok || !so.ok || !mg.ok || !sv.ok || !en.ok || !rp.ok ? 1 : 0);

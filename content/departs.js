@@ -46,6 +46,11 @@ export const departs = {
     id: "D04",
     nom: "La razzia",
     hors_tirage: true,
+    mutateurs: [],
+    // « Le jour se lève » : le matin, et un ciel d'été — pas la mi-journée d'un
+    // retour de chasse ni un gel tiré au sort.
+    segment_initial: 1,
+    meteo_initiale: "clair",
     description: "Le dernier matin ordinaire à Val-de-Garde, puis ce qui lui arrive. Tu pars chasser avec neuf flèches — il en faudrait douze — et tu choisis ce que tu sauves quand tu reviens.",
     inventaire: [],
     effets: [

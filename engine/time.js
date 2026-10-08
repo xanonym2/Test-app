@@ -72,7 +72,7 @@ export function appliquerPression(E) {
     decalage += db.mutateurs[mid]?.pression_decalage_jours ?? 0;
   }
   for (const p of paliers) {
-    if (E.temps.jour >= p.jour - decalage && !E.recit.flags[p.flag]) {
+    if (E.temps.jour >= p.jour + decalage && !E.recit.flags[p.flag]) {
       E.recit.flags[p.flag] = true;
       if (p.bloque) for (const id of p.bloque) E.geo.lieux_bloques[id] = { jusqu_au: 9999 };
       if (p.storylet) out.push({ type: 'declenche', storylet: p.storylet });

@@ -50,7 +50,7 @@ export const storylets = {
               { objet: "OBJ-02", quantite: 3 },
               { stat_partie: { compteur: "vdg_matinee", valeur: -2 } },
               { fatigue: 4 },
-              { xp: 10 },
+              { xp: 5 },
               { journal: "vdg_pointes", majeure: true },
               { declenche: "ST-VDG-02" },
             ],
@@ -77,7 +77,7 @@ export const storylets = {
               { objet: "OBJ-02", quantite: 3 },
               { stat_partie: { compteur: "vdg_matinee", valeur: -1 } },
               { flag: "f_vdg_dette_mathias" },
-              { xp: 10 },
+              { xp: 5 },
               { journal: "vdg_demande", majeure: true },
               { declenche: "ST-VDG-02" },
             ],
@@ -92,7 +92,7 @@ export const storylets = {
               { objet: "OBJ-02", quantite: 2 },
               { stat_partie: { compteur: "vdg_matinee", valeur: -1 } },
               { flag: "f_vdg_dette_mathias" },
-              { xp: 10 },
+              { xp: 5 },
               { journal: "vdg_demande", majeure: true },
               { declenche: "ST-VDG-02" },
             ],
@@ -114,7 +114,7 @@ export const storylets = {
             texte:
               "Neuf, c'est neuf. Tu as chassé avec moins.",
             effets: [
-              { xp: 10 },
+              { xp: 5 },
               { journal: "vdg_parti_court", majeure: true },
               { declenche: "ST-VDG-02" },
             ],
@@ -168,7 +168,7 @@ export const storylets = {
               "Mathias ne lève pas les yeux du soc. « Au toit des Ancel. Il a dit qu'il finissait avant midi. » Un temps. « Il ne finira pas avant midi. »",
             effets: [
               { flag: "f_vdg_jonas_situe" },
-              { xp: 10 },
+              { xp: 5 },
             ],
           },
         ],
@@ -189,7 +189,7 @@ export const storylets = {
               "« La garnison a eu deux hommes en moins ce mois-ci. Personne n'est venu les remplacer. » Il repose le marteau. « Ça fait trois mois. »",
             effets: [
               { stat_partie: { compteur: "vdg_voix", valeur: 1 } },
-              { xp: 10 },
+              { xp: 5 },
             ],
           },
         ],
@@ -368,7 +368,9 @@ export const storylets = {
             texte:
               "Jonas descend d'une échelle, une botte de chaume sous le bras. Il te voit, lève le menton.\n\n« Tu montes ? »\n\n« Je monte. »\n\nIl est déjà reparti vers le toit.",
             effets: [
-              { xp: 10 },
+              // Les bois sont à une heure de marche : la cloche sonnera en milieu de journée.
+              { segments: 1 },
+              { xp: 5 },
               { declenche: "ST-VDG-04" },
             ],
           },
@@ -435,7 +437,7 @@ export const storylets = {
       {
         id: "B",
         libelle: "Descendre en s'abritant derrière la berge",
-        cout: { segments: 1, fatigue: 6 },
+        cout: { fatigue: 6 },
         apparait_si: [["!local", "sang"], ["local<=", "distance", 0]],
         epuisable: true,
         observation: false,
@@ -443,6 +445,7 @@ export const storylets = {
         sortie: false,
         modif_proba: [
           { si: [["stat>=", "adresse", 3]], valeur: 15 },
+          { si: [["competence", "C02"]], valeur: 10 },
           { si: [["local", "lu"]], valeur: 10 },
         ],
         issues: [
@@ -479,6 +482,7 @@ export const storylets = {
         modif_proba: [
           { si: [["local>=", "distance", 1]], valeur: 25 },
           { si: [["stat>=", "adresse", 3]], valeur: 10 },
+          { si: [["competence", "C01"]], valeur: 10 },
           { si: [["local", "alerte"]], valeur: -15 },
         ],
         issues: [
@@ -525,7 +529,7 @@ export const storylets = {
       {
         id: "D",
         libelle: "Examiner les empreintes",
-        cout: { segments: 1 },
+        cout: {},
         apparait_si: [["local", "sang"]],
         epuisable: true,
         observation: true,
@@ -547,7 +551,7 @@ export const storylets = {
       {
         id: "E",
         libelle: "Continuer la piste dans les fourrés",
-        cout: { segments: 1, fatigue: 8 },
+        cout: { fatigue: 8 },
         apparait_si: [["local", "sang"]],
         epuisable: false,
         observation: false,

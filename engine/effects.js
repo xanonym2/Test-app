@@ -3,7 +3,7 @@
 // « traces » (clé + valeur) que l'interface traduit.
 import { ajouterObjet, retirerObjet, creerObjet, tirerObjet, userObjet, userUid } from './items.js';
 import { avancerSegments, programmerDiffere } from './time.js';
-import { santeMax, niveauPourXp } from './derive.js';
+import { santeMax, niveauPourXp, confianceDe } from './derive.js';
 import { NIVEAU_MAX, NIVEAUX_COMPETENCE } from './schema.js';
 import { getDb } from './db.js';
 
@@ -114,8 +114,7 @@ function appliquerEffet(E, ef, ctx, declenchements) {
     const { pnj, valeur } = ef.confiance;
     // Avant le recrutement, la confiance part de la fiche : sinon un geste
     // amical fait avant l'engagement la ramenait de 3 à 1.
-    const base = E.social.confiance[pnj] ?? db.pnj[pnj]?.confiance_initiale ?? 0;
-    E.social.confiance[pnj] = bornes(base + valeur, -5, 5);
+    E.social.confiance[pnj] = bornes(confianceDe(E, pnj) + valeur, -5, 5);
     const comp = E.compagnons.find((c) => c.id === pnj);
     if (comp) comp.confiance = E.social.confiance[pnj];
     return { cle: 'confiance', id: pnj, valeur };
@@ -143,7 +142,7 @@ function appliquerEffet(E, ef, ctx, declenchements) {
         competences: [...(modele.competences ?? [])],
         sante: santeMax(modele.stats),
         role: modele.role,
-        confiance: E.social.confiance[ef.compagnon] ?? modele.confiance_initiale ?? 0,
+        confiance: confianceDe(E, ef.compagnon),
         statut: 'actif',
         equipement: [...(modele.equipement ?? [])],
       });

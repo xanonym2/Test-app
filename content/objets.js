@@ -176,6 +176,7 @@ export const objets = {
     nom: "Nécessaire de réparation",
     categorie: "ressource",
     famille: null,
+    repare: 30,
     poids: 1.0,
     degats: null,
     protection: null,

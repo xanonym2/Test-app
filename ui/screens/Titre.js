@@ -12,9 +12,17 @@ export function EcranTitre() {
   const { demarrer, reprendre } = useJeu();
   const [sauvegarde, setSauvegarde] = useState(false);
   const [choix, setChoix] = useState(false);
+  // Sur un téléphone, un tap part vite : tant qu'une partie est en cours, la
+  // recommencer demande un second geste.
+  const [confirmer, setConfirmer] = useState(null);
   const db = getDb();
 
   useEffect(() => { existeSauvegarde().then(setSauvegarde); }, []);
+
+  const lancer = (opts) => {
+    if (sauvegarde) setConfirmer(opts);
+    else demarrer(opts);
+  };
 
   return (
     <Page contentStyle={{ paddingTop: ESP.xl * 2 }}>
@@ -32,9 +40,21 @@ export function EcranTitre() {
         </>
       ) : null}
 
-      {!choix ? (
+      {confirmer ? (
+        <Panneau style={{ borderColor: T.danger }}>
+          <SousTitre style={{ color: T.danger }}>Une partie est en cours</SousTitre>
+          <Petit style={{ marginBottom: ESP.md }}>
+            La recommencer l’efface. Rien n’en sera gardé.
+          </Petit>
+          <Bouton variante="fort" onPress={() => { setConfirmer(null); demarrer(confirmer); }}>
+            Effacer et recommencer
+          </Bouton>
+          <View style={{ height: ESP.sm }} />
+          <Bouton variante="discret" onPress={() => setConfirmer(null)}>Garder la partie en cours</Bouton>
+        </Panneau>
+      ) : !choix ? (
         <>
-          <Bouton variante={sauvegarde ? 'normal' : 'fort'} onPress={() => demarrer({})}>
+          <Bouton variante={sauvegarde ? 'normal' : 'fort'} onPress={() => lancer({})}>
             Nouvelle partie
           </Bouton>
           <Pressable onPress={() => setChoix(true)} style={{ paddingVertical: ESP.md, alignItems: 'center' }}>
@@ -51,7 +71,7 @@ export function EcranTitre() {
           {Object.values(db.departs).map((d) => (
             <Pressable
               key={d.id}
-              onPress={() => demarrer({ depart: d.id })}
+              onPress={() => lancer({ depart: d.id })}
               style={({ pressed }) => ({
                 backgroundColor: T.panneau, borderWidth: 1, borderColor: T.bord,
                 borderRadius: 7, padding: ESP.md, marginBottom: ESP.sm, opacity: pressed ? 0.8 : 1,

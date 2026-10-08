@@ -63,7 +63,7 @@ export const pnj = {
     niveau_max: 3,
     montee: ["vigueur", "adresse"],
     equipement: ["OBJ-03"],
-    confiance_initiale: 25,
+    confiance_initiale: 5,
     apport_hors_combat: "Il fait le guet pendant que tu travailles et il court plus vite que toi.",
     description: "Seize ans, apprenti à la forge de ton frère. Il te suit parce qu'il n'a plus personne d'autre.",
     recrutable: false,

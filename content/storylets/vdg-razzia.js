@@ -2,14 +2,17 @@
 // Texte validé, porté tel quel.
 //
 // Motif à moyeu : ST-VDG-10 redécrit la situation à chaque retour et propose
-// ce qui reste atteignable. Chaque chaîne est un storylet unique qui rend la
-// main au moyeu. L'horloge est le compteur razzia_temps : chaque beat de
-// chaîne coûte 1, le retour au moyeu est gratuit.
+// ce qui reste atteignable. Chaque chaîne est un storylet qui rend la main au
+// moyeu. L'horloge est le compteur razzia_temps : un beat de chaîne coûte 1 ou
+// 2, renoncer coûte 1 — regarder une chaîne n'est pas gratuit —, et une chaîne
+// bouclée coûte 2 à 4. Le moyeu, le bandeau et les fermetures suivent la même
+// échelle (docs/lots/MVP1.md §7.2) :
 //
-//   0-3  la ligne tient
-//   4    la ligne cède
-//   5-6  ils fouillent, ils avancent vers le bas du village
-//   7    ils se retirent — fin de scène, quoi qu'ait fait le joueur
+//   0-1  la ligne tient
+//   2-3  la ligne plie
+//   4    la ligne a cédé — la ligne (A) se ferme
+//   5-6  ils avancent vers le bas du village — forge, toit, réserve se ferment
+//   7    ils se retirent — il ne reste qu'à les regarder partir
 //
 // Personne ne meurt pendant la razzia (SPEC_DESIGN §4.5). Aucun texte ne
 // laisse croire au joueur qu'il a sauvé le village : les orcs se retirent
@@ -57,12 +60,12 @@ export const storylets = {
         {
           si: [["stat_partie>=", "razzia_temps", 4]],
           remplace:
-            "La ligne a cédé. Ils sont sur la place maintenant, et ils ne se pressent pas. L'un d'eux retourne une charrette d'un coup d'épaule, pour voir ce qu'il y a dessous.\n\nCe que tu n'as pas fait, tu ne le feras plus.",
+            "La ligne a cédé. Ils sont sur la place maintenant, et ils ne se pressent pas. L'un d'eux retourne une charrette d'un coup d'épaule, pour voir ce qu'il y a dessous.",
         },
         {
           si: [["stat_partie>=", "razzia_temps", 7]],
           remplace:
-            "Ils s'en vont comme ils sont venus, sans se presser, sans se retourner. Personne ne les poursuit.\n\nIl n'y a plus personne pour les poursuivre.",
+            "Ils s'en vont comme ils sont venus, sans se presser, sans se retourner. Personne ne les poursuit.\n\nIl n'y a plus personne pour les poursuivre. Ce que tu n'as pas fait, tu ne le feras plus.",
         },
       ],
     },
@@ -258,11 +261,12 @@ export const storylets = {
         id: "A",
         libelle: "Tirer depuis le toit du puits",
         cout: { objet: { "OBJ-02": 3 } },
+        requiert: [["equipe_famille", "arc"]],
         epuisable: false,
         observation: false,
         deplacement: false,
         sortie: true,
-        modif_proba: [{ si: [["stat>=", "adresse", 4]], valeur: 15 }],
+        modif_proba: [{ si: [["stat>=", "adresse", 4]], valeur: 15 }, { si: [["competence", "C01"]], valeur: 10 }],
         issues: [
           {
             probabilite: 60,
@@ -451,7 +455,7 @@ export const storylets = {
         observation: false,
         deplacement: false,
         sortie: false,
-        modif_proba: [{ si: [["flag", "f_vdg_repere"]], valeur: -15 }],
+        modif_proba: [{ si: [["competence", "C02"]], valeur: 10 }, { si: [["flag", "f_vdg_repere"]], valeur: -15 }],
         issues: [
           {
             probabilite: 55,
@@ -586,7 +590,7 @@ export const storylets = {
         observation: true,
         deplacement: false,
         sortie: false,
-        modif_proba: [{ si: [["stat>=", "sangfroid", 3]], valeur: 20 }, { si: [["flag", "f_vdg_repere"]], valeur: -15 }],
+        modif_proba: [{ si: [["stat>=", "sangfroid", 3]], valeur: 20 }, { si: [["competence", "C02"]], valeur: 10 }, { si: [["flag", "f_vdg_repere"]], valeur: -15 }],
         issues: [
           {
             probabilite: 60,
@@ -752,7 +756,7 @@ export const storylets = {
         libelle: "Demander à quelqu'un qui court",
         cout: {},
         apparait_si: [["!flag", "f_vdg_jonas_situe"], ["!local", "trouve"]],
-        epuisable: true,
+        epuisable: false,
         observation: false,
         deplacement: false,
         sortie: false,
@@ -1010,7 +1014,8 @@ export const storylets = {
               { objet: "OBJ-05", quantite: 2 },
               { objet: "OBJ-13", quantite: 2 },
               { flag: "f_vdg_chariot" },
-              { stat_partie: { compteur: "razzia_temps", valeur: 2 } },
+              // Il roule, mais il faut le sortir de là : un temps de plus que le sac.
+              { stat_partie: { compteur: "razzia_temps", valeur: 3 } },
               { xp: 25 },
               { flag: "f_vdg_chaine_d" },
               { declenche: "ST-VDG-10" },
@@ -1069,7 +1074,8 @@ export const storylets = {
             "Tu sais dans quelle direction ils sont partis. C'est tout ce que tu sais.",
         },
         {
-          si: [["flag", "f_vdg_rdv_mathias"]],
+          // Parti sur la route, on ne le trouve pas « déjà là » : il rattrape.
+          si: [["flag", "f_vdg_rdv_mathias"], ["!flag", "f_vdg_route_tete"], ["!flag", "f_vdg_route_flot"]],
           ajout:
             "Mathias est déjà là où il avait dit qu'il serait.",
         },
@@ -1090,7 +1096,7 @@ export const storylets = {
             reussite: true,
             si: [],
             texte:
-              "« Personne ne viendra le dire à leur place. » Il pose la masse contre le mur et la reprend aussitôt, parce qu'il ne sait pas quoi faire de ses mains. « Je ne suis pas soldat. Je viens quand même. »",
+              "« Personne ne viendra le dire à leur place. » Il pose la masse et la reprend aussitôt, parce qu'il ne sait pas quoi faire de ses mains. « Je ne suis pas soldat. Je viens quand même. »",
             effets: [
               { compagnon: "PNJ-F1" },
               { pnj_statut: { id: "PNJ-F2", valeur: "disparu" } },
@@ -1122,6 +1128,7 @@ export const fins = {
     id: "FIN-T1",
     nom: "Fin de la tranche",
     bilan: ["decisions", "survivants"],
+    apres: "Le chapitre suivant partira d'ici. Ce qui est arrivé à Mathias et à Jonas le suivra.",
     description:
       "Val-de-Garde a été traversé, pas pris. La route du nord commence ici, et il faut prévenir la Couronne, parce qu'il ne reste personne d'autre pour le faire. Ce qui est arrivé à Jonas attendra la suite.",
   },

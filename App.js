@@ -1,9 +1,10 @@
 import { Component } from 'react';
-import { View, Text, Platform, StatusBar as RNStatusBar, ActivityIndicator } from 'react-native';
+import { View, Text, Pressable, Platform, StatusBar as RNStatusBar, ActivityIndicator } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 
 import './content/index.js';
 import { T } from './ui/theme.js';
+import { effacer } from './engine/save.js';
 import { sceneVerrouillee } from './engine/derive.js';
 import { FournisseurJeu, useJeu } from './ui/jeu.js';
 import { Bandeau } from './ui/components/Bandeau.js';
@@ -17,7 +18,8 @@ import { EcranCompetences } from './ui/screens/Competences.js';
 import { EcranCompagnons } from './ui/screens/Compagnons.js';
 import { EcranBilan } from './ui/screens/Bilan.js';
 
-const HAUT = Platform.OS === 'android' ? (RNStatusBar.currentHeight ?? 0) : 44;
+// Le web n'a pas d'encoche : les 44 px d'iOS y étaient 44 px de moins à lire.
+const HAUT = Platform.select({ android: RNStatusBar.currentHeight ?? 0, ios: 44, default: 0 });
 
 function Contenu() {
   const { E, ecran, setEcran } = useJeu();
@@ -62,6 +64,15 @@ class Garde extends Component {
         <View style={{ flex: 1, backgroundColor: T.fond, padding: 24, justifyContent: 'center' }}>
           <Text style={{ color: T.danger, fontSize: 16, marginBottom: 12 }}>Le jeu s’est arrêté.</Text>
           <Text style={{ color: T.texteDoux, fontSize: 12 }}>{String(this.state.erreur?.message ?? this.state.erreur)}</Text>
+          {/* La sauvegarde reste en place : si c'est elle qui plante le rendu,
+              seul son effacement rend le jeu. Sans ce bouton, un téléphone
+              resterait bloqué sur cet écran. */}
+          <Pressable
+            onPress={() => effacer().then(() => this.setState({ erreur: null }))}
+            style={{ marginTop: 24, borderWidth: 1, borderColor: T.danger, borderRadius: 7, padding: 12, alignItems: 'center' }}
+          >
+            <Text style={{ color: T.danger, fontSize: 14 }}>Effacer la partie et revenir au titre</Text>
+          </Pressable>
         </View>
       );
     }

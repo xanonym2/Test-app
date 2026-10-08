@@ -1,6 +1,6 @@
 # Contrat de contenu — Les Terres Voilées
 
-**Version 2.2** — 8 octobre 2026 · remplace la v1 « Val-de-Garde (MVP) » · 2.1 : arbitrages A1 à A3 rendus · 2.2 : M19 à M21, après l'audit du MVP 1
+**Version 2.2** — 8 octobre 2026 · remplace la v1 « Val-de-Garde (MVP) » · 2.1 : arbitrages A1 à A3 rendus · 2.2 : M19 à M25, après l'audit du MVP 1
 
 Ce document est la **spécification mécanique** du contenu. Il fixe les
 identifiants, les schémas de données, les valeurs d'équilibrage et les
@@ -84,7 +84,10 @@ comme un assouplissement.
 | M19 | §4 r. 6 | **Le dernier tour d'un beat à choix n'est pas tenu au plancher.** Quand toutes les options épuisables ont été prises ou fermées, il ne reste que la sortie, et c'est juste : on n'ajoute pas une option pour tenir un quota | Clarification | Non — le vérificateur n'impose pas de minimum |
 | M20 | §5 | **Un storylet peut déclarer un en-tête de bandeau** (`bandeau`) : un titre et des paliers conditionnels, le premier vrai gagne. Il remplace la ligne du monde (jour, segment, météo, eau) tant que la scène dure. Jamais un chiffre : un état, pas un compte à rebours | Extension | Oui — opérateurs, libellés, aucun chiffre, palier final inconditionnel, et chaque scène à en-tête en produit un |
 | M21 | §16 | **Une fin peut restreindre le bilan** (`bilan: [...]`) aux blocs qui ont un sens pour elle, par les clés de `libelles.bilan`. Absent, le bilan est complet | Extension | Oui — clés connues, liste non vide |
-| M22 | §9 | **`OBJ-16` Masse de forge** — Mathias dit « ma masse » dans deux textes validés, sa fiche portait une hache. Et **les outres se cumulent** : la capacité d'eau vaut 3 par outre portée, ce que « deux outres » à la réserve exigeait | Extension | Non — références déjà contrôlées |
+| M22 | §6 | **`OBJ-16` Masse de forge** — Mathias dit « ma masse » dans deux textes validés, sa fiche portait une hache. Et **les outres se cumulent** : la capacité d'eau vaut 3 par outre portée, ce que « deux outres » à la réserve exigeait | Extension | Oui — un objet porté par un compagnon ou un départ compte comme utilisé |
+| M23 | §11 | **Un départ peut fixer ses mutateurs** (`mutateurs: []` : aucun). `D04` n'en tire plus : une tranche de campagne est un package défini, pas une variante de run | Extension | Non |
+| M24 | §11 | **Un départ peut fixer son premier matin** : `segment_initial` et `meteo_initiale`. `D04` ouvre au matin, ciel clair — « Le jour se lève » ne se lit plus sous « Milieu de journée » ni sous un gel tiré au sort | Extension | Non |
+| M25 | §9, §16 | **`repare`** sur un objet : combien d'usure une unité rend ; le moteur reconnaît le matériel de réparation à ce champ, l'écran sait s'il y en a. **`apres`** sur une fin : la phrase de clôture du bilan, à la place du pied générique | Extension | Non |
 
 ### Arbitrages
 
@@ -495,7 +498,7 @@ persiste d'un run à l'autre (§20).
 
 ---
 
-## 6. Objets — 15 bases
+## 6. Objets — 16 bases
 
 `content/objets.js` exporte `objets` (indexé par id) :
 
@@ -518,7 +521,7 @@ persiste d'un run à l'autre (§20).
 | `OBJ-10` | protection | — | 2.5 | — | 3 | non | oui | Légère. |
 | `OBJ-11` | protection | — | 6.0 | — | 7 | non | oui | Lourde. Met le portage en tension. |
 | `OBJ-12` | consommable | — | 0.2 | — | — | **oui** | non | Soin : `{ sante_heros: +10 }`, retire `blesse_leger`. |
-| `OBJ-13` | ressource | — | 1.0 | — | — | **oui** | non | Matériaux de réparation. |
+| `OBJ-13` | ressource | — | 1.0 | — | — | **oui** | non | Matériaux de réparation. `repare: 30` : une unité rend 30 d'usure (M25). |
 | `OBJ-14` | divers | — | 1.5 | — | — | non | oui | Outil d'escalade/franchissement. Ouvre des options. |
 | `OBJ-15` | consommable | — | 0.4 | — | — | **oui** | non | Vivres sèches. `{ faim: -25 }`. Ne se gâte pas. |
 | `OBJ-16` | arme | `lourde` | 4.0 | 13 | — | non | oui | La masse de Mathias : l'outil d'un forgeron, qui frappe comme une hache lourde (M22). |
@@ -655,7 +658,9 @@ le twist correspondant atteint (§0 bis, règle 7).
 ```js
 'D01': { id, nom, description: 'deux phrases, ce que ça change concrètement',
          inventaire: [{ base, quantite, usure }], effets: [...],
-         storylet_ouverture: 'ST-OUV-01' }
+         storylet_ouverture: 'ST-OUV-01',
+         mutateurs: [],        /* [v2.2] facultatif — M23 : fixés plutôt que tirés */
+         segment_initial: 1, meteo_initiale: 'clair' /* [v2.2] facultatif — M24 */ }
 ```
 
 | ID | Forme imposée |
@@ -747,12 +752,14 @@ export const meta = {
                         { base: 'OBJ-03', usure: 80 }, { base: 'OBJ-04' },
                         { base: 'OBJ-05', quantite: 1 }, { base: 'OBJ-06', quantite: 1 } ],
   fins: { 'FIN-xx': { id, nom, description: 'deux à trois phrases',
-                     bilan: ['decisions', 'equipe'] /* [v2.2] facultatif — M21 */ }, ... },
+                     bilan: ['decisions', 'equipe'], /* [v2.2] facultatif — M21 */
+                     apres: 'une phrase de clôture' /* [v2.2] facultatif — M25 */ }, ... },
 };
 ```
 `meta.fins` doit contenir `FIN-MORT` (mort du héros) plus les fins de `ST-FIN-01`.
 **[v2.2] `bilan` (M21)** : la liste des blocs du bilan que cette fin montre, par
-les clés de `libelles.bilan` (`savoir` · `temps` · `heros` · `equipe` ·
+les clés de `libelles.bilan` — qui ne contient que des titres de blocs ; les
+libellés de lignes sont dans `libelles.lignes_bilan` — (`savoir` · `temps` · `heros` · `equipe` ·
 `survivants` · `ennemis` · `zones_explorees` · `decisions` · `badges` ·
 `manque`). Absent : bilan complet. Une fin de tranche n'a ni zones ni badges à
 montrer — elle le dit, plutôt que d'afficher un échec qui n'en est pas un.

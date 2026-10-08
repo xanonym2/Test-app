@@ -5,9 +5,9 @@ import { View, Text, Pressable, Modal, ScrollView } from 'react-native';
 import { T, ESP, TYPO } from '../theme.js';
 import { Page, Panneau, Titre, SousTitre, Ligne, Jauge, Petit, Bouton, Etiquette, Separateur, Vide } from '../components/Base.js';
 import { getDb } from '../../engine/db.js';
-import { encombrement, objetBase, modificateursObjet, degatsArme, palierUsure, poidsObjet } from '../../engine/derive.js';
+import { encombrement, objetBase, modificateursObjet, degatsArme, palierUsure, poidsObjet, materielReparation } from '../../engine/derive.js';
 import { CATEGORIES_OBJET } from '../../engine/schema.js';
-import { nomObjet, etatUsure, poidsTexte } from '../format.js';
+import { nomObjet, etatUsure, poidsTexte, nomBase } from '../format.js';
 import { useJeu } from '../jeu.js';
 
 function Usure({ item }) {
@@ -60,6 +60,7 @@ function Detail({ item, E, fermer, actions }) {
     : null;
   const equipable = base.categorie === 'arme' || base.categorie === 'protection';
   const equipe = E.equipement.arme === item.uid || E.equipement.protection === item.uid;
+  const materiel = materielReparation(E);
 
   return (
     <Modal visible transparent animationType="fade" onRequestClose={fermer}>
@@ -115,8 +116,8 @@ function Detail({ item, E, fermer, actions }) {
                 <Bouton variante="fort" onPress={() => { actions.utiliser(item.uid); fermer(); }}>Utiliser</Bouton>
               ) : null}
               {u && item.usure < 100 ? (
-                <Bouton onPress={() => { actions.reparer(item.uid); fermer(); }}>
-                  Réparer (matériaux)
+                <Bouton desactive={materiel.quantite < 1} onPress={() => { actions.reparer(item.uid); fermer(); }}>
+                  {materiel.quantite < 1 ? 'Réparer — rien pour le faire' : 'Réparer (' + (materiel.id ? nomBase(materiel.id) : 'matériaux') + ')'}
                 </Bouton>
               ) : null}
               <Bouton variante="discret" onPress={() => { actions.jeter(item.uid); fermer(); }}>Jeter</Bouton>

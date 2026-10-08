@@ -1,7 +1,7 @@
 // Écran scène : texte narratif, options en bas, sélection réversible,
 // validation explicite et impossible à manquer.
 import { useRef, useEffect } from 'react';
-import { View, Text, Pressable, ScrollView } from 'react-native';
+import { View, Text, Pressable, ScrollView, useWindowDimensions } from 'react-native';
 import { T, ESP, TYPO } from '../theme.js';
 import { Bouton, Vide } from '../components/Base.js';
 import { coutTexte, nomBase } from '../format.js';
@@ -46,11 +46,22 @@ function Option({ o, choisi, onPress }) {
 export function EcranScene() {
   const { E, scene, selection, setSelection, valider, setEcran, relancerScene } = useJeu();
   const scroll = useRef(null);
+  const { height: hauteur } = useWindowDimensions();
 
+  // Un tour de plus dans la même scène : on suit le fil jusqu'en bas. Une scène
+  // nouvelle, ou un retour d'onglet : on la lit depuis le haut.
+  const precedent = useRef({ id: null, n: 0 });
   useEffect(() => {
-    const t = setTimeout(() => scroll.current?.scrollToEnd({ animated: true }), 60);
+    const id = scene.storylet?.id ?? null;
+    const n = scene.fil.length;
+    const suite = id !== null && id === precedent.current.id && n > precedent.current.n;
+    precedent.current = { id, n };
+    const t = setTimeout(() => {
+      if (suite) scroll.current?.scrollToEnd({ animated: true });
+      else scroll.current?.scrollTo({ y: 0, animated: false });
+    }, 60);
     return () => clearTimeout(t);
-  }, [scene.fil.length]);
+  }, [scene]);
 
   if (!scene.storylet) {
     return (
@@ -97,7 +108,8 @@ export function EcranScene() {
           <Bouton onPress={relancerScene} variante="fort">Continuer</Bouton>
         ) : (
           <>
-            <ScrollView style={{ maxHeight: 290 }} showsVerticalScrollIndicator={false}>
+            {/* Sur un petit écran, les options ne mangent pas le texte. */}
+            <ScrollView style={{ maxHeight: Math.min(290, Math.round(hauteur * 0.4)) }} showsVerticalScrollIndicator={false}>
               {opt.map((o) => (
                 <Option
                   key={o.id}
