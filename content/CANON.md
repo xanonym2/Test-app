@@ -40,6 +40,9 @@ dès qu'un storylet l'affirme, il devient vrai pour tous les autres.
 - **La famille Ancel** · famille de Val-de-Garde, sans rôle au-delà de son toit ;
   ne porte aucune faction, aucun secret, aucun lien avec les retournements ·
   `SPEC_CONTENU` §5.6 · chapitre 1 — **validée le 21/09/2026**
+- **Jonas, le matin de la razzia** · sur un toit, une botte de chaume sous le
+  bras, parfaitement ordinaire. Après : ni parmi les morts, ni parmi les
+  vivants. Son échelle reste contre le mur des Ancel.
 
 ## Objets et choses vues
 
@@ -49,6 +52,8 @@ dès qu'un storylet l'affirme, il devient vrai pour tous les autres.
 - **L'échelle des Ancel** · restée contre le mur, le chaume à moitié posé, la
   botte défaite. Elle y est encore après la razzia · `ST-VDG-13`, `ST-VDG-20` ·
   chapitre 1
+- **La masse de Mathias** · son outil de forge, et la seule arme qu'il ait
+  jamais tenue. Il n'est pas soldat, et il le dit.
 
 ## Rumeurs — ce qu'on raconte
 

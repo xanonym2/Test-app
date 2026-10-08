@@ -69,7 +69,7 @@ export function EcranTitre() {
       <Panneau plat>
         <Petit>
           Une partie dure quelques heures. La mort est définitive et rien ne se
-          débloque d’une partie à l’autre : seul ce que vous aurez compris reste.
+          débloque d’une partie à l’autre : seul ce que tu auras compris reste.
         </Petit>
       </Panneau>
     </Page>

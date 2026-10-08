@@ -15,12 +15,27 @@
 // laisse croire au joueur qu'il a sauvé le village : les orcs se retirent
 // d'eux-mêmes.
 
+// L'état du village, lisible en permanence pendant la razzia — même au fond
+// d'une chaîne, où le moyeu ne parle pas. Ce n'est pas un compte à rebours :
+// le même état que le moyeu raconte, sans chiffre. Premier palier vrai gagne.
+const BANDEAU_RAZZIA = {
+  titre: "Val-de-Garde",
+  paliers: [
+    { si: [["stat_partie>=", "razzia_temps", 7]], libelle: "Ils se retirent" },
+    { si: [["stat_partie>=", "razzia_temps", 5]], libelle: "Ils avancent vers le bas du village" },
+    { si: [["stat_partie>=", "razzia_temps", 4]], libelle: "La ligne a cédé" },
+    { si: [["stat_partie>=", "razzia_temps", 2]], libelle: "La ligne plie" },
+    { si: [], libelle: "La ligne tient" },
+  ],
+};
+
 export const storylets = {
   // ----------------------------------------------------------------- MOYEU
   "ST-VDG-10": {
     id: "ST-VDG-10",
     titre_travail: "Razzia — le moyeu",
     lieu: { type: "declenche_uniquement" },
+    bandeau: BANDEAU_RAZZIA,
     conditions: { requis: [], interdit: [] },
     unique: false,
     majeur: true,
@@ -34,6 +49,11 @@ export const storylets = {
       base:
         "La ligne tient encore. Tu as peut-être le temps de deux choses. Peut-être.",
       variantes: [
+        {
+          si: [["stat_partie>=", "razzia_temps", 2]],
+          remplace:
+            "La ligne plie. Du côté du puits, ils reculent d'un pas à chaque coup, et personne ne vient remplir les trous.\n\nIl te reste le temps d'une chose. Peut-être.",
+        },
         {
           si: [["stat_partie>=", "razzia_temps", 4]],
           remplace:
@@ -75,7 +95,7 @@ export const storylets = {
         cout: {},
         apparait_si: [
           ["!flag", "f_vdg_chaine_b"],
-          ["non", [["stat_partie>=", "razzia_temps", 7]]],
+          ["non", [["stat_partie>=", "razzia_temps", 5]]],
         ],
         epuisable: false,
         observation: false,
@@ -96,7 +116,8 @@ export const storylets = {
         cout: {},
         apparait_si: [
           ["!flag", "f_vdg_chaine_c"],
-          ["non", [["stat_partie>=", "razzia_temps", 7]]],
+          ["flag", "f_vdg_jonas_situe"],
+          ["non", [["stat_partie>=", "razzia_temps", 5]]],
         ],
         epuisable: false,
         observation: false,
@@ -112,12 +133,36 @@ export const storylets = {
         ],
       },
       {
+        // Le même objectif, sans la réponse que la chaîne fait payer :
+        // le libellé ne dit pas « les Ancel » à qui n'a pas posé la question.
+        id: "C2",
+        libelle: "Chercher Jonas",
+        cout: {},
+        apparait_si: [
+          ["!flag", "f_vdg_chaine_c"],
+          ["!flag", "f_vdg_jonas_situe"],
+          ["non", [["stat_partie>=", "razzia_temps", 5]]],
+        ],
+        epuisable: false,
+        observation: false,
+        deplacement: false,
+        sortie: false,
+        issues: [
+          {
+            reussite: true,
+            si: [],
+            texte: "Tu coupes par les jardins.",
+            effets: [{ declenche: "ST-VDG-13" }],
+          },
+        ],
+      },
+      {
         id: "D",
         libelle: "Descendre à la réserve du bas",
         cout: {},
         apparait_si: [
           ["!flag", "f_vdg_chaine_d"],
-          ["non", [["stat_partie>=", "razzia_temps", 7]]],
+          ["non", [["stat_partie>=", "razzia_temps", 5]]],
         ],
         epuisable: false,
         observation: false,
@@ -179,10 +224,7 @@ export const storylets = {
             si: [],
             texte:
               "Tu restes où tu es jusqu'à ce que le dernier ait passé la haie du bas. Personne ne bouge avant longtemps.",
-            effets: [
-              { flag: "f_vdg_route_flot" },
-              { declenche: "ST-VDG-20" },
-            ],
+            effets: [{ declenche: "ST-VDG-20" }],
           },
         ],
       },
@@ -195,6 +237,7 @@ export const storylets = {
     id: "ST-VDG-11",
     titre_travail: "Razzia — rejoindre la ligne",
     lieu: { type: "declenche_uniquement" },
+    bandeau: BANDEAU_RAZZIA,
     conditions: { requis: [], interdit: [] },
     unique: true,
     majeur: true,
@@ -219,7 +262,7 @@ export const storylets = {
         observation: false,
         deplacement: false,
         sortie: true,
-        modif_proba: [{ si: [["stat>=", "adresse", 3]], valeur: 15 }],
+        modif_proba: [{ si: [["stat>=", "adresse", 4]], valeur: 15 }],
         issues: [
           {
             probabilite: 60,
@@ -318,9 +361,10 @@ export const storylets = {
             reussite: true,
             si: [],
             texte:
-              "Trois d'entre eux entendent. Les autres ne bougent pas. Les trois passent la porte de la forge avant que ça cède.",
+              "Trois d'entre eux entendent. Les autres ne bougent pas.",
             effets: [
-              { stat_partie: { compteur: "razzia_temps", valeur: 2 } },
+              // Spec §5.4 : « ligne : cède immédiatement ». Le prix des trois.
+              { stat_partie: { compteur: "razzia_temps", valeur: 4 } },
               { stat_partie: { compteur: "survivants", valeur: 3 } },
               { xp: 25 },
               { journal: "vdg_crie", majeure: true },
@@ -358,7 +402,7 @@ export const storylets = {
             si: [],
             texte:
               "Tu regardes la rue une seconde de trop, puis tu tournes les talons.",
-            effets: [{ declenche: "ST-VDG-10" }],
+            effets: [{ stat_partie: { compteur: "razzia_temps", valeur: 1 } }, { declenche: "ST-VDG-10" }],
           },
         ],
       },
@@ -370,6 +414,7 @@ export const storylets = {
     id: "ST-VDG-12",
     titre_travail: "Razzia — atteindre la forge",
     lieu: { type: "declenche_uniquement" },
+    bandeau: BANDEAU_RAZZIA,
     conditions: { requis: [], interdit: [] },
     unique: true,
     majeur: true,
@@ -406,6 +451,7 @@ export const storylets = {
         observation: false,
         deplacement: false,
         sortie: false,
+        modif_proba: [{ si: [["flag", "f_vdg_repere"]], valeur: -15 }],
         issues: [
           {
             probabilite: 55,
@@ -461,7 +507,7 @@ export const storylets = {
         observation: false,
         deplacement: false,
         sortie: false,
-        modif_proba: [{ si: [["stat>=", "adresse", 3]], valeur: 20 }],
+        modif_proba: [{ si: [["stat>=", "adresse", 4]], valeur: 20 }, { si: [["flag", "f_vdg_repere"]], valeur: -15 }],
         issues: [
           {
             probabilite: 60,
@@ -499,7 +545,7 @@ export const storylets = {
         observation: false,
         deplacement: false,
         sortie: false,
-        modif_proba: [{ si: [["stat>=", "vigueur", 3]], valeur: 15 }],
+        modif_proba: [{ si: [["stat>=", "vigueur", 3]], valeur: 15 }, { si: [["flag", "f_vdg_repere"]], valeur: -15 }],
         issues: [
           {
             probabilite: 60,
@@ -540,7 +586,7 @@ export const storylets = {
         observation: true,
         deplacement: false,
         sortie: false,
-        modif_proba: [{ si: [["stat>=", "sangfroid", 3]], valeur: 20 }],
+        modif_proba: [{ si: [["stat>=", "sangfroid", 3]], valeur: 20 }, { si: [["flag", "f_vdg_repere"]], valeur: -15 }],
         issues: [
           {
             probabilite: 60,
@@ -638,14 +684,14 @@ export const storylets = {
             si: [["local>=", "etape", 2]],
             texte:
               "Tu ne réponds rien. Il n'attend pas de réponse.",
-            effets: [{ declenche: "ST-VDG-10" }],
+            effets: [{ flag: "f_vdg_chaine_b" }, { declenche: "ST-VDG-10" }],
           },
           {
             reussite: true,
             si: [],
             texte:
               "Tu recules d'une rue. La forge attendra, ou elle n'attendra pas.",
-            effets: [{ declenche: "ST-VDG-10" }],
+            effets: [{ stat_partie: { compteur: "razzia_temps", valeur: 1 } }, { declenche: "ST-VDG-10" }],
           },
         ],
       },
@@ -657,6 +703,7 @@ export const storylets = {
     id: "ST-VDG-13",
     titre_travail: "Razzia — le toit des Ancel",
     lieu: { type: "declenche_uniquement" },
+    bandeau: BANDEAU_RAZZIA,
     conditions: { requis: [], interdit: [] },
     unique: true,
     majeur: true,
@@ -709,7 +756,7 @@ export const storylets = {
         observation: false,
         deplacement: false,
         sortie: false,
-        modif_proba: [{ si: [["stat>=", "sangfroid", 3]], valeur: 20 }],
+        modif_proba: [{ si: [["stat>=", "sangfroid", 3]], valeur: 20 }, { si: [["flag", "f_vdg_repere"]], valeur: -15 }],
         issues: [
           {
             probabilite: 60,
@@ -746,7 +793,7 @@ export const storylets = {
         observation: true,
         deplacement: false,
         sortie: true,
-        modif_proba: [{ si: [["stat>=", "perception", 3]], valeur: 20 }],
+        modif_proba: [{ si: [["stat>=", "perception", 4]], valeur: 20 }, { si: [["flag", "f_vdg_repere"]], valeur: -15 }],
         issues: [
           {
             probabilite: 60,
@@ -840,7 +887,7 @@ export const storylets = {
             reussite: true,
             si: [],
             texte: "Tu laisses l'échelle où elle est.",
-            effets: [{ declenche: "ST-VDG-10" }],
+            effets: [{ stat_partie: { compteur: "razzia_temps", valeur: 1 } }, { declenche: "ST-VDG-10" }],
           },
         ],
       },
@@ -852,6 +899,7 @@ export const storylets = {
     id: "ST-VDG-14",
     titre_travail: "Razzia — la réserve du bas",
     lieu: { type: "declenche_uniquement" },
+    bandeau: BANDEAU_RAZZIA,
     conditions: { requis: [], interdit: [] },
     unique: true,
     majeur: true,
@@ -881,16 +929,17 @@ export const storylets = {
         observation: false,
         deplacement: false,
         sortie: true,
-        modif_proba: [{ si: [["stat>=", "vigueur", 3]], valeur: 20 }],
+        modif_proba: [{ si: [["stat>=", "vigueur", 3]], valeur: 20 }, { si: [["flag", "f_vdg_repere"]], valeur: -15 }],
         issues: [
           {
             probabilite: 60,
             reussite: true,
             si: [],
             texte:
-              "Grain, lard, deux outres. Le sac pèse trop et tu le prends quand même.",
+              "Grain, lard, deux outres. Le sac pèse lourd et tu le prends quand même.",
             effets: [
-              { objet: "OBJ-15", quantite: 4 },
+              { objet: "OBJ-15", quantite: 8 },
+              { objet: "OBJ-04", quantite: 2 },
               { objet: "OBJ-05", quantite: 2 },
               { stat_partie: { compteur: "razzia_temps", valeur: 2 } },
               { xp: 25 },
@@ -905,7 +954,7 @@ export const storylets = {
             texte:
               "Tu prends trop. Tu devras jeter la moitié sur la route.",
             effets: [
-              { objet: "OBJ-15", quantite: 2 },
+              { objet: "OBJ-15", quantite: 4 },
               { objet: "OBJ-05", quantite: 1 },
               { stat_partie: { compteur: "razzia_temps", valeur: 2 } },
               { xp: 15 },
@@ -930,7 +979,7 @@ export const storylets = {
             texte:
               "Tu cries à deux familles cachées derrière le cellier de prendre ce qu'elles peuvent et de filer par le bas. Elles t'écoutent.",
             effets: [
-              { objet: "OBJ-15", quantite: 2 },
+              { objet: "OBJ-15", quantite: 4 },
               { stat_partie: { compteur: "razzia_temps", valeur: 2 } },
               { stat_partie: { compteur: "survivants", valeur: 4 } },
               { xp: 30 },
@@ -956,7 +1005,8 @@ export const storylets = {
             texte:
               "Il y en a un, la ridelle cassée, mais il roule. Il ne passera pas partout.",
             effets: [
-              { objet: "OBJ-15", quantite: 6 },
+              { objet: "OBJ-15", quantite: 16 },
+              { objet: "OBJ-04", quantite: 2 },
               { objet: "OBJ-05", quantite: 2 },
               { objet: "OBJ-13", quantite: 2 },
               { flag: "f_vdg_chariot" },
@@ -981,7 +1031,7 @@ export const storylets = {
             reussite: true,
             si: [],
             texte: "Tu refermes la porte du cellier derrière toi.",
-            effets: [{ declenche: "ST-VDG-10" }],
+            effets: [{ stat_partie: { compteur: "razzia_temps", valeur: 1 } }, { declenche: "ST-VDG-10" }],
           },
         ],
       },
@@ -1004,10 +1054,15 @@ export const storylets = {
     etat_local_initial: {},
     texte: {
       arrivee:
-        "La porte de la forge s'ouvre en fin d'après-midi. Ils sortent un par un, vingt, peut-être plus. Personne n'a rien.\n\nLes hommes de la ligne sont tous morts. On les compte avant la nuit.\n\nL'échelle est toujours contre le mur des Ancel, le chaume à moitié posé. Jonas n'est ni parmi les morts, ni parmi les vivants.",
+        "La porte de la forge s'ouvre en fin d'après-midi. Ils sortent un par un, vingt, peut-être plus. Personne n'a rien.\n\nLes hommes de la ligne sont morts. On les compte avant la nuit.\n\nL'échelle est toujours contre le mur des Ancel, le chaume à moitié posé. Jonas n'est ni parmi les morts, ni parmi les vivants.",
       base:
-        "Ils sortent de la forge. Les hommes de la ligne sont tous morts. Jonas n'est nulle part.",
+        "Ils sortent de la forge. Les hommes de la ligne sont morts. Jonas n'est nulle part.",
       variantes: [
+        {
+          si: [["ou", [["flag", "f_vdg_route_tete"]], [["flag", "f_vdg_route_flot"]]]],
+          ajout:
+            "Tu n'as rien vu de tout ça. Tu l'apprends sur le chemin, à la nuit, de ceux qui te rattrapent.",
+        },
         {
           si: [["flag", "f_vdg_piste_jonas"]],
           ajout:
@@ -1066,7 +1121,8 @@ export const fins = {
   "FIN-T1": {
     id: "FIN-T1",
     nom: "Fin de la tranche",
+    bilan: ["decisions", "survivants"],
     description:
-      "Val-de-Garde a été traversé, pas pris. La route du nord commence ici, et il faut prévenir la Couronne avant que quelqu'un d'autre ne s'en charge. Ce qui est arrivé à Jonas attendra la suite.",
+      "Val-de-Garde a été traversé, pas pris. La route du nord commence ici, et il faut prévenir la Couronne, parce qu'il ne reste personne d'autre pour le faire. Ce qui est arrivé à Jonas attendra la suite.",
   },
 };

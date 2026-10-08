@@ -232,20 +232,25 @@ déplace jamais la mesure de la v3.
 
 ```
 bloquants : 0 | à revoir : 0
-garde-fou « l'aléatoire ne tue jamais » · soif · mort en voyage · migration : conformes
+garde-fou « l'aléatoire ne tue jamais » · soif · mort en voyage · migration
+scènes verrouillées · en-têtes de scène : conformes
 
 v3           30/30 · jours 8,0 · niveau 6,2 · 2,9 compétences · 2,9 groupes fermés
              scènes 16,1/22 · points 4,7/6 · savoir 1,6/3 · gorgées 2,6
              survie qui mord 16/30 · 5 fins + la mort
 
-MVP 1 (D04)  30/30 · FIN-T1 30/30 · scènes 9,3/11
-             chaînes bouclées 1,6/4 — réparties 0:8 · 1:4 · 2:11 · 3:7
-             horloge finale 4,5/7
+MVP 1 (D04)  30/30 · FIN-T1 30/30 · scènes 9,0/11
+             chaînes bouclées 1,3/4 — réparties 0:8 · 1:5 · 2:17
+             horloge finale 3,9/7
 ```
 
 **La métrique qui compte pour la razzia est « chaînes bouclées ».** La spec veut
 « deux, parfois trois ; il y en a quatre ». Si elle remonte vers 4, l'horloge a
-cessé de mordre.
+cessé de mordre. Le robot est timide : la vraie mesure est celle d'un **joueur
+qui ne renonce jamais** — 2 chaînes dans 67 % des parties, 3 dans 33 %, jamais 4
+(200 parties, `docs/lots/MVP1.md` §7). Le robot du vérificateur n'utilise que
+les options de scène : **ce qu'il ne touche pas — barre de nav, carte,
+rechargement — se teste dans le navigateur**, pas par le vérificateur.
 
 ### Les ratios à surveiller
 
@@ -297,6 +302,16 @@ issue tirée au sort ne tue ni le héros ni un compagnon, et ne met pas fin au r
 
 **Package de chapitre défini, jamais sauvegarde restaurée.** Sinon, abandonner un
 run annulerait une perte.
+
+**Une scène déclenchée se quitte par un choix, jamais par la nav.** Rien ne
+sélectionne un storylet `declenche_uniquement`, donc rien ne le ramène : la
+carte disparaît tant qu'il dure (`sceneVerrouillee`, `engine/derive.js`), et
+« regarder autour » réaffiche la scène au lieu d'en tirer une autre.
+
+**Le bandeau lit l'état du monde, jamais un compte à rebours.** Une scène peut
+déclarer un en-tête (`bandeau`, contrat M20) : des paliers conditionnels, un
+libellé, aucun chiffre. Pendant la razzia il remplace jour, segment, météo et
+eau, qui n'ont rien à dire à cet instant.
 
 **Le code fait foi sur les nombres.** `SPEC_EQUILIBRAGE` est une cible : un de ses
 nombres n'entre dans le contrat qu'une fois implémenté et mesuré.

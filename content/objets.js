@@ -212,4 +212,17 @@ export const objets = {
       { faim: -25 },
     ],
   },
+
+  "OBJ-16": {
+    id: "OBJ-16",
+    nom: "Masse de forge",
+    categorie: "arme",
+    famille: "lourde",
+    poids: 4.0,
+    degats: 13,
+    protection: null,
+    empilable: false,
+    usable: true,
+    description: "L'outil d'un forgeron, pas une arme : elle frappe comme une hache lourde et se manie aussi lentement.",
+  },
 };

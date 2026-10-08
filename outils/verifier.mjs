@@ -4,7 +4,7 @@
 import db from '../content/index.js';
 import { operateursConnus } from '../engine/conditions.js';
 import { nouvellePartie, voyager, rafraichirScene, pointsAccessibles, partieTerminee } from '../engine/game.js';
-import { composerTexte, optionsVisibles, resoudreOption, ouvrirStorylet } from '../engine/storylets.js';
+import { composerTexte, optionsVisibles, resoudreOption, ouvrirStorylet, enteteScene } from '../engine/storylets.js';
 import { bilan } from '../engine/badges.js';
 import * as schema from '../engine/schema.js';
 import { migrer, chaineComplete } from '../engine/migrations.js';
@@ -237,6 +237,20 @@ function verifier() {
       verifConditions(id, 'regle' + i, r.si);
       verifEffets(id, 'regle' + i, (r.alors ?? []).filter((a) => !a.texte_force));
     }
+    if (s.bandeau) {
+      const paliers = s.bandeau.paliers ?? [];
+      if (!paliers.length) note(1, id, 'bandeau_vide', '');
+      verifStyle(id, 'bandeau_titre', s.bandeau.titre, 4);
+      for (const [i, pa] of paliers.entries()) {
+        verifConditions(id, 'bandeau' + i, pa.si);
+        if (!pa.libelle) note(1, id, 'bandeau_sans_libelle', String(i));
+        verifStyle(id, 'bandeau' + i, pa.libelle, 8);
+        if (/\d/.test(pa.libelle ?? '')) note(1, id, 'bandeau_chiffre', String(i));
+      }
+      // Sans palier inconditionnel en dernier, l'en-tête disparaîtrait par
+      // moments — et un en-tête qui clignote est pire qu'aucun.
+      if (paliers.length && (paliers[paliers.length - 1].si ?? []).length) note(1, id, 'bandeau_sans_palier_final', '');
+    }
 
     const opts = s.options ?? [];
     if (!opts.length) note(1, id, 'sans_option', '');
@@ -280,8 +294,10 @@ function verifier() {
   for (const c of Object.keys(db.competences)) {
     if (!brut.includes('"' + c + '"')) note(0, 'competences', 'competence_jamais_utilisee', c);
   }
+  // Un objet vit aussi dans l'équipement d'un compagnon ou l'inventaire d'un départ.
+  const horsScene = JSON.stringify([db.meta, db.pnj, db.departs]);
   for (const o of Object.keys(db.objets)) {
-    if (!brut.includes('"' + o + '"') && !JSON.stringify(db.meta).includes('"' + o + '"')) {
+    if (!brut.includes('"' + o + '"') && !horsScene.includes('"' + o + '"')) {
       note(0, 'objets', 'objet_jamais_utilise', o);
     }
   }
@@ -301,6 +317,10 @@ function verifier() {
     }
   }
   if (!db.storylets[db.meta.storylet_ouverture]) note(1, 'meta', 'ouverture_inconnue', db.meta.storylet_ouverture);
+  for (const [fid, f] of Object.entries(db.meta.fins ?? {})) {
+    for (const k of f.bilan ?? []) if (!(k in (db.libelles.bilan ?? {}))) note(1, fid, 'bloc_bilan_inconnu', k);
+    if (f.bilan && !f.bilan.length) note(1, fid, 'bilan_vide', '');
+  }
 
   return { ids, parLieu };
 }
@@ -403,6 +423,22 @@ function testScenesVerrouillees() {
     declenchees: declenchees.length, lieux: lieux.length, manquees, fausses, hors_scene,
     ok: manquees.length === 0 && fausses.length === 0 && !hors_scene,
   };
+}
+
+
+// Une scène qui déclare un en-tête doit toujours en produire un : le bandeau
+// ne peut pas se vider au milieu d'une razzia.
+function testEntetes() {
+  const avec = Object.values(db.storylets).filter((s) => s.bandeau);
+  const E = nouvellePartie({ seed: 41 });
+  const muettes = [];
+  for (const s of avec) {
+    ouvrirStorylet(E, s.id);
+    if (!enteteScene(E)?.libelle) muettes.push(s.id);
+  }
+  E.systeme.storylet_courant = null;
+  const sans = enteteScene(E);
+  return { avec: avec.length, muettes, hors_scene: sans, ok: muettes.length === 0 && sans === null };
 }
 
 
@@ -605,6 +641,12 @@ console.log('  déclenchées non verrouillées :', sv.manquees.length ? sv.manqu
             '| hors scène :', sv.hors_scene ? 'VERROUILLÉ' : 'libre');
 console.log('  →', sv.ok ? 'CONFORME' : 'ÉCHEC');
 
+const en = testEntetes();
+console.log('\n=== EN-TÊTES DE SCÈNE ===');
+console.log('  scènes à en-tête :', en.avec, '| muettes :', en.muettes.length ? en.muettes.join(', ') : 'aucune',
+            '| hors scène :', en.hors_scene === null ? 'aucun' : 'UN EN-TÊTE');
+console.log('  →', en.ok ? 'CONFORME' : 'ÉCHEC');
+
 const mv = testMortEnVoyage();
 console.log('  mort d\'attrition en voyage        : santé', mv.sante, '| fin', mv.fin ?? 'aucune');
 console.log('  attendu : 0 / FIN-MORT                   →', mv.ok ? 'CONFORME' : 'ÉCHEC');
@@ -664,4 +706,4 @@ if (resT.length) {
   for (const r of resT) finsT[r.fin ?? 'aucune'] = (finsT[r.fin ?? 'aucune'] ?? 0) + 1;
   console.log('  fins         :', JSON.stringify(finsT));
 }
-process.exit(graves.length || ko || koT || atteintT1 < 10 || !gf.ok || !mv.ok || !so.ok || !mg.ok || !sv.ok ? 1 : 0);
+process.exit(graves.length || ko || koT || atteintT1 < 10 || !gf.ok || !mv.ok || !so.ok || !mg.ok || !sv.ok || !en.ok ? 1 : 0);

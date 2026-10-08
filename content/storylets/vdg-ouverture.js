@@ -225,9 +225,16 @@ export const storylets = {
         issues: [
           {
             reussite: true,
-            si: [],
+            si: [["flag", "f_vdg_dette_mathias"]],
             texte:
               "Tu prends tes pointes, tu ne dis rien. Il hoche la tête sans s'arrêter. C'est comme ça entre vous, et ça suffit.",
+            effets: [{ declenche: "ST-VDG-03" }],
+          },
+          {
+            reussite: true,
+            si: [],
+            texte:
+              "Tu ne dis rien. Il hoche la tête sans s'arrêter. C'est comme ça entre vous, et ça suffit.",
             effets: [{ declenche: "ST-VDG-03" }],
           },
         ],

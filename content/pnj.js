@@ -83,7 +83,7 @@ export const pnj = {
     niveau: 1,
     niveau_max: 5,
     montee: ["vigueur", "vigueur", "sangfroid"],
-    equipement: ["OBJ-08", "OBJ-13"],
+    equipement: ["OBJ-16", "OBJ-13"],
     confiance_initiale: 3,
     apport_hors_combat: "Il remet en état ce qui casse : une lame ébréchée, une boucle arrachée, un manche fendu.",
     description: "Ton frère, vingt ans, forgeron de Val-de-Garde. Il frappe plus fort que quiconque et ne sait pas se couvrir : il n'a jamais été soldat, et il le dit lui-même.",
@@ -99,7 +99,7 @@ export const pnj = {
     nom: "Jonas",
     minimal: true,
     statut_initial: "disparu",
-    note: "Ton frère aîné, vingt-huit ans. Parti avant l'attaque, sans nouvelles depuis.",
+    note: "Ton frère aîné, vingt-huit ans. Sur un toit le matin de la razzia. Ni parmi les morts, ni parmi les vivants.",
   },
 
   "PNJ-V1": {

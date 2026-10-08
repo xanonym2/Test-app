@@ -4,6 +4,7 @@ import { T, ESP, TYPO } from '../theme.js';
 import { Jauge } from './Base.js';
 import { getDb } from '../../engine/db.js';
 import { santeMax, tousLesEtats, encombrement, reserveEau } from '../../engine/derive.js';
+import { enteteScene } from '../../engine/storylets.js';
 
 function Mini({ nom, valeur, max, couleur, inverse }) {
   return (
@@ -26,23 +27,41 @@ export function Bandeau({ E, onEtats }) {
   const meteo = db.meteo.table.find((m) => m.id === E.temps.meteo);
   const eau = reserveEau(E);
   const aSoif = etats.includes('assoiffe');
+  // Une scène qui déclare son en-tête remplace la ligne du monde : pendant
+  // une razzia, l'heure et la météo n'ont rien à dire.
+  const entete = enteteScene(E);
 
   return (
     <View style={{ backgroundColor: T.fond2, borderBottomWidth: 1, borderBottomColor: T.bord, paddingHorizontal: ESP.lg, paddingTop: ESP.sm, paddingBottom: ESP.sm }}>
       <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 7 }}>
-        <Text style={[TYPO.minuscule, { color: T.accent, letterSpacing: 0.8 }]}>
-          {'JOUR ' + E.temps.jour}
-        </Text>
-        <Text style={[TYPO.minuscule, { marginHorizontal: 6 }]}>·</Text>
-        <Text style={TYPO.minuscule}>{l.segments?.[E.temps.segment] ?? ''}</Text>
-        <Text style={[TYPO.minuscule, { marginHorizontal: 6 }]}>·</Text>
-        <Text style={TYPO.minuscule}>{meteo?.nom ?? ''}</Text>
-        <View style={{ flex: 1 }} />
-        {eau.contenant ? (
-          <Text style={[TYPO.minuscule, { color: aSoif ? T.danger : eau.portee === 0 ? T.faim : T.texteDoux }]}>
-            {'EAU ' + eau.portee + '/' + eau.capacite}
-          </Text>
-        ) : null}
+        {entete ? (
+          <>
+            {entete.titre ? (
+              <>
+                <Text style={[TYPO.minuscule, { color: T.accent, letterSpacing: 0.8 }]}>{entete.titre.toUpperCase()}</Text>
+                <Text style={[TYPO.minuscule, { marginHorizontal: 6 }]}>·</Text>
+              </>
+            ) : null}
+            <Text style={TYPO.minuscule} numberOfLines={1}>{entete.libelle}</Text>
+            <View style={{ flex: 1 }} />
+          </>
+        ) : (
+          <>
+            <Text style={[TYPO.minuscule, { color: T.accent, letterSpacing: 0.8 }]}>
+              {'JOUR ' + E.temps.jour}
+            </Text>
+            <Text style={[TYPO.minuscule, { marginHorizontal: 6 }]}>·</Text>
+            <Text style={TYPO.minuscule}>{l.segments?.[E.temps.segment] ?? ''}</Text>
+            <Text style={[TYPO.minuscule, { marginHorizontal: 6 }]}>·</Text>
+            <Text style={TYPO.minuscule}>{meteo?.nom ?? ''}</Text>
+            <View style={{ flex: 1 }} />
+            {eau.contenant ? (
+              <Text style={[TYPO.minuscule, { color: aSoif ? T.danger : eau.portee === 0 ? T.faim : T.texteDoux }]}>
+                {'EAU ' + eau.portee + '/' + eau.capacite}
+              </Text>
+            ) : null}
+          </>
+        )}
         {enc.surcharge ? (
           <Text style={[TYPO.minuscule, { color: T.danger, marginLeft: 8 }]}>SURCHARGE</Text>
         ) : null}

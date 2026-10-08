@@ -1,6 +1,6 @@
 # Contrat de contenu — Les Terres Voilées
 
-**Version 2.1** — 21 septembre 2026 · remplace la v1 « Val-de-Garde (MVP) » · 2.1 : arbitrages A1 à A3 rendus
+**Version 2.2** — 8 octobre 2026 · remplace la v1 « Val-de-Garde (MVP) » · 2.1 : arbitrages A1 à A3 rendus · 2.2 : M19 à M21, après l'audit du MVP 1
 
 Ce document est la **spécification mécanique** du contenu. Il fixe les
 identifiants, les schémas de données, les valeurs d'équilibrage et les
@@ -81,6 +81,10 @@ comme un assouplissement.
 | M16 | §4 r. 9 | **Mort du héros clarifiée** — un adversaire ne tue jamais (`SPEC_DESIGN` §4.5) ; seule l'attrition met fin au run. La contradiction §2.5 / §4.5 est levée | Clarification | Non — le moteur v3 n'a pas d'état de défaite |
 | M17 | §4 r. 6 | **Un beat de transition peut n'avoir qu'une option.** La règle « 3 à 5 options par tour » vaut pour un beat qui offre un choix ; `SPEC_CONTENU` impose des beats sans choix (la cloche, le retrait des orcs) | Clarification | Non — le vérificateur n'imposait pas de minimum |
 | M18 | §11 | Départ `D04` ajouté au plan, et notion de départ **hors tirage** | Extension du plan | Non |
+| M19 | §4 r. 6 | **Le dernier tour d'un beat à choix n'est pas tenu au plancher.** Quand toutes les options épuisables ont été prises ou fermées, il ne reste que la sortie, et c'est juste : on n'ajoute pas une option pour tenir un quota | Clarification | Non — le vérificateur n'impose pas de minimum |
+| M20 | §5 | **Un storylet peut déclarer un en-tête de bandeau** (`bandeau`) : un titre et des paliers conditionnels, le premier vrai gagne. Il remplace la ligne du monde (jour, segment, météo, eau) tant que la scène dure. Jamais un chiffre : un état, pas un compte à rebours | Extension | Oui — opérateurs, libellés, aucun chiffre, palier final inconditionnel, et chaque scène à en-tête en produit un |
+| M21 | §16 | **Une fin peut restreindre le bilan** (`bilan: [...]`) aux blocs qui ont un sens pour elle, par les clés de `libelles.bilan`. Absent, le bilan est complet | Extension | Oui — clés connues, liste non vide |
+| M22 | §9 | **`OBJ-16` Masse de forge** — Mathias dit « ma masse » dans deux textes validés, sa fiche portait une hache. Et **les outres se cumulent** : la capacité d'eau vaut 3 par outre portée, ce que « deux outres » à la réserve exigeait | Extension | Non — références déjà contrôlées |
 
 ### Arbitrages
 
@@ -329,7 +333,9 @@ choix ne dépasse pas **200 mots**.
 5. Une **sortie est toujours disponible** à chaque tour (`sortie: true`).
 6. **3 à 5 options par tour.** **[v2]** Vaut pour un beat qui offre un choix.
    Un **beat de transition** — une scène qui se contente d'enchaîner, comme la
-   cloche ou le retrait des orcs — peut n'en avoir qu'une (M17).
+   cloche ou le retrait des orcs — peut n'en avoir qu'une (M17). Le **dernier
+   tour** d'un beat à choix, quand il ne reste que la sortie, n'y est pas tenu
+   non plus (M19) : on n'ajoute jamais une option pour tenir un quota.
 7. Une option d'**observation** coûtant du temps partout où il y a un risque.
 8. Les **différés** ont leur issue déterminée au moment du choix
    (`{ differe: { evenement, resolution, dans_jours } }`).
@@ -350,6 +356,13 @@ retrait est toujours jouable, même coûteux.**
   id: 'ST-P02-01',
   titre_travail: 'court, pour les outils — jamais affiché',
   lieu: { type: 'point_interet', cible: 'P02' },
+  bandeau: {                        // [v2.2] facultatif — M20
+    titre: 'Val-de-Garde',          // 4 mots au plus
+    paliers: [                      // le premier palier vrai gagne ; le dernier est sans condition
+      { si: [['stat_partie>=', 'razzia_temps', 4]], libelle: 'La ligne a cédé' },
+      { si: [], libelle: 'La ligne tient' },
+    ],
+  },
   conditions: { requis: [], interdit: [] },
   unique: true,
   priorite: 9,
@@ -390,6 +403,12 @@ retrait est toujours jouable, même coûteux.**
 
 `lieu.type` ∈ `point_interet` · `zone` · `territoire` · `type_lieu` · `partout` ·
 `declenche_uniquement`.
+
+**[v2.2] `bandeau` (M20).** Tant que la scène dure, le bandeau affiche
+`titre · libelle` à la place de la ligne du monde. Un libellé fait 8 mots au
+plus et ne contient **aucun chiffre** : c'est un état du monde que le joueur
+lit, jamais une jauge ni un compte à rebours (`SPEC_DESIGN`, pression). Les
+scènes d'une même séquence partagent le même objet.
 
 Sélection : parmi les storylets disponibles au point courant, la **priorité la
 plus haute** gagne ; à égalité, tirage pondéré par `poids`.
@@ -490,7 +509,7 @@ persiste d'un run à l'autre (§20).
 | `OBJ-01` | arme | `arc` | 2.0 | 7 | — | non | oui | Arme de départ. Distance, munitions limitées, silencieux. |
 | `OBJ-02` | ressource | — | 0.05 | — | — | **oui** | non | Munitions de l'arc. |
 | `OBJ-03` | arme | `lame_legere` | 0.6 | 4 | — | non | oui | Arme de départ secondaire. Rapide, faible dégât. |
-| `OBJ-04` | divers | — | 0.4 | — | — | non | oui | Contenant : limite la quantité d'eau transportable (3). |
+| `OBJ-04` | divers | — | 0.4 | — | — | non | oui | Contenant : limite la quantité d'eau transportable (3 par outre, cumulable — M22). |
 | `OBJ-05` | consommable | — | 0.5 | — | — | **oui** | non | L'eau est un **objet**, pas une jauge. `{ fatigue: -8 }`, retire `assoiffe`. |
 | `OBJ-06` | consommable | — | 1.2 | — | — | **oui** | non | La chasse du jour. `{ faim: -40 }`. Se gâte : voir `perissable: 3` (jours). |
 | `OBJ-07` | arme | `lame_longue` | 1.8 | 9 | — | non | oui | Polyvalent. |
@@ -502,6 +521,7 @@ persiste d'un run à l'autre (§20).
 | `OBJ-13` | ressource | — | 1.0 | — | — | **oui** | non | Matériaux de réparation. |
 | `OBJ-14` | divers | — | 1.5 | — | — | non | oui | Outil d'escalade/franchissement. Ouvre des options. |
 | `OBJ-15` | consommable | — | 0.4 | — | — | **oui** | non | Vivres sèches. `{ faim: -25 }`. Ne se gâte pas. |
+| `OBJ-16` | arme | `lourde` | 4.0 | 13 | — | non | oui | La masse de Mathias : l'outil d'un forgeron, qui frappe comme une hache lourde (M22). |
 
 Chaque objet porte une `description` d'**une phrase**, factuelle, qui dit à
 quoi il sert — jamais un chiffre de règle.
@@ -726,10 +746,16 @@ export const meta = {
   inventaire_initial: [ { base: 'OBJ-01', usure: 75 }, { base: 'OBJ-02', quantite: 9 },
                         { base: 'OBJ-03', usure: 80 }, { base: 'OBJ-04' },
                         { base: 'OBJ-05', quantite: 1 }, { base: 'OBJ-06', quantite: 1 } ],
-  fins: { 'FIN-xx': { id, nom, description: 'deux à trois phrases' }, ... },
+  fins: { 'FIN-xx': { id, nom, description: 'deux à trois phrases',
+                     bilan: ['decisions', 'equipe'] /* [v2.2] facultatif — M21 */ }, ... },
 };
 ```
 `meta.fins` doit contenir `FIN-MORT` (mort du héros) plus les fins de `ST-FIN-01`.
+**[v2.2] `bilan` (M21)** : la liste des blocs du bilan que cette fin montre, par
+les clés de `libelles.bilan` (`savoir` · `temps` · `heros` · `equipe` ·
+`survivants` · `ennemis` · `zones_explorees` · `decisions` · `badges` ·
+`manque`). Absent : bilan complet. Une fin de tranche n'a ni zones ni badges à
+montrer — elle le dit, plutôt que d'afficher un échec qui n'en est pas un.
 
 ## 17. Libellés d'interface — `content/libelles.js`
 

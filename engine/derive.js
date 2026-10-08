@@ -131,11 +131,11 @@ export function reserveEau(E) {
   const portee = E.inventaire
     .filter((i) => i.base === idEau)
     .reduce((s2, i) => s2 + (i.quantite ?? 1), 0);
-  const contenant = E.inventaire.some((i) => i.base === idContenant);
+  const contenants = E.inventaire.filter((i) => i.base === idContenant).length;
   return {
     portee,
-    capacite: contenant ? (db.objets[idContenant]?.capacite_eau ?? 0) : 0,
-    contenant,
+    capacite: contenants * (db.objets[idContenant]?.capacite_eau ?? 0),
+    contenant: contenants > 0,
   };
 }
 

@@ -23,6 +23,10 @@ export function EcranBilan() {
   const b = bilan(E);
   const fin = db.meta.fins?.[b.fin?.id] ?? null;
   const obtenus = b.badges.filter((x) => x.obtenu);
+  // Une fin peut restreindre le bilan aux blocs qui ont un sens pour elle :
+  // une tranche de vingt minutes n'a ni zones ni badges à montrer.
+  const blocs = fin?.bilan ?? null;
+  const montre = (k) => !blocs || blocs.includes(k);
   // Le message de permadeath n'arrive jamais pendant la scène : ici, une fois,
   // et seulement si un compagnon mortel a rejoint le groupe.
   const permadeath = !!db.meta.message_permadeath
@@ -42,47 +46,53 @@ export function EcranBilan() {
         </Panneau>
       ) : null}
 
-      <Bloc titre={l.appris ?? 'Ce que vous avez appris'}>
-        <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 6 }}>
-          <Text style={[TYPO.nombre, { fontSize: 22, color: T.accent, marginRight: ESP.sm }]}>
-            {b.savoir}
-          </Text>
-          <Text style={TYPO.petit}>sur {b.savoir_max} morceaux de vérité</Text>
-        </View>
-        <Jauge valeur={b.savoir} max={b.savoir_max} couleur={T.accent} />
-        <Petit style={{ marginTop: ESP.sm }}>
-          {b.compteurs.indices_trouves} indice{b.compteurs.indices_trouves > 1 ? 's' : ''} relevé{b.compteurs.indices_trouves > 1 ? 's' : ''} sur les {b.indices_total} qui traînaient sur le chemin.
-        </Petit>
-      </Bloc>
+      {montre('savoir') ? (
+        <Bloc titre={l.savoir ?? 'Ce que tu as appris'}>
+          <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 6 }}>
+            <Text style={[TYPO.nombre, { fontSize: 22, color: T.accent, marginRight: ESP.sm }]}>
+              {b.savoir}
+            </Text>
+            <Text style={TYPO.petit}>sur {b.savoir_max} morceaux de vérité</Text>
+          </View>
+          <Jauge valeur={b.savoir} max={b.savoir_max} couleur={T.accent} />
+          <Petit style={{ marginTop: ESP.sm }}>
+            {b.compteurs.indices_trouves} indice{b.compteurs.indices_trouves > 1 ? 's' : ''} relevé{b.compteurs.indices_trouves > 1 ? 's' : ''} sur les {b.indices_total} qui traînaient sur le chemin.
+          </Petit>
+        </Bloc>
+      ) : null}
 
-      <Bloc titre={l.temps ?? 'Temps écoulé'}>
-        <Ligne gauche="Jours de jeu" droite={b.jours} />
-        <Ligne gauche="Segments écoulés" droite={b.segments} />
-        <Ligne gauche="Départ" droite={db.departs[b.depart]?.nom ?? b.depart} />
-        {b.mutateurs.map((m) => (
-          <Ligne key={m} gauche="Monde" droite={db.mutateurs[m]?.nom ?? m} doux />
-        ))}
-      </Bloc>
+      {montre('temps') ? (
+        <Bloc titre={l.temps ?? 'Temps écoulé'}>
+          <Ligne gauche="Jours de jeu" droite={b.jours} />
+          <Ligne gauche="Segments écoulés" droite={b.segments} />
+          <Ligne gauche="Départ" droite={db.departs[b.depart]?.nom ?? b.depart} />
+          {b.mutateurs.map((m) => (
+            <Ligne key={m} gauche="Monde" droite={db.mutateurs[m]?.nom ?? m} doux />
+          ))}
+        </Bloc>
+      ) : null}
 
-      <Bloc titre={l.heros ?? 'Le héros'}>
-        <Ligne gauche="Niveau atteint" droite={b.heros.niveau} />
-        <Ligne gauche="Expérience" droite={b.heros.xp} />
-        {Object.entries(b.heros.stats).map(([s, v]) => (
-          <Ligne key={s} gauche={db.libelles.stats?.[s]?.nom ?? s} droite={v} doux />
-        ))}
-        {b.heros.competences.length ? (
-          <>
-            <Separateur style={{ marginVertical: ESP.sm }} />
-            {b.heros.competences.map((c) => (
-              <Text key={c} style={[TYPO.petit, { color: T.texteDoux }]}>
-                {db.competences[c]?.nom ?? c}
-              </Text>
-            ))}
-          </>
-        ) : null}
-      </Bloc>
+      {montre('heros') ? (
+        <Bloc titre={l.heros ?? 'Le héros'}>
+          <Ligne gauche="Niveau atteint" droite={b.heros.niveau} />
+          <Ligne gauche="Expérience" droite={b.heros.xp} />
+          {Object.entries(b.heros.stats).map(([s, v]) => (
+            <Ligne key={s} gauche={db.libelles.stats?.[s]?.nom ?? s} droite={v} doux />
+          ))}
+          {b.heros.competences.length ? (
+            <>
+              <Separateur style={{ marginVertical: ESP.sm }} />
+              {b.heros.competences.map((c) => (
+                <Text key={c} style={[TYPO.petit, { color: T.texteDoux }]}>
+                  {db.competences[c]?.nom ?? c}
+                </Text>
+              ))}
+            </>
+          ) : null}
+        </Bloc>
+      ) : null}
 
-      {b.equipe.length ? (
+      {montre('equipe') && b.equipe.length ? (
         <Bloc titre={l.equipe ?? 'L’équipe'}>
           {b.equipe.map((c) => (
             <View key={c.id} style={{ marginBottom: ESP.sm }}>
@@ -100,7 +110,7 @@ export function EcranBilan() {
         </Bloc>
       ) : null}
 
-      {b.pnj.length ? (
+      {montre('survivants') && b.pnj.length ? (
         <Bloc titre={l.survivants ?? 'Qui a survécu'}>
           {b.pnj.map((p) => (
             <Ligne
@@ -113,31 +123,35 @@ export function EcranBilan() {
         </Bloc>
       ) : null}
 
-      <Bloc titre={l.ennemis ?? 'Ennemis vaincus'}>
-        <Ligne gauche={db.libelles.factions?.terres_noires ?? 'Orcs'} droite={b.ennemis.orcs} />
-        <Ligne gauche="Humains" droite={b.ennemis.humains} />
-        <Ligne gauche="Bêtes" droite={b.ennemis.betes} />
-        <Separateur style={{ marginVertical: ESP.sm }} />
-        <Ligne gauche="Combats gagnés" droite={b.compteurs.combats_gagnes} doux />
-        <Ligne gauche="Combats évités" droite={b.compteurs.combats_evites} doux />
-        <Ligne gauche="Dégâts encaissés" droite={b.compteurs.degats_subis} doux />
-      </Bloc>
+      {montre('ennemis') ? (
+        <Bloc titre={l.ennemis ?? 'Ennemis vaincus'}>
+          <Ligne gauche={db.libelles.factions?.terres_noires ?? 'Orcs'} droite={b.ennemis.orcs} />
+          <Ligne gauche="Humains" droite={b.ennemis.humains} />
+          <Ligne gauche="Bêtes" droite={b.ennemis.betes} />
+          <Separateur style={{ marginVertical: ESP.sm }} />
+          <Ligne gauche="Combats gagnés" droite={b.compteurs.combats_gagnes} doux />
+          <Ligne gauche="Combats évités" droite={b.compteurs.combats_evites} doux />
+          <Ligne gauche="Dégâts encaissés" droite={b.compteurs.degats_subis} doux />
+        </Bloc>
+      ) : null}
 
-      <Bloc titre={l.zones ?? 'Zones'}>
-        {b.zones_explorees.map((z) => (
-          <Text key={z} style={[TYPO.petit, { color: T.texte }]}>{db.points[z]?.nom ?? z}</Text>
-        ))}
-        {b.zones_jamais_atteintes.length ? (
-          <>
-            <Separateur style={{ marginVertical: ESP.sm }} />
-            <Petit style={{ color: T.texteFaible }}>
-              {b.zones_jamais_atteintes.length} lieu{b.zones_jamais_atteintes.length > 1 ? 'x' : ''} jamais atteint{b.zones_jamais_atteintes.length > 1 ? 's' : ''}.
-            </Petit>
-          </>
-        ) : null}
-      </Bloc>
+      {montre('zones_explorees') ? (
+        <Bloc titre={l.zones_explorees ?? 'Zones'}>
+          {b.zones_explorees.map((z) => (
+            <Text key={z} style={[TYPO.petit, { color: T.texte }]}>{db.points[z]?.nom ?? z}</Text>
+          ))}
+          {b.zones_jamais_atteintes.length ? (
+            <>
+              <Separateur style={{ marginVertical: ESP.sm }} />
+              <Petit style={{ color: T.texteFaible }}>
+                {b.zones_jamais_atteintes.length} lieu{b.zones_jamais_atteintes.length > 1 ? 'x' : ''} jamais atteint{b.zones_jamais_atteintes.length > 1 ? 's' : ''}.
+              </Petit>
+            </>
+          ) : null}
+        </Bloc>
+      ) : null}
 
-      {b.decisions.length ? (
+      {montre('decisions') && b.decisions.length ? (
         <Bloc titre={l.decisions ?? 'Décisions majeures'}>
           {b.decisions.map((d, i) => (
             <View key={i} style={{ flexDirection: 'row', marginBottom: 5 }}>
@@ -148,36 +162,40 @@ export function EcranBilan() {
         </Bloc>
       ) : null}
 
-      <Bloc titre={l.badges ?? 'Badges'}>
-        <Petit style={{ marginBottom: ESP.md }}>{obtenus.length} sur {b.badges.length}</Petit>
-        {b.badges.map((x) => (
-          <View key={x.id} style={{ flexDirection: 'row', alignItems: 'flex-start', marginBottom: ESP.sm, opacity: x.obtenu ? 1 : 0.38 }}>
-            <View style={{
-              width: 8, height: 8, borderRadius: 4, marginTop: 6, marginRight: ESP.md,
-              backgroundColor: x.obtenu ? T.accent : 'transparent',
-              borderWidth: 1, borderColor: x.obtenu ? T.accent : T.bordFort,
-            }} />
-            <View style={{ flex: 1 }}>
-              <Text style={[TYPO.corps, { fontSize: 14, fontWeight: '600' }]}>{x.nom}</Text>
-              <Petit>{x.description}</Petit>
+      {montre('badges') ? (
+        <Bloc titre={l.badges ?? 'Badges'}>
+          <Petit style={{ marginBottom: ESP.md }}>{obtenus.length} sur {b.badges.length}</Petit>
+          {b.badges.map((x) => (
+            <View key={x.id} style={{ flexDirection: 'row', alignItems: 'flex-start', marginBottom: ESP.sm, opacity: x.obtenu ? 1 : 0.38 }}>
+              <View style={{
+                width: 8, height: 8, borderRadius: 4, marginTop: 6, marginRight: ESP.md,
+                backgroundColor: x.obtenu ? T.accent : 'transparent',
+                borderWidth: 1, borderColor: x.obtenu ? T.accent : T.bordFort,
+              }} />
+              <View style={{ flex: 1 }}>
+                <Text style={[TYPO.corps, { fontSize: 14, fontWeight: '600' }]}>{x.nom}</Text>
+                <Petit>{x.description}</Petit>
+              </View>
             </View>
-          </View>
-        ))}
-      </Bloc>
+          ))}
+        </Bloc>
+      ) : null}
 
-      <Bloc titre={l.manques ?? 'Ce que vous avez manqué'}>
-        <Petit style={{ marginBottom: ESP.sm }}>
-          Il y avait autre chose à trouver. Cette partie n’en a pas vu la moitié.
-        </Petit>
-        <Ligne gauche="Scènes jamais jouées" droite={b.manques.storylets_non_vus} doux />
-        <Ligne gauche="Indices laissés sur place" droite={b.manques.indices_non_trouves} doux />
-        <Ligne gauche="Lieux jamais atteints" droite={b.manques.points_non_atteints} doux />
-        <Ligne gauche="Compétences jamais prises" droite={b.manques.competences_non_prises} doux />
-      </Bloc>
+      {montre('manque') ? (
+        <Bloc titre={l.manque ?? 'Ce que tu as manqué'}>
+          <Petit style={{ marginBottom: ESP.sm }}>
+            Il y avait autre chose à trouver. Cette partie n’en a pas vu la moitié.
+          </Petit>
+          <Ligne gauche="Scènes jamais jouées" droite={b.manques.storylets_non_vus} doux />
+          <Ligne gauche="Indices laissés sur place" droite={b.manques.indices_non_trouves} doux />
+          <Ligne gauche="Lieux jamais atteints" droite={b.manques.points_non_atteints} doux />
+          <Ligne gauche="Compétences jamais prises" droite={b.manques.competences_non_prises} doux />
+        </Bloc>
+      ) : null}
 
       <Bouton variante="fort" onPress={abandonner}>Relancer une partie</Bouton>
       <Petit style={{ marginTop: ESP.sm, textAlign: 'center' }}>
-        Rien ne sera conservé. Sauf ce que vous savez maintenant.
+        Rien ne sera conservé. Sauf ce que tu sais maintenant.
       </Petit>
     </Page>
   );

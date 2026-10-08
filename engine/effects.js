@@ -112,7 +112,10 @@ function appliquerEffet(E, ef, ctx, declenchements) {
 
   if (ef.confiance !== undefined) {
     const { pnj, valeur } = ef.confiance;
-    E.social.confiance[pnj] = bornes((E.social.confiance[pnj] ?? 0) + valeur, -5, 5);
+    // Avant le recrutement, la confiance part de la fiche : sinon un geste
+    // amical fait avant l'engagement la ramenait de 3 à 1.
+    const base = E.social.confiance[pnj] ?? db.pnj[pnj]?.confiance_initiale ?? 0;
+    E.social.confiance[pnj] = bornes(base + valeur, -5, 5);
     const comp = E.compagnons.find((c) => c.id === pnj);
     if (comp) comp.confiance = E.social.confiance[pnj];
     return { cle: 'confiance', id: pnj, valeur };

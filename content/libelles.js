@@ -145,6 +145,7 @@ export const libelles = {
 
   bilan: {
     savoir: "Ce que tu as appris",
+    heros: "Le héros",
     survivants: "Survivants",
     equipe: "Ton équipe",
     ennemis: "Ennemis vaincus",

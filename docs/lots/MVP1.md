@@ -1911,3 +1911,158 @@ repère religieux. **C'est la seule modification du texte validé.**
 3. **Le bilan est celui de la v3.** Il parle de zones explorées et de badges qui
    n'ont pas de sens pour une tranche de vingt minutes. Il fonctionne, il n'est
    pas faux, mais il n'est pas écrit pour ça.
+
+---
+
+## 7. Audit de jouabilité et corrections — 8 octobre 2026
+
+Après la livraison, la tranche a été jouée dans un navigateur (390 × 844, à la
+souris) et mesurée par des scripts, en plus du vérificateur. Tom a ensuite
+délégué les décisions. Tout ce qui suit est fait, vérifié et poussé.
+
+### 7.1 Une faille que le vérificateur ne pouvait pas voir
+
+**La barre de nav faisait sortir de la razzia sans retour.** Carte → « Rester
+et regarder autour » resélectionnait une scène de lieu (la Crête, v3) ; les 11
+storylets de la tranche étant `declenche_uniquement`, rien ne ramenait jamais au
+moyeu et `FIN-T1` devenait inatteignable. Même chose pendant l'ouverture v3 et
+le combat. Le robot n'utilise que les options de scène : il ne pouvait pas le
+voir.
+
+Correctif : `sceneVerrouillee` (`engine/derive.js`) dérive le verrou du type de
+lieu du storylet courant ; l'onglet Carte disparaît tant qu'une scène déclenchée
+dure, et `relancerScene` réaffiche la scène au lieu d'en tirer une autre. Le
+vérificateur contrôle les 14 scènes déclenchées (3 v3, 11 tranche).
+
+**Leçon de méthode**, inscrite au `CLAUDE.md` : ce que le robot ne touche pas —
+barre de nav, carte, rechargement — se teste dans le navigateur.
+
+### 7.2 L'horloge ne mordait pas contre un joueur qui a compris
+
+Mesure sur 200 parties par politique (`mesure-stricte.mjs`, scratchpad) :
+
+| Politique | Avant | Après |
+|---|---|---|
+| **Stricte** — toujours une chaîne, jamais renoncer | 2 : 52 % · **3 : 45 %** · 4 : 2 % | 2 : 67 % · 3 : 33 % · 4 : 0 |
+| Gourmande — une chaîne, renonce parfois | 2 : 35 % · 3 : 60 % | 1 : 20 % · 2 : 75 % · 3 : 5 % |
+| Aléatoire | 0-3, moy 1,07 | 0-3, moy 0,94 |
+
+Trois causes, trois décisions :
+
+1. **Regarder une chaîne était gratuit.** Entrer dans A, C ou D, lire
+   l'arrivée, revenir par « Renoncer » : zéro temps. On pouvait inspecter les
+   quatre avant de choisir — contre la règle 7 du contrat et contre « le joueur
+   ne choisit pas des objectifs : il court ». **Renoncer coûte 1 temps** dans
+   les quatre chaînes (dans B, seulement avant d'avoir avancé).
+2. **B, C et D restaient ouvertes jusqu'à 7.** Avec des chaînes à 2-3 temps,
+   trois chaînes étaient presque garanties, quatre possibles. **Elles se ferment
+   à 5** : deux chaînes, trois si les deux premières ont été courtes. C'est
+   exactement « deux, parfois trois ». La spec disait « toujours » parce qu'elle
+   coupait une chaîne en cours à 7 ; le port ne coupe pas en cours, la fermeture
+   à 5 produit la même pression.
+3. **« Crier de reculer » ne faisait pas céder la ligne.** La spec §5.4 le
+   demande (« ligne : cède immédiatement ») : l'issue franche coûte désormais 4
+   temps. Les trois survivants ont un prix : la ligne.
+
+### 7.3 L'horloge se lit, sans chiffre
+
+Le moyeu ne changeait de texte qu'à 4 et 7 : le joueur dépensait la moitié de
+son budget sans signal, et le seul avertissement arrivait après la perte.
+
+- **Troisième version du moyeu à 2** — « La ligne plie. […] Il te reste le
+  temps d'une chose. Peut-être. » C'est la seule phrase ajoutée au texte validé
+  de la razzia : sans elle, « Tu as peut-être le temps de deux choses » se
+  relisait tel quel après une chaîne, et c'était faux.
+- **Un en-tête de scène** (`bandeau`, contrat M20) : pendant le moyeu et les
+  quatre chaînes, le bandeau affiche « VAL-DE-GARDE · La ligne tient / La ligne
+  plie / La ligne a cédé / Ils avancent vers le bas du village / Ils se
+  retirent » à la place de jour, segment, météo et eau. Aucun nombre : l'état du
+  monde que le moyeu raconte, rendu permanent — y compris au fond d'une chaîne,
+  où le moyeu ne parle pas. Ce n'est pas le compte à rebours que `SPEC_DESIGN`
+  rejette.
+
+### 7.4 Cohérence — ce que la relecture croisée a trouvé
+
+Un atelier de six lecteurs indépendants a relu la tranche sous six angles. Les
+trouvailles retenues :
+
+- **La confiance de Mathias tombait de 3 à 1** quand on lui proposait de venir
+  (ST-VDG-02 C) : le moteur partait de 0 pour un PNJ pas encore compagnon, puis
+  la fiche n'était plus lue. Corrigé dans `engine/effects.js` : la confiance part
+  de `confiance_initiale`.
+- **« Les hommes de la ligne sont tous morts »** contredisait la chaîne A, qui
+  en sauve deux à trois. **« tous » est retiré** de l'arrivée et de la base de
+  ST-VDG-20 — un mot, deux fois, dans le texte validé. Et la phrase « Les trois
+  passent la porte de la forge avant que ça cède » (11-C), qui était de moi,
+  contredisait Mathias barricadé : coupée.
+- **Parti tôt, on lisait la sortie de la forge comme si on y était.** Variante
+  `ajout` de ST-VDG-20 sous `route_tete` ou `route_flot` : « Tu n'as rien vu de
+  tout ça. Tu l'apprends sur le chemin, à la nuit, de ceux qui te rattrapent. »
+  La sortie F (regarder les orcs partir) ne pose plus `route_flot` : on est
+  resté.
+- **Le moyeu disait « les Ancel » à qui n'avait pas posé la question.** Le
+  libellé C dévoilait la réponse que la chaîne fait payer. Deux options
+  exclusives : « Monter au toit des Ancel » si on sait, **« Chercher Jonas »**
+  sinon. Même chaîne, même coût, même nombre d'options visibles.
+- **« Tu prends tes pointes »** à la forge quand on n'en avait pas demandé :
+  deux issues sur `f_vdg_dette_mathias`, la seconde sans les pointes.
+- **Être repéré ne coûtait rien.** `f_vdg_repere` était posé quatre fois et lu
+  nulle part. Il vaut désormais **−15** sur les options tirées des chaînes jouées
+  ensuite (12-A, C, D, E · 13-B, C · 14-A). Aucun texte ajouté.
+- **Arriver à la porte de la forge** et repartir laissait la chaîne B ouverte :
+  on rejouait toute la traversée et le discours de Mathias. Repartir de la porte
+  ferme B.
+- **La réserve** : « deux outres » donnaient deux rations d'eau ; elles donnent
+  deux outres, et la capacité d'eau se cumule par outre (M22). Les quantités
+  doublent pour que « le sac pèse lourd » (un mot changé : « trop » → « lourd »,
+  le poids ne dépassait jamais la capacité de port).
+- **Mathias dit « ma masse »** dans deux textes validés ; sa fiche portait une
+  hache lourde, visible à l'écran Compagnons. **`OBJ-16` Masse de forge** (M22).
+- **La note de Jonas** (`PNJ-F2`) le disait « parti avant l'attaque » — c'était
+  la v3. Alignée sur la tranche, et le canon le dit.
+- **`FIN-T1`** disait « avant que quelqu'un d'autre ne s'en charge » ; Mathias
+  dit « Personne ne viendra le dire à leur place ». La fin dit la même chose
+  que lui.
+- **Les seuils `adresse ≥ 3` et `perception ≥ 3`** étaient toujours vrais au
+  départ (stats 2/3/3/2) : bonus inconditionnels. Passés à 4 dans la razzia : un
+  point dépensé après l'ouverture les débloque.
+
+### 7.5 Le reste de l'audit
+
+- **Le bilan** : une fin déclare les blocs qu'elle montre (M21). `FIN-T1` montre
+  les décisions et les survivants — Mathias vivant, **Jonas disparu** — et plus
+  « 1 badge sur 10 » ni « 5 lieux jamais atteints ». Au passage, l'écran de
+  bilan et le titre tutoient, comme tout le jeu ; trois clés de `libelles.bilan`
+  n'étaient pas lues.
+- **Le dernier tour d'un beat** n'est plus tenu au plancher de 3 options (M19).
+  Mesuré : ST-VDG-02, 03, 04, 10, 13 descendaient à 1 ou 2 quand il ne restait
+  que la sortie. On n'ajoute pas une option pour tenir un quota.
+- **`D04` ne porte plus la viande** de la chasse avant d'être allé chasser (§6.4
+  point 2, tranché).
+- **Faim, fatigue, soif** restent inertes sur vingt minutes (§6.4 point 1) :
+  accepté tel quel. Les jauges disent vrai, elles ne bougent pas.
+
+### 7.6 Ce qui reste signalé, pas corrigé
+
+- ST-VDG-03 dit « on n'a pas le temps de les prendre tous » alors qu'avec la
+  matinée entière, on prend les trois voix. Texte validé, contradiction de la
+  spec elle-même : à Tom.
+- Dans ST-VDG-12, « Le frapper maintenant » use l'arme équipée — l'arc — alors
+  qu'on frappe au couteau. Le coût s'affiche, l'objet usé est le mauvais ;
+  corriger demanderait un coût d'usure ciblé que le schéma n'a pas.
+- Sortir d'une chaîne par Z puis y revenir remet son état local à zéro
+  (« Chercher chez lui » se rejoue). Renoncer coûte 1 temps, ce qui le rend
+  rare ; pas corrigé.
+- `vdg_voix`, `f_vdg_ligne_tenue`, `f_vdg_vue_haute`, `f_vdg_chariot` sont
+  écrits et jamais lus : ce sont les retombées que la spec réserve à la suite.
+
+### 7.7 État de référence après l'audit
+
+```
+MVP 1 (D04)  30/30 · FIN-T1 30/30 · scènes 9,0/11
+             chaînes bouclées 1,3/4 — réparties 0:8 · 1:5 · 2:17
+             horloge finale 3,9/7
+             joueur strict (200 parties) : 2 chaînes 67 % · 3 chaînes 33 %
+```
+
+La v3 n'a pas bougé.

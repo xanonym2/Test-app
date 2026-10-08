@@ -80,6 +80,18 @@ export function composerTexte(E, s) {
   return [corps, ...ajouts].filter(Boolean).join('\n\n');
 }
 
+// L'en-tête qu'une scène déclare pour le bandeau : le premier palier dont les
+// conditions tiennent. Aucun nombre n'en sort — un libellé, rien d'autre.
+export function enteteScene(E) {
+  const s = getDb().storylets[E.systeme.storylet_courant];
+  const b = s?.bandeau;
+  if (!b) return null;
+  const L = E.systeme.etat_local;
+  const ctx = { tour: E.systeme.tour };
+  const palier = (b.paliers ?? []).find((p) => evaluerConditions(E, p.si, L, ctx));
+  return palier ? { titre: b.titre ?? null, libelle: palier.libelle } : null;
+}
+
 export function optionsVisibles(E, s) {
   const L = E.systeme.etat_local;
   const ctx = { tour: E.systeme.tour };

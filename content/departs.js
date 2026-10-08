@@ -50,6 +50,9 @@ export const departs = {
     inventaire: [],
     effets: [
       { stat_partie: { compteur: "vdg_matinee", valeur: 3 } },
+      // L'inventaire commun est celui d'un retour de chasse ; ce matin-là, on
+      // n'est pas encore parti. La viande vient du beat 4.
+      { objet: "OBJ-06", quantite: -1 },
     ],
     storylet_ouverture: "ST-VDG-01",
   },
