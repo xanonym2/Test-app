@@ -1879,7 +1879,9 @@ tiers depuis la Saint-Jean »**. Le contrat bannit le lexique chrétien (§0 bis
 règle 6) et le vérificateur l'a bloqué. La Saint-Jean est une fête catholique
 réelle : la garder importait le christianisme dans un monde dont la religion est
 l'Ordre. J'ai écrit **« depuis les foins »** — même saison, même sens, aucun
-repère religieux. **C'est la seule modification du texte validé.**
+repère religieux. **C'était la seule modification du texte validé à la
+livraison** ; l'audit du 8 octobre en a relevé d'autres, de moi, et en a fait
+quelques-unes : la liste complète est au §7.8.
 
 ### 6.2 Deux défauts de mon portage, trouvés par la mesure
 
@@ -1943,7 +1945,7 @@ Mesure sur 200 parties par politique (`mesure-stricte.mjs`, scratchpad) :
 
 | Politique | Avant | Après |
 |---|---|---|
-| **Stricte** — toujours une chaîne, jamais renoncer | 2 : 52 % · **3 : 45 %** · 4 : 2 % | 2 : 75 % · 3 : 25 % · 4 : 0 |
+| **Stricte** — toujours une chaîne, jamais renoncer | 2 : 52 % · **3 : 45 %** · 4 : 2 % | 2 : 64 % · 3 : 36 % · 4 : 0 |
 | Gourmande — une chaîne, renonce parfois | 2 : 35 % · 3 : 60 % | 1 : 20 % · 2 : 75 % · 3 : 5 % |
 | Aléatoire | 0-3, moy 1,07 | 0-3, moy 0,94 |
 
@@ -2138,6 +2140,73 @@ corrigé :
   `libelles.lignes_bilan` ; `libelles.bilan` ne contient que des blocs, et le
   contrôle est exact.
 
+### 7.4 quinquies Récit et contrat — cinquième et sixième lecteurs
+
+- **À 5-6, le moyeu n'offrait que « Prendre la route »** : deux tiers des
+  joueurs qui s'étaient battus étaient mis dehors et lisaient « Tu n'as rien
+  vu de tout ça ». « Les regarder s'en aller » apparaît dès 5 : rester est un
+  choix.
+- **Les deux questions à la forge coûtent « un peu de temps »** dans le texte
+  validé — rien dans le jeu. Elles coûtent une part de matinée, comme au seuil.
+  Savoir où est Jonas se paie en voix entendues.
+- **« Crier de reculer » sautait au retrait** depuis 3 (+4 → 7). La spec dit
+  « la ligne cède » : un état, pas un saut. `stat_partie` accepte `'='` (M26)
+  et l'horloge se pose à 4.
+- **« Épargner coûtait de l'XP »** (§0 bis r.5) — trouvaille réfutée après
+  essai. Attendre que l'orc passe rapporte 15, le frapper 25 : mais la règle
+  vise une unité *mise hors de combat* — tuée, neutralisée, mise en fuite.
+  Laisser passer, se cacher, contourner, c'est se dérober : la rencontre n'a
+  pas eu lieu. Un contrôle automatique sur cette lecture large faisait payer
+  la fuite par les ronces autant que la bête tuée en v3 ; il est retiré, la
+  règle est précisée au contrat (M26). « Crier de reculer » passe à 30 comme
+  le tir, pour l'équilibre de la chaîne A — rien à voir avec r.5.
+- **Une issue tirée pouvait tuer un compagnon** (`sante_compagnon` à 0,
+  `pnj_statut: mort`) : règle 9 étendue au compagnon, moteur et vérificateur.
+- **Observer n'aidait pas** (§4 r.7) : avoir vu le village d'en haut vaut +10
+  au tir depuis le puits et au chargement de la réserve ; avoir lu les
+  empreintes vaut +10 pour lire la rue depuis le toit. `f_vdg_vue_haute` a un
+  lecteur.
+- **« Je t'avais dit avant-hier »** se relisait à chaque réponse de Mathias,
+  jusqu'à quatre fois : à l'arrivée seulement (`["tour", 1]`).
+- **« D'ici, une flèche porte droit »** s'affichait sur la piste de sang, après
+  la fuite du chevreuil. Plus après le tir.
+- **Entré par « Chercher Jonas »**, le joueur ne lisait jamais l'échelle et la
+  botte défaite : une variante les montre une fois Jonas situé sur place.
+- **Le vérificateur avait des angles morts** : une clé de coût mal écrite
+  passait en silence, un `lieu.type` inconnu aussi, et une scène déclenchée
+  pouvait n'offrir aucune sortie à un tour. Bloquants désormais.
+- **« Charger, et prévenir les familles cachées »** annonçait des familles que
+  l'arrivée nie ; le libellé validé est « Charger et prévenir ».
+
+### 7.4 sexies Dernière relecture — vérificateur et interface
+
+- **La fin de la v3 pouvait se perdre.** Ouvrir `ST-FIN-01` puis partir par la
+  carte : la scène, unique, ne revenait jamais, et la partie ne pouvait plus
+  finir que par la mort. Reproduit. Elle n'est plus unique : elle revient au
+  prochain lieu (M27). Le vérificateur interdit désormais qu'une scène qui
+  porte une fin soit à la fois unique et quittable.
+- **Le robot voyageait après la fin de partie** quand la fin tombait sur une
+  option « sortie », et y perdait de la santé que personne ne voit. Il s'arrête
+  à la fin, comme l'interface. La mesure v3 en est un peu plus juste : jours
+  7,8 au lieu de 7,9.
+- **Le vérificateur** : un palier d'en-tête sans condition avant le dernier
+  masquait tous les suivants sans rien dire — bloquant. Les champs d'un départ
+  (storylet, météo, mutateurs, segment) sont contrôlés. L'auto-test de reprise
+  part d'une vraie sauvegarde v1 prise au milieu de la razzia, avec un fil de
+  40 entrées, et la fait remonter la chaîne de migration.
+- **L'écran titre** distingue une partie en cours, une partie finie (« Revoir
+  le bilan », et « Nouvelle partie » sans confirmation : il n'y a plus rien à
+  perdre) et une sauvegarde illisible par cette version.
+- **L'en-tête de la razzia** passait sur deux lignes avec SURCHARGE et coupait
+  le palier le plus long. Le titre ne se coupe plus, le libellé cède la place.
+  Vérifié à 360 px.
+- **L'après** affichait « Milieu de journée » sous « La porte de la forge
+  s'ouvre en fin d'après-midi » : en-tête « Val-de-Garde · Après la razzia ».
+  Et plus de coût sous la seule option de la scène.
+- **La liste des départs** disait de tous qu'« une ou deux variables du monde
+  sont tirées par-dessus » : seulement sous les trois départs v3.
+- **Les badges, une créature et un objet vouvoyaient** : tout le jeu tutoie.
+
 ### 7.5 Le reste de l'audit
 
 - **Le bilan** : une fin déclare les blocs qu'elle montre (M21). `FIN-T1` montre
@@ -2181,14 +2250,49 @@ corrigé :
 - `vdg_voix`, `f_vdg_ligne_tenue`, `f_vdg_vue_haute`, `f_vdg_chariot` sont
   écrits et jamais lus : ce sont les retombées que la spec réserve à la suite.
 
+- **Le tout premier choix — neuf flèches ou douze — ne se paie nulle part**
+  dans la tranche : « Tirer depuis le toit » en coûte 3, on en a toujours au
+  moins 8. `SPEC_DESIGN` §6.8 vise la bascule tactique (MVP 3), où les flèches
+  partent par tour. Dette inscrite.
+- **« Ils suivent quelque chose. »** (ST-VDG-13, l'indice de la poursuite) est
+  une interprétation, contre la lettre de §0 bis r.1 — mais c'est le texte
+  validé de `SPEC_CONTENU` §5.6. Gardé ; à Tom de trancher s'il faut
+  l'assouplir au contrat ou couper.
+- **Neuf points où le contrat se contredit ou contredit `SPEC_DESIGN`** (deux
+  ou trois paliers sur un majeur, « aucun dysfonctionnement visible » contre
+  la relève qui manque, etc.) sont listés dans le rapport du lecteur
+  « contrat » (`scratchpad/wf/contrat/`) : une passe de correction
+  documentaire, pas de code. À planifier.
+- Le journal `vdg_demande` dit « les trois pointes qui manquaient » même quand
+  Mathias n'en avait que deux.
+
 ### 7.7 État de référence après l'audit
 
 ```
-MVP 1 (D04)  30/30 · FIN-T1 30/30 · scènes 9,2/11
-             chaînes bouclées 1,5/4 — réparties 0:6 · 1:4 · 2:19 · 3:1
-             horloge finale 4,4/7
-             joueur strict (200 parties) : 2 chaînes 75 % · 3 chaînes 25 %
+MVP 1 (D04)  30/30 · FIN-T1 30/30 · scènes 8,8/11
+             chaînes bouclées 1,3/4 — réparties 0:7 · 1:8 · 2:14 · 3:1
+             horloge finale 3,7/7
+             joueur strict (200 parties) : 2 chaînes 64 % · 3 chaînes 36 %
 ```
+
+### 7.8 Les écarts au texte validé, tous
+
+Ce que la livraison avait changé sans le dire, ce que l'audit a changé en le
+disant. Rien d'autre n'a bougé.
+
+| Où | Écart | Pourquoi |
+|---|---|---|
+| ST-VDG-03 | « la Saint-Jean » → « les foins » | lexique chrétien banni (§6.1) |
+| ST-VDG-10 | version à 2 ajoutée : « La ligne plie… Il te reste le temps d'une chose. Peut-être. » | « deux choses » se relisait faux après une chaîne |
+| ST-VDG-10 | « Ce que tu n'as pas fait, tu ne le feras plus » déplacé de 4 à 7 | faux à 4, vrai à 7 |
+| ST-VDG-11 C | « Les trois passent la porte de la forge avant que ça cède » — de moi, coupé | contredisait la forge barrée |
+| ST-VDG-12 | « Reculer et tenter la rue » (B.2) non porté ; « Tu attends encore, plaqué au mur… » ajouté à la partielle d'« Attendre » | Z recule déjà d'une rue ; le beat B.2bis n'existe pas |
+| ST-VDG-14 | « Le sac pèse trop » → « pèse lourd » ; « Il ne passera pas partout » (de moi) coupé ; variante `surcharge` (de moi) gardée | l'état ne dépassait jamais la capacité ; rien ne lisait la promesse |
+| ST-VDG-14 B | « Charger, et prévenir les familles cachées » → « Charger et prévenir » | libellé validé, et l'autre dévoilait |
+| ST-VDG-20 | « tous morts » → « morts », deux fois ; variante « Tu n'as rien vu de tout ça… » ajoutée | la chaîne A sauve des hommes ; parti tôt, on n'était pas là |
+| ST-VDG-20 Z | « la masse contre le mur » → « la masse » (phrase de moi) | sur un chemin, pas de mur |
+| ST-VDG-02 D | seconde issue sans « Tu prends tes pointes » | on n'en avait pas demandé |
+| ST-VDG-13 | variante « Tu ne sais pas où il est… » conservée ; l'arrivée validée rejouée une fois Jonas situé | texte validé ; sinon jamais lu |
 
 La v3 bouge d'un cheveu, par la pression corrigée : jours 7,9, survie qui mord
 17/30. Rien d'autre.

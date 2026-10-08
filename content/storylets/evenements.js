@@ -291,7 +291,9 @@ export const storylets = {
       requis: [["ou", [["jour>=", 8]], [["flag", "f_pret_a_partir"]]]],
       interdit: [],
     },
-    unique: true,
+    // La convergence revient au prochain lieu : s'en éloigner par la carte
+    // ne doit jamais rendre la fin inatteignable.
+    unique: false,
     priorite: 10,
     poids: 10,
     duree_segments: 1,

@@ -1,6 +1,6 @@
 # Contrat de contenu — Les Terres Voilées
 
-**Version 2.2** — 8 octobre 2026 · remplace la v1 « Val-de-Garde (MVP) » · 2.1 : arbitrages A1 à A3 rendus · 2.2 : M19 à M25, après l'audit du MVP 1
+**Version 2.2** — 8 octobre 2026 · remplace la v1 « Val-de-Garde (MVP) » · 2.1 : arbitrages A1 à A3 rendus · 2.2 : M19 à M27, après l'audit du MVP 1
 
 Ce document est la **spécification mécanique** du contenu. Il fixe les
 identifiants, les schémas de données, les valeurs d'équilibrage et les
@@ -87,7 +87,9 @@ comme un assouplissement.
 | M22 | §6 | **`OBJ-16` Masse de forge** — Mathias dit « ma masse » dans deux textes validés, sa fiche portait une hache. Et **les outres se cumulent** : la capacité d'eau vaut 3 par outre portée, ce que « deux outres » à la réserve exigeait | Extension | Oui — un objet porté par un compagnon ou un départ compte comme utilisé |
 | M23 | §11 | **Un départ peut fixer ses mutateurs** (`mutateurs: []` : aucun). `D04` n'en tire plus : une tranche de campagne est un package défini, pas une variante de run | Extension | Non |
 | M24 | §11 | **Un départ peut fixer son premier matin** : `segment_initial` et `meteo_initiale`. `D04` ouvre au matin, ciel clair — « Le jour se lève » ne se lit plus sous « Milieu de journée » ni sous un gel tiré au sort | Extension | Non |
-| M25 | §9, §16 | **`repare`** sur un objet : combien d'usure une unité rend ; le moteur reconnaît le matériel de réparation à ce champ, l'écran sait s'il y en a. **`apres`** sur une fin : la phrase de clôture du bilan, à la place du pied générique | Extension | Non |
+| M25 | §6, §16 | **`repare`** sur un objet : combien d'usure une unité rend ; le moteur reconnaît le matériel de réparation à ce champ, l'écran sait s'il y en a. **`apres`** sur une fin : la phrase de clôture du bilan, à la place du pied générique | Extension | Non |
+| M26 | §5, §4 r.9, §0 bis r.5 | **`stat_partie` accepte `'='`** — poser l'état d'un compteur, comme `local` : « la ligne cède » pose l'horloge à 4, elle ne saute pas de 4. **Règle 9 étendue au compagnon** : une issue tirée ne le tue ni par `sante_compagnon` ni par `pnj_statut: mort`. **§0 bis r.5 précisée** : elle vise une *unité mise hors de combat* — tuée, neutralisée, mise en fuite. Se dérober (`combats_evites` : se cacher, contourner, laisser passer) n'est pas épargner et peut rapporter moins | Extension · Clarification | Oui — `pnj_statut: mort` dans une issue tirée, clés de `cout` et `lieu.type` inconnus, sortie visible à chaque tour d'une scène déclenchée |
+| M27 | §4 | **Une fin ne se perd pas.** `ST-FIN-01` n'est plus unique : s'éloigner de la convergence par la carte la rendait inatteignable, et la partie ne finissait plus que par la mort. Elle revient au prochain lieu | Correction | Oui — une scène qui porte une fin est déclenchée ou non unique (`fin_perdable`) |
 
 ### Arbitrages
 
@@ -143,7 +145,9 @@ Aucune n'était écrite en v1 : rien ne les imposait au contenu.
    orcs offre au moins une option non létale — fuir, neutraliser, épargner,
    capturer. Le texte n'explique jamais pourquoi elle existe.
 5. **Épargner ne coûte jamais d'expérience.** Une unité mise hors de combat —
-   tuée, neutralisée ou mise en fuite — rapporte la même chose.
+   tuée, neutralisée ou mise en fuite — rapporte la même chose. **[v2.2]** Se
+   dérober — se cacher, contourner, laisser passer — n'est pas épargner : la
+   rencontre n'a pas eu lieu, elle peut rapporter moins (M26).
 6. **L'Ordre n'a aucun lexique chrétien.** Bannis : *église, chapelle, cierge,
    messe, prêtre, saint, abbaye*. Son registre : la veille, le scellement, les
    portes closes, les statues, le feu entretenu, les serments.
@@ -289,6 +293,7 @@ choix ne dépasse pas **200 mots**.
 |---|---|---|---|---|
 | `ST-P03-01` | `P03` | 9 | oui | **Scène de respiration** (10.9) : aucune menace, aucun jet raté possible. Enseigne l'eau comme **objet** : options de remplissage `{ objet: "OBJ-05", quantite: N }` limitées par `OBJ-04`. Repos possible : `{ fatigue: -35 }` pour `cout.segments: 2`. `{ xp: 20 }`. |
 | `ST-P03-02` | `P03` | 7 | oui | Le **partage**. Un PNJ demande de l'eau. Donner : `{ objet: "OBJ-05", quantite: -1 }`, `{ confiance: {...} }`, `{ stat_partie: { compteur: "eau_partagee", valeur: 1 } }`. Refuser : effet distinct et réel. Pose `f_source_partage` ou `f_source_refus`. `{ journal: "...", majeure: true }`. |
+`{ stat_partie: { compteur, '=': v } }` **[v2.2]** pose la valeur au lieu de l'ajouter (M26).
 
 ### `content/storylets/p04.js`
 | ID | Lieu | Prio | Unique | Obligations |
@@ -321,7 +326,7 @@ choix ne dépasse pas **200 mots**.
 |---|---|---|---|---|
 | `ST-EVT-01` | `partout` | 8 | oui | Évènement de pression, `requis: [['jour>=',3]]`. Court, 1 tour. Rappelle que le monde se dégrade. |
 | `ST-EVT-02` | `partout` | 3 | non | **Nuit à découvert**, `requis: [['segment>=',5]]`. Repos possible : `{ fatigue: -40 }`, `cout.segments: 2`, `{ stat_partie: { compteur: "nuits_a_decouvert", valeur: 1 } }`. Si `['meteo','gel']` ou `['meteo','pluie']`, coût supplémentaire. |
-| `ST-FIN-01` | `partout` | 10 | oui | `requis: [['ou', [['jour>=',8]], [['flag','f_pret_a_partir']]]]`. Convergence : partir vers l'ouest. Chaque option mène à `{ fin: "FIN-xx" }`. Au moins 3 fins distinctes selon `connaissance_sortilege`, présence de compagnons, et état du héros. |
+| `ST-FIN-01` | `partout` | 10 | **non** (M27) | `requis: [['ou', [['jour>=',8]], [['flag','f_pret_a_partir']]]]`. Convergence : partir vers l'ouest. Chaque option mène à `{ fin: "FIN-xx" }`. Au moins 3 fins distinctes selon `connaissance_sortilege`, présence de compagnons, et état du héros. |
 
 ### Règles de contenu — non négociables (rappel)
 
@@ -653,7 +658,7 @@ le twist correspondant atteint (§0 bis, règle 7).
 
 ---
 
-## 11. Départs — `content/departs.js` — 3
+## 11. Départs — `content/departs.js` — 4
 
 ```js
 'D01': { id, nom, description: 'deux phrases, ce que ça change concrètement',

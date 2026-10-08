@@ -1,4 +1,4 @@
-// Objets — 15 bases. Voir CONTRAT.md §6.
+// Objets — 16 bases. Voir CONTRAT.md §6.
 // Chaque description dit à quoi sert l'objet. Jamais de chiffre de règle.
 
 export const objets = {
@@ -38,7 +38,7 @@ export const objets = {
     protection: null,
     empilable: false,
     usable: true,
-    description: "Lame courte pour ouvrir une bête, trancher une corde ou frapper quand l'autre est déjà sur vous.",
+    description: "Lame courte pour ouvrir une bête, trancher une corde ou frapper quand l'autre est déjà sur toi.",
   },
 
   "OBJ-04": {

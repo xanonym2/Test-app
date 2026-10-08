@@ -24,6 +24,8 @@ const EFFETS = new Set([
   'lieu_bloque', 'debloque_point', 'differe', 'declenche', 'journal', 'majeure',
   'acte', 'fin',
 ]);
+const COUTS = new Set(['segments', 'fatigue', 'objet', 'usure_arme']);
+const LIEUX = new Set(['point_interet', 'zone', 'territoire', 'type_lieu', 'partout', 'declenche_uniquement']);
 const BANNIS = [
   'atmosphère pesante', 'silence inquiétant', 'silence pesant', 'calme trouble',
   'étrangement calme', 'une ambiance', 'air lourd', 'comme si le temps',
@@ -168,6 +170,7 @@ function verifEtape1(id, s) {
         for (const e of effets) {
           if (e.retire_compagnon !== undefined) note(dur ? 1 : 0, id, 'issue_tiree_letale', ou + ':retire_compagnon');
           if (e.fin !== undefined) note(dur ? 1 : 0, id, 'issue_tiree_letale', ou + ':fin');
+          if (e.pnj_statut?.valeur === 'mort') note(dur ? 1 : 0, id, 'issue_tiree_letale', ou + ':pnj_statut');
         }
       }
       if (effets.some(estIndice) && effets.some((e) => e.journal !== undefined)) {
@@ -220,6 +223,13 @@ function verifier() {
 
   for (const [id, s] of Object.entries(db.storylets)) {
     if (s.id !== id) note(1, id, 'id_incoherent', s.id);
+    if (!LIEUX.has(s.lieu?.type ?? 'partout')) note(1, id, 'lieu_inconnu', String(s.lieu?.type));
+    // Une scène qui porte une fin ne doit pas pouvoir se perdre : soit rien ne
+    // permet de la quitter (déclenchée), soit elle revient (non unique).
+    if (s.lieu?.type !== 'declenche_uniquement' && s.unique
+        && (s.options ?? []).some((o) => (o.issues ?? []).some((x) => (x.effets ?? []).some((e) => e.fin !== undefined)))) {
+      note(1, id, 'fin_perdable', 'unique hors scène déclenchée');
+    }
     if (!s.texte?.base && !s.texte?.arrivee) note(1, id, 'sans_texte', '');
     verifConditions(id, 'requis', s.conditions?.requis);
     verifConditions(id, 'interdit', s.conditions?.interdit);
@@ -250,6 +260,8 @@ function verifier() {
       // Sans palier inconditionnel en dernier, l'en-tête disparaîtrait par
       // moments — et un en-tête qui clignote est pire qu'aucun.
       if (paliers.length && (paliers[paliers.length - 1].si ?? []).length) note(1, id, 'bandeau_sans_palier_final', '');
+      // Un palier sans condition avant le dernier masque tous ceux qui suivent.
+      if (paliers.slice(0, -1).some((pa) => !(pa.si ?? []).length)) note(1, id, 'bandeau_palier_mort', '');
     }
 
     const opts = s.options ?? [];
@@ -275,6 +287,10 @@ function verifier() {
         verifEffets(id, 'issue' + o.id + i, x.effets);
         verifStyle(id, 'issue' + o.id + i, x.texte, 70);
         if ((x.effets ?? []).length) modifieEtat = true;
+      }
+      // Une clé de coût que le moteur ne lit pas est un coût qui n'existe pas.
+      for (const k of Object.keys(o.cout ?? {})) {
+        if (!COUTS.has(k)) note(1, id, 'cout_inconnu', 'cout' + o.id + ':' + k);
       }
       if (o.cout?.objet) {
         for (const k of Object.keys(o.cout.objet)) {
@@ -317,6 +333,15 @@ function verifier() {
     }
   }
   if (!db.storylets[db.meta.storylet_ouverture]) note(1, 'meta', 'ouverture_inconnue', db.meta.storylet_ouverture);
+  const meteos = new Set((db.meteo?.table ?? []).map((m) => m.id));
+  for (const d of Object.values(db.departs)) {
+    if (d.storylet_ouverture && !db.storylets[d.storylet_ouverture]) note(1, d.id, 'reference_inconnue', 'storylet_ouverture:' + d.storylet_ouverture);
+    if (d.meteo_initiale !== undefined && !meteos.has(d.meteo_initiale)) note(1, d.id, 'reference_inconnue', 'meteo_initiale:' + d.meteo_initiale);
+    for (const m of d.mutateurs ?? []) if (!db.mutateurs[m]) note(1, d.id, 'reference_inconnue', 'mutateur:' + m);
+    if (d.segment_initial !== undefined && !(d.segment_initial >= 1 && d.segment_initial <= schema.SEGMENTS_PAR_JOUR)) {
+      note(1, d.id, 'segment_hors_journee', String(d.segment_initial));
+    }
+  }
   for (const [fid, f] of Object.entries(db.meta.fins ?? {})) {
     for (const k of f.bilan ?? []) if (!(k in (db.libelles.bilan ?? {}))) note(1, fid, 'bloc_bilan_inconnu', k);
     if (f.bilan && !f.bilan.length) note(1, fid, 'bilan_vide', '');
@@ -442,9 +467,9 @@ function testEntetes() {
 }
 
 
-// Reprendre une sauvegarde faite au milieu de la razzia doit rendre la même
-// scène, les mêmes options et le même état : le fil est persisté, les options
-// recalculées, rien d'autre ne doit bouger.
+// Une sauvegarde faite au milieu de la razzia, dans l'ancien format (v1), doit
+// remonter la chaîne de migration et rendre la même scène, les mêmes options,
+// le même état — et le fil affiché, que l'interface persiste dans l'état.
 function testReprise() {
   const E = nouvellePartie({ seed: 51, depart: 'D04' });
   let coups = 0;
@@ -459,18 +484,23 @@ function testReprise() {
     if (r.declenchements.length) ouvrirStorylet(E, r.declenchements[0]);
     coups += 1;
   }
+  E.systeme.fil = Array.from({ length: 40 }, (_, i) => ({ k: i % 2 ? 'i' : 's', t: 'tour ' + i }));
   const s = db.storylets[E.systeme.storylet_courant];
   const avant = optionsVisibles(E, s).map((o) => o.id + (o.indisponible ? '-' : '')).join(',');
-  const copie = migrer({ version: schema.VERSION_SAUVEGARDE, etat: JSON.parse(JSON.stringify(E)) });
+  const v1 = JSON.parse(JSON.stringify(E));
+  delete v1.heros.segments_sans_boire;
+  const copie = migrer({ version: 1, etat: v1 });
   const apres = copie ? optionsVisibles(copie, db.storylets[copie.systeme.storylet_courant]).map((o) => o.id + (o.indisponible ? '-' : '')).join(',') : null;
   const memes = (a, b) => JSON.stringify(a) === JSON.stringify(b);
   const ok = !!copie
+    && copie.heros.segments_sans_boire === 0
     && copie.systeme.storylet_courant === E.systeme.storylet_courant
+    && sceneVerrouillee(copie)
     && memes(copie.systeme.etat_local, E.systeme.etat_local)
     && memes(copie.systeme.options_epuisees, E.systeme.options_epuisees)
+    && memes(copie.systeme.fil, E.systeme.fil)
     && memes(copie.stats_partie, E.stats_partie)
     && memes(copie.recit.flags, E.recit.flags)
-    && sceneVerrouillee(copie) === sceneVerrouillee(E)
     && apres === avant;
   return { coups, scene: E.systeme.storylet_courant, avant, apres, ok };
 }
@@ -579,6 +609,9 @@ function partieAuto(seed, maxActions = 400, depart = null) {
         if (sceneVerrouillee(E)) return { erreur: 'impasse:' + s.id, actions };
         rafraichirScene(E); continue;
       }
+      // Règle 5, par tour : dans une scène qu'on ne quitte pas par la carte, une
+      // sortie visible à chaque tour.
+      if (sceneVerrouillee(E) && !opts.some((o) => o.sortie)) return { erreur: 'sans_sortie:' + s.id + ':tour' + E.systeme.tour, actions };
       const obs = opts.filter((x) => x.observation);
       const o = (E.geo.points_decouverts.length < 4 && obs.length)
         ? obs[0]
@@ -588,6 +621,9 @@ function partieAuto(seed, maxActions = 400, depart = null) {
         if (sceneVerrouillee(E)) return { erreur: 'option_refusee:' + s.id + ':' + o.id, actions };
         rafraichirScene(E); continue;
       }
+      // La partie finie, l'interface passe au bilan : le robot non plus ne
+      // voyage pas après la fin (il y perdait de la santé que personne ne voit).
+      if (partieTerminee(E)) break;
       if (r.declenchements.length) { ouvrirStorylet(E, r.declenchements[0]); continue; }
       if (r.sortie) {
         const quitte = s.id;

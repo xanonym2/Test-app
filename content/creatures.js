@@ -17,7 +17,7 @@ export const creatures = {
     type: "orc",
     pv: 22,
     degats: 7,
-    note: "Il court plus vite qu'un homme et lance un appel bref dès qu'il vous voit.",
+    note: "Il court plus vite qu'un homme et lance un appel bref dès qu'il te voit.",
   },
 
   "CRE-03": {

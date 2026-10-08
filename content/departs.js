@@ -1,4 +1,4 @@
-// Départs — 3 (CONTRAT §11). Les effets sont imposés.
+// Départs — 4 (CONTRAT §11). Les effets sont imposés.
 // description : deux phrases, ce que le choix change concrètement.
 
 export const departs = {

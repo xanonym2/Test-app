@@ -122,6 +122,9 @@ function appliquerEffet(E, ef, ctx, declenchements) {
 
   if (ef.pnj_statut !== undefined) {
     const { id, valeur } = ef.pnj_statut;
+    // Règle 9 : une issue tirée au sort ne tue personne. Le vérificateur le bloque
+    // en amont ; le moteur n'en fait rien si ça passait quand même.
+    if (valeur === 'mort' && ctx.plancher_sante) return { cle: 'pnj_statut', id, valeur: null };
     E.social.pnj_statut[id] = valeur;
     if (valeur === 'mort') {
       E.stats_partie.pnj_morts += 1;
@@ -162,7 +165,9 @@ function appliquerEffet(E, ef, ctx, declenchements) {
     const { id, valeur } = ef.sante_compagnon;
     const c = E.compagnons.find((x) => x.id === id);
     if (c) {
-      c.sante = bornes(c.sante + valeur, 0, santeMax(c.stats));
+      // Règle 9 : un revers tiré au sort coûte, il ne tue pas — un compagnon non plus.
+      const min = ctx.plancher_sante ? Math.min(1, c.sante) : 0;
+      c.sante = bornes(c.sante + valeur, min, santeMax(c.stats));
       if (c.sante === 0) { c.statut = 'mort'; E.social.pnj_statut[id] = 'mort'; E.stats_partie.compagnons_perdus += 1; }
     }
     return { cle: 'sante_compagnon', id, valeur };
@@ -188,7 +193,11 @@ function appliquerEffet(E, ef, ctx, declenchements) {
 
   if (ef.stat_partie !== undefined) {
     const { compteur, valeur } = ef.stat_partie;
-    E.stats_partie[compteur] = (E.stats_partie[compteur] ?? 0) + valeur;
+    // « = » pose l'état d'un compteur, comme pour un local : une horloge qui
+    // doit atteindre un palier sans sauter par-dessus.
+    E.stats_partie[compteur] = ef.stat_partie['='] !== undefined
+      ? ef.stat_partie['=']
+      : (E.stats_partie[compteur] ?? 0) + (valeur ?? 0);
     return { cle: 'stat_partie', id: compteur, valeur };
   }
 

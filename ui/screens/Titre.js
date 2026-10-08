@@ -5,22 +5,25 @@ import { View, Text, Pressable } from 'react-native';
 import { T, ESP, TYPO } from '../theme.js';
 import { Page, Panneau, Titre, SousTitre, Petit, Bouton, Etiquette, Separateur } from '../components/Base.js';
 import { getDb } from '../../engine/db.js';
-import { existeSauvegarde } from '../../engine/save.js';
+import { etatSauvegarde } from '../../engine/save.js';
 import { useJeu } from '../jeu.js';
 
 export function EcranTitre() {
   const { demarrer, reprendre } = useJeu();
-  const [sauvegarde, setSauvegarde] = useState(false);
+  const [sauvegarde, setSauvegarde] = useState('aucune');
   const [choix, setChoix] = useState(false);
   // Sur un téléphone, un tap part vite : tant qu'une partie est en cours, la
   // recommencer demande un second geste.
   const [confirmer, setConfirmer] = useState(null);
   const db = getDb();
 
-  useEffect(() => { existeSauvegarde().then(setSauvegarde); }, []);
+  useEffect(() => { etatSauvegarde().then(setSauvegarde); }, []);
 
+  // Une partie finie n'a plus que son bilan : la recommencer n'efface rien
+  // qu'on puisse encore jouer.
+  const aProteger = sauvegarde === 'en_cours' || sauvegarde === 'illisible';
   const lancer = (opts) => {
-    if (sauvegarde) setConfirmer(opts);
+    if (aProteger) setConfirmer(opts);
     else demarrer(opts);
   };
 
@@ -31,13 +34,21 @@ export function EcranTitre() {
       </Text>
       <View style={{ height: 2, width: 48, backgroundColor: T.accent, marginTop: ESP.md, marginBottom: ESP.xl }} />
 
-      {sauvegarde ? (
+      {sauvegarde === 'en_cours' || sauvegarde === 'terminee' ? (
         <>
-          <Bouton variante="fort" onPress={() => reprendre()}>Reprendre</Bouton>
+          <Bouton variante="fort" onPress={() => reprendre()}>
+            {sauvegarde === 'terminee' ? 'Revoir le bilan' : 'Reprendre'}
+          </Bouton>
           <Petit style={{ marginTop: 6, marginBottom: ESP.lg }}>
-            La partie reprend exactement où elle s’est arrêtée.
+            {sauvegarde === 'terminee'
+              ? 'La dernière partie est finie. Il en reste le bilan.'
+              : 'La partie reprend exactement où elle s’est arrêtée.'}
           </Petit>
         </>
+      ) : sauvegarde === 'illisible' ? (
+        <Petit style={{ marginBottom: ESP.lg }}>
+          La partie enregistrée ne se lit pas avec cette version du jeu.
+        </Petit>
       ) : null}
 
       {confirmer ? (
@@ -54,7 +65,7 @@ export function EcranTitre() {
         </Panneau>
       ) : !choix ? (
         <>
-          <Bouton variante={sauvegarde ? 'normal' : 'fort'} onPress={() => lancer({})}>
+          <Bouton variante={sauvegarde === 'en_cours' ? 'normal' : 'fort'} onPress={() => lancer({})}>
             Nouvelle partie
           </Bouton>
           <Pressable onPress={() => setChoix(true)} style={{ paddingVertical: ESP.md, alignItems: 'center' }}>
@@ -65,8 +76,7 @@ export function EcranTitre() {
         <>
           <SousTitre>Départs</SousTitre>
           <Petit style={{ marginBottom: ESP.md }}>
-            Le même chemin, un point d’entrée différent. Une ou deux variables du monde
-            sont tirées par-dessus.
+            Chaque départ change ce que tu portes et le moment où tu entres.
           </Petit>
           {Object.values(db.departs).map((d) => (
             <Pressable
@@ -79,6 +89,11 @@ export function EcranTitre() {
             >
               <Text style={[TYPO.corps, { fontSize: 15, fontWeight: '600' }]}>{d.nom}</Text>
               <Petit style={{ marginTop: 4 }}>{d.description}</Petit>
+              {d.mutateurs === undefined ? (
+                <Petit style={{ marginTop: 4, color: T.texteFaible }}>
+                  Une ou deux variables du monde sont tirées par-dessus.
+                </Petit>
+              ) : null}
             </Pressable>
           ))}
           <Bouton variante="discret" onPress={() => setChoix(false)}>Retour</Bouton>

@@ -216,7 +216,7 @@ export const storylets = {
         id: "F",
         libelle: "Les regarder s'en aller",
         cout: {},
-        apparait_si: [["stat_partie>=", "razzia_temps", 7]],
+        apparait_si: [["stat_partie>=", "razzia_temps", 5]],
         epuisable: false,
         observation: false,
         deplacement: false,
@@ -266,7 +266,7 @@ export const storylets = {
         observation: false,
         deplacement: false,
         sortie: true,
-        modif_proba: [{ si: [["stat>=", "adresse", 4]], valeur: 15 }, { si: [["competence", "C01"]], valeur: 10 }],
+        modif_proba: [{ si: [["stat>=", "adresse", 4]], valeur: 15 }, { si: [["competence", "C01"]], valeur: 10 }, { si: [["flag", "f_vdg_vue_haute"]], valeur: 10 }],
         issues: [
           {
             probabilite: 60,
@@ -367,10 +367,10 @@ export const storylets = {
             texte:
               "Trois d'entre eux entendent. Les autres ne bougent pas.",
             effets: [
-              // Spec §5.4 : « ligne : cède immédiatement ». Le prix des trois.
-              { stat_partie: { compteur: "razzia_temps", valeur: 4 } },
+              // Spec §5.4 : « ligne : cède immédiatement » — l'état 4, d'où qu'on parte.
+              { stat_partie: { compteur: "razzia_temps", "=": 4 } },
               { stat_partie: { compteur: "survivants", valeur: 3 } },
-              { xp: 25 },
+              { xp: 30 },
               { journal: "vdg_crie", majeure: true },
               { flag: "f_vdg_chaine_a" },
               { declenche: "ST-VDG-10" },
@@ -726,6 +726,12 @@ export const storylets = {
           remplace:
             "Tu ne sais pas où il est. Il pouvait être n'importe où.",
         },
+        {
+          // Trouvé sur place : l'arrivée validée, que la première vue n'a pas montrée.
+          si: [["local", "trouve"]],
+          remplace:
+            "L'échelle est encore contre le mur. Le chaume est à moitié posé, la botte défaite, les liens en travers.\n\nIl n'y a personne sur le toit. Il n'y a personne en bas.",
+        },
       ],
     },
     regles_locales: [],
@@ -797,7 +803,7 @@ export const storylets = {
         observation: true,
         deplacement: false,
         sortie: true,
-        modif_proba: [{ si: [["stat>=", "perception", 4]], valeur: 20 }, { si: [["flag", "f_vdg_repere"]], valeur: -15 }],
+        modif_proba: [{ si: [["stat>=", "perception", 4]], valeur: 20 }, { si: [["flag", "f_vdg_empreintes_lues"]], valeur: 10 }, { si: [["flag", "f_vdg_repere"]], valeur: -15 }],
         issues: [
           {
             probabilite: 60,
@@ -933,7 +939,7 @@ export const storylets = {
         observation: false,
         deplacement: false,
         sortie: true,
-        modif_proba: [{ si: [["stat>=", "vigueur", 3]], valeur: 20 }, { si: [["flag", "f_vdg_repere"]], valeur: -15 }],
+        modif_proba: [{ si: [["stat>=", "vigueur", 3]], valeur: 20 }, { si: [["flag", "f_vdg_vue_haute"]], valeur: 10 }, { si: [["flag", "f_vdg_repere"]], valeur: -15 }],
         issues: [
           {
             probabilite: 60,
@@ -970,7 +976,7 @@ export const storylets = {
       },
       {
         id: "B",
-        libelle: "Charger, et prévenir les familles cachées",
+        libelle: "Charger et prévenir",
         cout: {},
         epuisable: false,
         observation: false,
@@ -1007,7 +1013,7 @@ export const storylets = {
             reussite: true,
             si: [],
             texte:
-              "Il y en a un, la ridelle cassée, mais il roule. Il ne passera pas partout.",
+              "Il y en a un, la ridelle cassée, mais il roule.",
             effets: [
               { objet: "OBJ-15", quantite: 16 },
               { objet: "OBJ-04", quantite: 2 },
@@ -1050,6 +1056,9 @@ export const storylets = {
     id: "ST-VDG-20",
     titre_travail: "Razzia — après",
     lieu: { type: "declenche_uniquement" },
+    // « Fin d'après-midi », « avant la nuit » : la ligne du monde dirait encore
+    // le milieu de la journée. La razzia est passée ; l'en-tête le dit.
+    bandeau: { titre: "Val-de-Garde", paliers: [{ si: [], libelle: "Après la razzia" }] },
     conditions: { requis: [], interdit: [] },
     unique: true,
     majeur: false,
@@ -1086,7 +1095,7 @@ export const storylets = {
       {
         id: "Z",
         libelle: "Écouter ce que dit Mathias",
-        cout: { segments: 1 },
+        cout: {},
         epuisable: false,
         observation: false,
         deplacement: false,

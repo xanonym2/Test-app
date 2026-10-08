@@ -235,19 +235,19 @@ bloquants : 0 | à revoir : 0
 garde-fou « l'aléatoire ne tue jamais » · soif · mort en voyage · migration
 scènes verrouillées · en-têtes de scène · reprise au milieu de la razzia : conformes
 
-v3           30/30 · jours 7,9 · niveau 6,3 · 2,8 compétences · 2,8 groupes fermés
+v3           30/30 · jours 7,8 · niveau 6,3 · 2,8 compétences · 2,8 groupes fermés
              scènes 16,0/22 · points 4,6/6 · savoir 1,6/3 · gorgées 2,7
              survie qui mord 17/30 · 5 fins + la mort
 
-MVP 1 (D04)  30/30 · FIN-T1 30/30 · scènes 9,2/11
-             chaînes bouclées 1,5/4 — réparties 0:6 · 1:4 · 2:19 · 3:1
-             horloge finale 4,4/7
+MVP 1 (D04)  30/30 · FIN-T1 30/30 · scènes 8,8/11
+             chaînes bouclées 1,3/4 — réparties 0:7 · 1:8 · 2:14 · 3:1
+             horloge finale 3,7/7
 ```
 
 **La métrique qui compte pour la razzia est « chaînes bouclées ».** La spec veut
 « deux, parfois trois ; il y en a quatre ». Si elle remonte vers 4, l'horloge a
 cessé de mordre. Le robot est timide : la vraie mesure est celle d'un **joueur
-qui ne renonce jamais** — 2 chaînes dans 75 % des parties, 3 dans 25 %, jamais 4
+qui ne renonce jamais** — 2 chaînes dans 64 % des parties, 3 dans 36 %, jamais 4
 (200 parties, `docs/lots/MVP1.md` §7). Le robot du vérificateur n'utilise que
 les options de scène : **ce qu'il ne touche pas — barre de nav, carte,
 inventaire pendant une scène — se teste dans le navigateur**, pas par le
@@ -309,6 +309,10 @@ run annulerait une perte.
 sélectionne un storylet `declenche_uniquement`, donc rien ne le ramène : la
 carte disparaît tant qu'il dure (`sceneVerrouillee`, `engine/derive.js`), et
 « regarder autour » réaffiche la scène au lieu d'en tirer une autre.
+
+**Une fin ne se perd pas.** Une scène qui porte une fin est déclenchée — on ne
+la quitte que par un choix — ou non unique — elle revient au prochain lieu. Le
+vérificateur le contrôle (`fin_perdable`, contrat M27).
 
 **Le bandeau lit l'état du monde, jamais un compte à rebours.** Une scène peut
 déclarer un en-tête (`bandeau`, contrat M20) : des paliers conditionnels, un

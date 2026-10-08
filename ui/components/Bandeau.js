@@ -38,12 +38,13 @@ export function Bandeau({ E, onEtats }) {
           <>
             {entete.titre ? (
               <>
-                <Text style={[TYPO.minuscule, { color: T.accent, letterSpacing: 0.8 }]}>{entete.titre.toUpperCase()}</Text>
+                <Text numberOfLines={1} style={[TYPO.minuscule, { color: T.accent, letterSpacing: 0.8, flexShrink: 0 }]}>{entete.titre.toUpperCase()}</Text>
                 <Text style={[TYPO.minuscule, { marginHorizontal: 6 }]}>·</Text>
               </>
             ) : null}
-            <Text style={TYPO.minuscule} numberOfLines={1}>{entete.libelle}</Text>
-            <View style={{ flex: 1 }} />
+            {/* Le libellé prend la place qui reste et cède le premier : le titre
+                ne passe jamais sur deux lignes, SURCHARGE reste lisible. */}
+            <Text style={[TYPO.minuscule, { flex: 1, flexShrink: 1 }]} numberOfLines={1}>{entete.libelle}</Text>
           </>
         ) : (
           <>

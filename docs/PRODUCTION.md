@@ -122,6 +122,15 @@ Une réponse de travers : on réécrit avant de lancer le vérificateur.
 | Au plus 3 variantes | §0 r. 12 | **étape 1**, s'il manque |
 | Aucun indice dans un storylet recombinable | ce document, §1 | **étape 1** |
 | Mots sensibles avant le twist 1 — *sortilège, emprise, ensorcelé, magie* | §0 bis r. 2 | **étape 1**, en « à revoir » |
+| Une issue à `probabilite` ne contient pas `pnj_statut: mort` | §4 r. 9 · M26 | **audit MVP 1** |
+| Clés de `cout` et `lieu.type` dans les listes fermées | §5 · M26 | **audit MVP 1** |
+| Une scène qui porte une fin est déclenchée ou non unique | §4 · M27 | **audit MVP 1** |
+| En-tête de scène : libellés sans chiffre, palier final sans condition, aucun palier masqué | §5 · M20 | **audit MVP 1** |
+| Blocs de bilan d'une fin : clés connues, liste non vide | §16 · M21 | **audit MVP 1** |
+| Champs d'un départ : storylet, météo, mutateurs existent ; segment dans la journée | §11 · M23 · M24 | **audit MVP 1** |
+| Objet porté par un compagnon ou un départ compté comme utilisé | §6 · M22 | **audit MVP 1** |
+| Auto-tests : scènes déclenchées verrouillées ; chaque scène à en-tête en produit un ; reprise d'une sauvegarde v1 au milieu de la razzia | décisions du `CLAUDE.md` | **audit MVP 1** |
+| Robot : coincé comme le joueur dans une scène déclenchée — impasse ou tour sans sortie = plantage | §4 r. 5 | **audit MVP 1** |
 
 Un storylet est **recombinable** quand son `lieu.type` n'est pas `point_interet`
 ni `declenche_uniquement`. Un **indice** est un effet `f_indice_*` ou

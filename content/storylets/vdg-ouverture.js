@@ -7,7 +7,7 @@
 //   vdg_matinee   3 entière · 2 presque entière · 1 entamée
 //   vdg_voix      nombre de voix entendues à la traversée
 //   f_vdg_jonas_situe    on sait où est Jonas
-//   f_vdg_dette_mathias  on lui a demandé des pointes la veille au soir
+//   f_vdg_dette_mathias  on lui a demandé des pointes avant-hier, et il le dit
 // Les flèches sont un vrai objet : OBJ-02.
 
 export const storylets = {
@@ -143,7 +143,8 @@ export const storylets = {
         "Mathias frappe le soc tordu. Il a vingt ans et les avant-bras d'un homme qui en a trente.",
       variantes: [
         {
-          si: [["flag", "f_vdg_dette_mathias"]],
+          // Le reproche vaut à l'arrivée ; relu à chaque réponse, il devenait un tic.
+          si: [["flag", "f_vdg_dette_mathias"], ["tour", 1]],
           ajout:
             "« Je t'avais dit avant-hier. Tu me le dis toujours le matin même. »",
         },
@@ -167,6 +168,8 @@ export const storylets = {
             texte:
               "Mathias ne lève pas les yeux du soc. « Au toit des Ancel. Il a dit qu'il finissait avant midi. » Un temps. « Il ne finira pas avant midi. »",
             effets: [
+              // Texte validé : « un peu de temps » — comme au seuil, une part de matinée.
+              { stat_partie: { compteur: "vdg_matinee", valeur: -1 } },
               { flag: "f_vdg_jonas_situe" },
               { xp: 5 },
             ],
@@ -188,6 +191,8 @@ export const storylets = {
             texte:
               "« La garnison a eu deux hommes en moins ce mois-ci. Personne n'est venu les remplacer. » Il repose le marteau. « Ça fait trois mois. »",
             effets: [
+              // Texte validé : « un peu de temps » — comme au seuil, une part de matinée.
+              { stat_partie: { compteur: "vdg_matinee", valeur: -1 } },
               { stat_partie: { compteur: "vdg_voix", valeur: 1 } },
               { xp: 5 },
             ],
@@ -400,7 +405,7 @@ export const storylets = {
         "Le chevreuil est toujours le long du ruisseau. Le vent tient.",
       variantes: [
         {
-          si: [["local>=", "distance", 1]],
+          si: [["local>=", "distance", 1], ["!local", "sang"]],
           ajout: "Tu es à vingt pas plus bas. D'ici, une flèche porte droit.",
         },
         {
